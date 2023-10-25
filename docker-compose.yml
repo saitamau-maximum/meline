@@ -1,0 +1,70 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:1.25
+    ports:
+      - 80:80
+    volumes:
+      - ./etc/nginx/dev/conf.d:/etc/nginx/conf.d
+      - ./server/public:/var/www/public
+    depends_on:
+      - server
+      - client
+
+  database:
+    image: mysql:8.1
+    ports:
+      - 3306:3306
+    volumes:
+      - ./etc/mysql/conf.d:/etc/mysql/conf.d
+      - ./etc/mysql/dbdata:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
+  server:
+    image: golang:1.20
+    build:
+      context: ./server
+      target: dev
+    volumes:
+      - ./server:/app
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  client:
+    image: node:18
+    build:
+      context: ./client
+      target: dev
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
+volumes:
+  dbdata:
