@@ -15,6 +15,6 @@ type User struct {
 	DeletedAt time.Time `bun:"deleted_at,default:null"`
 }
 
-func (u *User) MapUserModelToEntity() *entity.User {
+func (u *User) ToUserEntity() *entity.User {
 	return entity.NewUserEntity(u.ID, u.GithubID, u.Name, u.CreatedAt, u.UpdatedAt, u.DeletedAt)
 }
