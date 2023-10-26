@@ -1,10 +1,7 @@
 import { vars } from "@/styles/theme.css";
-import { style, keyframes } from "@vanilla-extract/css";
+import { style, createVar } from "@vanilla-extract/css";
 
-const loadingAnimation = keyframes({
-  "0%": { transform: "rotate(0deg)" },
-  "100%": { transform: "rotate(360deg)" },
-});
+const loadingObjectSizeVar = createVar();
 
 export const styles = {
   overlay: style({
@@ -14,17 +11,26 @@ export const styles = {
     width: "100%",
     height: "100%",
     zIndex: vars.zIndex.modal,
+    backgroundColor: vars.color.gray[1],
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    opacity: 0,
+    pointerEvents: "none",
   }),
   loading: style({
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    width: "5rem",
-    height: "5rem",
-    margin: "-2.5rem 0 0 -2.5rem",
-    border: `0.5rem solid ${vars.color.green[12]}`,
-    borderRadius: "50%",
-    borderTopColor: vars.color.green[3],
-    animation: `${loadingAnimation} 1s linear infinite`,
+    vars: {
+      [loadingObjectSizeVar]: "3rem",
+    },
+    width: loadingObjectSizeVar,
+    height: loadingObjectSizeVar,
+  }),
+  active: style({
+    opacity: 1,
+    pointerEvents: "auto",
+  }),
+  fade: style({
+    transition: "opacity 0.5s ease-in-out",
   }),
 };
