@@ -1,11 +1,11 @@
 import React, { createContext, useState } from "react";
 
-interface LoadingContextProps {
+interface LoadingOverlayContextProps {
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
 }
 
-export const LoadingContext = createContext<LoadingContextProps>({
+export const LoadingOverlayContext = createContext<LoadingOverlayContextProps>({
   isLoading: false,
   setIsLoading: () => {},
 });
@@ -14,12 +14,12 @@ interface LoadingProviderProps {
   children: React.ReactNode;
 }
 
-export const LoadingProvider = ({ children }: LoadingProviderProps) => {
+export const LoadingOverlayProvider = ({ children }: LoadingProviderProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
+    <LoadingOverlayContext.Provider value={{ isLoading, setIsLoading }}>
       {children}
-    </LoadingContext.Provider>
+    </LoadingOverlayContext.Provider>
   );
 };

@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
 import { styles } from "./page.css";
-import { LoadingContext } from "@/providers/loading";
+import { LoadingOverlayContext } from "@/providers/loading-overlay";
 
 export const OnboardingPage = () => {
-  const { setIsLoading } = useContext(LoadingContext);
+  const { setIsLoading } = useContext(LoadingOverlayContext);
 
   useEffect(() => {
     setIsLoading(true);

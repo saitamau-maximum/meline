@@ -1,13 +1,13 @@
-import { Loading } from "./components/loading/loading";
+import { LoadingOverlay } from "./components/loading-overlay/loading-overlay";
 import { OnboardingPage } from "./features/onboarding";
-import { LoadingProvider } from "./providers/loading";
+import { LoadingOverlayProvider } from "./providers/loading-overlay";
 
 function App() {
   return (
-    <LoadingProvider>
-      <Loading />
+    <LoadingOverlayProvider>
+      <LoadingOverlay />
       <OnboardingPage />
-    </LoadingProvider>
+    </LoadingOverlayProvider>
   );
 }
 

@@ -1,11 +1,11 @@
 import { clsx } from "@/libs/clsx";
-import { styles } from "./loading.css";
-import { LoadingContext } from "@/providers/loading";
+import { styles } from "./loading-overlay.css";
+import { LoadingOverlayContext } from "@/providers/loading-overlay";
 import { vars } from "@/styles/theme.css";
 import { useContext, useEffect, useRef } from "react";
 
-export const Loading = () => {
-  const { isLoading } = useContext(LoadingContext);
+export const LoadingOverlay = () => {
+  const { isLoading } = useContext(LoadingOverlayContext);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
