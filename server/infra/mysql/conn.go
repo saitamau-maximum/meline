@@ -12,10 +12,23 @@ const (
 	driver = "mysql"
 	port = "3306"
 	net = "tcp"
-	host = "database"
 )
 
-func ConnectDB() (*sql.DB, error) {
+func ConnectDB(host string) (*sql.DB, error) {
+	user := os.Getenv("MYSQL_USER")
+	if user == "" {
+		os.Exit(1)
+	} 
+	pass := os.Getenv("MYSQL_PASSWORD")
+	if pass== "" {
+		os.Exit(1)
+	}
+	dbname := os.Getenv("MYSQL_DATABASE")
+	if dbname == "" {
+		os.Exit(1)
+	}
+	
+
 	c := mysql.Config{
 		User: os.Getenv("MYSQL_USER"),
 		Passwd: os.Getenv("MYSQL_PASSWORD"),

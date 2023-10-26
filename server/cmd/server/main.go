@@ -11,10 +11,14 @@ import (
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 )
 
+const (
+	host = "database"
+)
+
 func main() {
 	e := echo.New()
 
-	db, err := infra.ConnectDB()
+	db, err := infra.ConnectDB(host)
 	if err != nil {
 		e.Logger.Error(err)
 	}

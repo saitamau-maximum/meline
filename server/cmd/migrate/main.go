@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -12,9 +11,9 @@ import (
 	"github.com/uptrace/bun/migrate"
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/urfave/cli/v2"
-	"github.com/go-sql-driver/mysql"
 
 	"github.com/saitamau-maximum/meline/cmd/migrate/migrations"
+	infra "github.com/saitamau-maximum/meline/infra/mysql"
 )
 
 const (
@@ -25,7 +24,7 @@ const (
 )
 
 func main() {
-	db, err := ConnectDB()
+	db, err := infra.ConnectDB(host)
 	if err != nil {
 		panic(err)
 	}
@@ -183,22 +182,4 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 			},
 		},
 	}
-}
-
-func ConnectDB() (*sql.DB, error) {
-	c := mysql.Config{
-		User: os.Getenv("MYSQL_USER"),
-		Passwd: os.Getenv("MYSQL_PASSWORD"),
-		Net: net,
-		Addr: fmt.Sprintf("%s:%s", host, port),
-		DBName: os.Getenv("MYSQL_DATABASE"),
-		AllowNativePasswords: true,
-		ParseTime: true,
-	}
-
-	db, err := sql.Open(driver, c.FormatDSN())
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
 }
