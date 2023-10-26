@@ -22,8 +22,6 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
-	initBun(bunDB)
-
 	defer bunDB.Close()
 
 	e.GET("/", func(c echo.Context) error {
@@ -33,6 +31,3 @@ func main() {
 	e.Start(":8000")
 }
 
-func initBun(bunDB *bun.DB) {
-	bunDB.NewCreateTable().Model((*model.User)(nil)).IfNotExists().Exec(context.Background())
-}
