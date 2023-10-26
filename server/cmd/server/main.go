@@ -2,14 +2,12 @@ package main
 
 import (
 	"net/http"
-	"context"
 
 	"github.com/labstack/echo/v4"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/saitamau-maximum/meline/usecase/model"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 )
 
