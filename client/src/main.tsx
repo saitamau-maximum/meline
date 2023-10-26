@@ -1,10 +1,14 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import "@/styles/global.css"
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import { LoadingOverlayProvider } from "./providers/loading-overlay.tsx";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+import "@/styles/global.css";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+    <LoadingOverlayProvider>
+      <App />
+    </LoadingOverlayProvider>
+  </React.StrictMode>
+);
