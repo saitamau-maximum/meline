@@ -1,12 +1,13 @@
-import { styles } from "./App.css";
+import { Loading } from "./components/loading/loading";
+import { OnboardingPage } from "./features/onboarding";
+import { LoadingProvider } from "./providers/loading";
 
 function App() {
   return (
-    <div className={styles.container}>
-      <img src="/maximum.svg" alt="Maximum" width="300" height="100" />
-      <h1 className={styles.title}>MELINE</h1>
-      <p className={styles.subtitle}>Coming Soon...</p>
-    </div>
+    <LoadingProvider>
+      <Loading />
+      <OnboardingPage />
+    </LoadingProvider>
   );
 }
 
