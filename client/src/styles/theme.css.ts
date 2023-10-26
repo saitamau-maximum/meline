@@ -101,6 +101,7 @@ const zIndexVars = createGlobalTheme(":root", {
   float: "10",
   windowFloat: "100",
   modal: "1000",
+  overlay: "10000",
 });
 
 export const vars = {

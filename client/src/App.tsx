@@ -1,12 +1,13 @@
-import { styles } from "./App.css";
+import { LoadingOverlay } from "./components/loading-overlay/loading-overlay";
+import { OnboardingPage } from "./features/onboarding";
+import { LoadingOverlayProvider } from "./providers/loading-overlay";
 
 function App() {
   return (
-    <div className={styles.container}>
-      <img src="/maximum.svg" alt="Maximum" width="300" height="100" />
-      <h1 className={styles.title}>MELINE</h1>
-      <p className={styles.subtitle}>Coming Soon...</p>
-    </div>
+    <LoadingOverlayProvider>
+      <LoadingOverlay />
+      <OnboardingPage />
+    </LoadingOverlayProvider>
   );
 }
 
