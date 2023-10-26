@@ -16,5 +16,5 @@ type User struct {
 }
 
 func (u *User) MapUserModelToEntity() *entity.User {
-	return entity.NewUser(u.ID, u.GithubID, u.Name, u.CreatedAt, u.UpdatedAt, u.DeletedAt)
+	return entity.NewUserEntity(u.ID, u.GithubID, u.Name, u.CreatedAt, u.UpdatedAt, u.DeletedAt)
 }
