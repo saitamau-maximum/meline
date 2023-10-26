@@ -30,11 +30,11 @@ func ConnectDB(host string) (*sql.DB, error) {
 	
 
 	c := mysql.Config{
-		User: os.Getenv("MYSQL_USER"),
-		Passwd: os.Getenv("MYSQL_PASSWORD"),
+		User: user,
+		Passwd: pass,
 		Net: net,
 		Addr: fmt.Sprintf("%s:%s", host, port),
-		DBName: os.Getenv("MYSQL_DATABASE"),
+		DBName: dbname,
 		AllowNativePasswords: true,
 		ParseTime: true,
 	}
