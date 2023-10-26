@@ -13,7 +13,7 @@ type User struct {
 	DeletedAt time.Time
 }
 
-func NewUser(id uint64, githubID, name string, createdAt, updatedAt, deletedAt time.Time) *User {
+func NewUserEntity(id uint64, githubID, name string, createdAt, updatedAt, deletedAt time.Time) *User {
 	return &User{
 		ID: id,
 		GithubID: githubID,
