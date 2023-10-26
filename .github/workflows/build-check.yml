@@ -17,5 +17,5 @@ jobs:
         working-directory: ./server
         run: go mod download
       - name: server Build Check
-        working-directory: ./server
+        working-directory: ./server/cmd/server
         run: go build -o main .

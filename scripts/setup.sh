@@ -42,6 +42,8 @@ go mod tidy
 
 echo "バックエンドのセットアップが完了しました！"
 
+cd "${PROJECT_DIR}"
+
 echo "Dockerのセットアップを開始します..."
 
 docker compose down
