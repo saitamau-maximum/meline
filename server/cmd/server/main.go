@@ -5,12 +5,12 @@ import (
 	"context"
 
 	"github.com/labstack/echo/v4"
-	"github.com/saitamau-maximum/meline/infra"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/saitamau-maximum/meline/domain/model"
+	"github.com/saitamau-maximum/meline/usecase/model"
+	infra "github.com/saitamau-maximum/meline/infra/mysql"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
-	bunDB.NewCreateTable().Model((*model.User)(nil)).IfNotExists().Exec(context.Background())
+	initBun(bunDB)
 
 	defer bunDB.Close()
 
@@ -31,4 +31,8 @@ func main() {
 	})
 
 	e.Start(":8000")
+}
+
+func initBun(bunDB *bun.DB) {
+	bunDB.NewCreateTable().Model((*model.User)(nil)).IfNotExists().Exec(context.Background())
 }
