@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	driver = "mysql"
-	port = "3306"
-	net = "tcp"
+	DRIVER = "mysql"
+	PORT = "3306"
+	NET = "tcp"
 )
 
 func ConnectDB(host string) (*sql.DB, error) {
@@ -32,14 +32,14 @@ func ConnectDB(host string) (*sql.DB, error) {
 	c := mysql.Config{
 		User: user,
 		Passwd: pass,
-		Net: net,
-		Addr: fmt.Sprintf("%s:%s", host, port),
+		Net: NET,
+		Addr: fmt.Sprintf("%s:%s", host, PORT),
 		DBName: dbname,
 		AllowNativePasswords: true,
 		ParseTime: true,
 	}
 
-	db, err := sql.Open(driver, c.FormatDSN())
+	db, err := sql.Open(DRIVER, c.FormatDSN())
 	if err != nil {
 		return nil, err
 	}

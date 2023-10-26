@@ -17,14 +17,14 @@ import (
 )
 
 const (
-	driver = "mysql"
-	port = "3306"
-	net = "tcp"
-	host = "localhost"
+	DRIVER = "mysql"
+	PORT = "3306"
+	NET = "tcp"
+	HOST = "localhost"
 )
 
 func main() {
-	db, err := infra.ConnectDB(host)
+	db, err := infra.ConnectDB(HOST)
 	if err != nil {
 		panic(err)
 	}

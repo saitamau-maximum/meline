@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	host = "database"
+	HOST = "database"
 )
 
 func main() {
 	e := echo.New()
 
-	db, err := infra.ConnectDB(host)
+	db, err := infra.ConnectDB(HOST)
 	if err != nil {
 		e.Logger.Error(err)
 	}
