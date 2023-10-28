@@ -25,7 +25,7 @@ func main() {
 	bunDB := bun.NewDB(db, mysqldialect.New())
 	defer bunDB.Close()
 
-	if err := Seed(context.Background(), bunDB); err != nil {
+	if err := seed(context.Background(), bunDB); err != nil {
 		log.Printf("failed to seed: %v", err)
 		return
 	}
@@ -33,7 +33,7 @@ func main() {
 	log.Printf("seeding is done")
 }
 
-func Seed(ctx context.Context, db *bun.DB) error {
+func seed(ctx context.Context, db *bun.DB) error {
 	// add seeders here
 	if err := seeds.UserSeeds(ctx, db); err != nil {
 		return err

@@ -2,6 +2,7 @@ package seeds
 
 import (
 	"context"
+	"errors"
 
 	"github.com/uptrace/bun"
 	"github.com/saitamau-maximum/meline/usecase/model"
@@ -25,6 +26,12 @@ var (
 )
 
 func UserSeeds(ctx context.Context, db *bun.DB) error {
+	if  isExists, err := db.NewSelect().Model(&model.User{}).Exists(ctx); err != nil {
+		return err
+	} else if isExists {
+		return errors.New("user data already exists")
+	}
+
 	if _, err := db.NewInsert().Model(&users).Exec(ctx); err != nil {
 		return err
 	}
