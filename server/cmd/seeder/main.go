@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	host = "localhost"
+	HOST = "localhost"
 )
 
 var (
@@ -32,7 +32,7 @@ var (
 )
 
 func main() {
-	db, err := infra.ConnectDB(host)
+	db, err := infra.ConnectDB(HOST)
 	if err != nil {
 		log.Printf("failed to connect db: %v", err)
 		return
