@@ -6,29 +6,13 @@ import (
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
+
+	"github.com/saitamau-maximum/meline/cmd/seeder/seeds"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
-	model "github.com/saitamau-maximum/meline/usecase/model"
 )
 
 const (
 	HOST = "localhost"
-)
-
-var (
-	users = []*model.User{
-		{
-			GithubID: "sample1",
-			Name: "name_1",
-		},
-		{
-			GithubID: "sample2",
-			Name: "name_2",
-		},
-		{
-			GithubID: "sample3",
-			Name: "name_3",
-		},
-	}		
 )
 
 func main() {
@@ -41,7 +25,7 @@ func main() {
 	bunDB := bun.NewDB(db, mysqldialect.New())
 	defer bunDB.Close()
 
-	if err := seeds(context.Background(), bunDB); err != nil {
+	if err := Seed(context.Background(), bunDB); err != nil {
 		log.Printf("failed to seed: %v", err)
 		return
 	}
@@ -49,8 +33,9 @@ func main() {
 	log.Printf("seeding is done")
 }
 
-func seeds(ctx context.Context, db *bun.DB) error {
-	if _, err := db.NewInsert().Model(&users).Exec(ctx); err != nil {
+func Seed(ctx context.Context, db *bun.DB) error {
+	// add seeders here
+	if err := seeds.UserSeeds(ctx, db); err != nil {
 		return err
 	}
 
