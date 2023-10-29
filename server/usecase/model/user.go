@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID uint64 `bun:"id,pk,autoincrement,notnull"`
+	ID uint64 `bun:"id,pk,autoincrement"`
 	GithubID string `bun:"github_id,unique,notnull"`
 	Name string `bun:"name,notnull"`
 	CreatedAt time.Time `bun:"created_at,notnull,default:current_timestamp"`
