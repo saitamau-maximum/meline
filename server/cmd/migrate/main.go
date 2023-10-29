@@ -12,7 +12,7 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/urfave/cli/v2"
 
-	"github.com/saitamau-maximum/meline/cmd/migrate/migrations"
+	"github.com/saitamau-maximum/meline/migrations"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 )
 
