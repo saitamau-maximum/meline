@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -21,6 +22,7 @@ const (
 	PORT = "3306"
 	NET = "tcp"
 	HOST = "localhost"
+	MIGRATION_TABLE = "bun_migrations"
 )
 
 func main() {
@@ -35,6 +37,11 @@ func main() {
 	))
 
 	defer bunDB.Close()
+
+	if err := checkMigrationsTable(context.Background(), bunDB); err != nil {
+		log.Println("Migrations table does not exist \n\n\t run `./scripts/migrate.sh init` first \n")
+		return
+	}
 
 	app := &cli.App{
 		Name: "bun",
@@ -182,4 +189,16 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 			},
 		},
 	}
+}
+
+func checkMigrationsTable(ctx context.Context, db *bun.DB) error {
+	if os.Args[2] == "init" {
+		return nil
+	}
+
+	if _, err := db.NewSelect().Table(MIGRATION_TABLE).Exists(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
