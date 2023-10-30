@@ -22,7 +22,7 @@ const (
 	PORT = "3306"
 	NET = "tcp"
 	HOST = "localhost"
-	TABLE = "bun_migrations"
+	MIGRATION_TABLE = "bun_migrations"
 )
 
 func main() {
@@ -196,7 +196,7 @@ func checkMigrationsTable(ctx context.Context, db *bun.DB) error {
 		return nil
 	}
 
-	if _, err := db.NewSelect().Table(TABLE).Exists(ctx); err != nil {
+	if _, err := db.NewSelect().Table(MIGRATION_TABLE).Exists(ctx); err != nil {
 		return err
 	}
 
