@@ -9,7 +9,7 @@ which dotenv >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "dotenv-cli がインストールされていません！"
     echo "dotenvインストールしてから再度実行してください。"
-    echo "`npm install -g dotenv-cli`"
+    echo "\`npm install -g dotenv-cli\`"
     exit 1
 fi
 
