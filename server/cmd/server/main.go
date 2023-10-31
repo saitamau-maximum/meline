@@ -29,6 +29,16 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+	// auth
+	e.GET("/auth/login", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.GET("/auth/callback", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.GET("/auth/token", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
 
 	e.Start(":8000")
 }

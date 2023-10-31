@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/uptrace/bun"
-	"github.com/saitamau-maximum/meline/usecase/model"
+	"github.com/saitamau-maximum/meline/models"
 )
 
 var (
