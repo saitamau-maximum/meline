@@ -2,8 +2,6 @@ package usecase
 
 import (
 	"context"
-	"io"
-	"net/http"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
 )
@@ -11,7 +9,7 @@ import (
 type IAuthInteractor interface {
 	GetGithubOAuthURL(ctx context.Context, state string) string
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
-	GetGithubUser(ctx context.Context, token string) (*http.Response, error)
+	GetGithubUser(ctx context.Context, token string) ([]byte, error)
 }
 
 type AuthInteractor struct {
@@ -32,6 +30,6 @@ func (i *AuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (
 	return i.repository.GetGithubOAuthToken(ctx, code)
 }
 
-func (i *AuthInteractor) GetGithubUser(ctx context.Context, token string) (*http.Response, error) {
+func (i *AuthInteractor) GetGithubUser(ctx context.Context, token string) ([]byte, error) {
 	return i.repository.GetGithubUser(ctx, token)
 }

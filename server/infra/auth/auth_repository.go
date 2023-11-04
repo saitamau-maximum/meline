@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"net/http"
+	"io"
 
 	"golang.org/x/oauth2"
 
@@ -33,7 +34,7 @@ func (r *AuthRepository) GetGithubOAuthToken(ctx context.Context, code string) (
 	return token.AccessToken, nil
 }
 
-func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) (*http.Response, error) {
+func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) ([]byte, error) {
 	client := oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	))
@@ -43,12 +44,15 @@ func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) (*http
 		return nil, err
 	}
 
-	req.Header.Set("Accept", "application/vnd.github.v3+json")
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody, nil
 }

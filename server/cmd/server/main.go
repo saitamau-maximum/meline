@@ -3,12 +3,15 @@ package main
 import (
 	"net/http"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
-	_ "github.com/go-sql-driver/mysql"
 
+	"github.com/saitamau-maximum/meline/handler"
+	"github.com/saitamau-maximum/meline/infra/auth"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
+	"github.com/saitamau-maximum/meline/usecase"
 )
 
 const (
@@ -26,19 +29,21 @@ func main() {
 	bunDB := bun.NewDB(db, mysqldialect.New())
 	defer bunDB.Close()
 
+	authRepository := auth.NewAuthRepository()
+	userRepository := infra.NewUserRepository(bunDB)
+	authInteractor := usecase.NewAuthInteractor(authRepository)
+	userInteractor := usecase.NewUserInteractor(userRepository)
+	authHandler := handler.NewAuthHandler(authInteractor)
+	userHandler := handler.NewUserHandler(userInteractor, authInteractor)
+
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	// auth
-	e.GET("/auth/login", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.GET("/auth/callback", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.GET("/auth/token", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	e.GET("/auth/login", authHandler.Login)
+	e.GET("/auth/callback", authHandler.Callback)
+	e.POST("/auth/signup", userHandler.SignUp)
+	e.GET("/logged_in", userHandler.LoggedIn)
 
 	e.Start(":8000")
 }

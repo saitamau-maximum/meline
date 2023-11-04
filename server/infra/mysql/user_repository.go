@@ -42,6 +42,28 @@ func (r *UserRepository) FindByGithubID(ctx context.Context, githubID string) (*
 }
 
 func (r *UserRepository) Insert(ctx context.Context, githubID, name string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	user := model.User{
+		GithubID: githubID,
+		Name:     name,
+	}
+
+	if _, err := tx.NewInsert().Model(&user).Exec(ctx); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -2,14 +2,15 @@ package handler
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
 type IAuthHandler interface {
+	Login(c echo.Context) error
 	Callback(c echo.Context) error
-	Auth(c echo.Context) error
 }
 
 type AuthHandler struct {
@@ -22,6 +23,14 @@ func NewAuthHandler(interactor usecase.IAuthInteractor) IAuthHandler {
 	}
 }
 
+func (h *AuthHandler) Login(c echo.Context) error {
+	state := c.Request().URL.Query().Get("state")
+
+	redirectUrl := h.interactor.GetGithubOAuthURL(c.Request().Context(), state)
+
+	return c.Redirect(http.StatusMovedPermanently, redirectUrl)
+}
+
 func (h *AuthHandler) Callback(c echo.Context) error {
 	query := c.Request().URL.Query()
 	code := query.Get("code")
@@ -31,9 +40,12 @@ func (h *AuthHandler) Callback(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(200, accessToken)
-}
+	cookie := &http.Cookie{
+		Name: "access_token",
+		Value: accessToken,
+	}
 
-func (h *AuthHandler) Auth(c echo.Context) error {
-	return nil
+	c.SetCookie(cookie)
+
+	return c.Redirect(http.StatusFound, "/logged_in")
 }
