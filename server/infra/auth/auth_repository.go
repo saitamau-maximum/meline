@@ -2,11 +2,15 @@ package auth
 
 import (
 	"context"
-	"net/http"
 	"io"
+	"net/http"
+	"os"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 
+	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
 )
 
@@ -44,15 +48,29 @@ func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) ([]byt
 		return nil, err
 	}
 
-	resp, err := client.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	respBody, err := io.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	return respBody, nil
+	return resBody, nil
+}
+
+func (r *AuthRepository) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
+	claims := jwt.MapClaims{
+		"iss": "meline",
+		"user_id": user.ID,
+		"github_id": user.GithubID,
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(time.Hour * 3).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }

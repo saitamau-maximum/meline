@@ -9,6 +9,7 @@ import (
 	"github.com/uptrace/bun/dialect/mysqldialect"
 
 	"github.com/saitamau-maximum/meline/handler"
+	authHandler "github.com/saitamau-maximum/meline/handler/auth"
 	"github.com/saitamau-maximum/meline/infra/auth"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 	"github.com/saitamau-maximum/meline/usecase"
@@ -33,17 +34,16 @@ func main() {
 	userRepository := infra.NewUserRepository(bunDB)
 	authInteractor := usecase.NewAuthInteractor(authRepository)
 	userInteractor := usecase.NewUserInteractor(userRepository)
-	authHandler := handler.NewAuthHandler(authInteractor)
-	userHandler := handler.NewUserHandler(userInteractor, authInteractor)
+	authHandler := authHandler.NewAuthHandler(authInteractor, userInteractor)
+	userHandler := handler.NewUserHandler(userInteractor)
 
-	e.GET("/", func(c echo.Context) error {
+	e.GET("/", authHandler.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
-	})
+	}))
 	// auth
 	e.GET("/auth/login", authHandler.Login)
-	e.GET("/auth/callback", authHandler.Callback)
-	e.POST("/auth/signup", userHandler.SignUp)
-	e.GET("/logged_in", userHandler.LoggedIn)
+	e.GET("/auth/callback", authHandler.CallBack)
+	e.POST("/signup", userHandler.CreateUser)
 
 	e.Start(":8000")
 }
