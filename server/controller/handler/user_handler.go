@@ -4,16 +4,15 @@ import (
 	// "encoding/json"
 	// "net/http"
 
+	"net/http"
+
 	"github.com/labstack/echo/v4"
+	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
 type IUserHandler interface {
-	GetUser(c echo.Context) error
-	GetUserByGithubID(c echo.Context) error
 	CreateUser(c echo.Context) error
-	UpdateUser(c echo.Context) error
-	DeleteUser(c echo.Context) error
 }
 
 type UserHandler struct {
@@ -26,22 +25,18 @@ func NewUserHandler(userInteractor usecase.IUserInteractor) IUserHandler {
 	}
 }
 
-func (h *UserHandler) GetUser(c echo.Context) error {
-	return nil
-}
-
-func (h *UserHandler) GetUserByGithubID(c echo.Context) error {
-	return nil
-}
-
 func (h *UserHandler) CreateUser(c echo.Context) error {
-	return nil
+	ctx := c.Request().Context()
+
+	var user *entity.User
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	if err := h.userInteractor.CreateUser(ctx, user); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusOK, "User created")
 }
 
-func (h *UserHandler) UpdateUser(c echo.Context) error {
-	return nil
-}
-
-func (h *UserHandler) DeleteUser(c echo.Context) error {
-	return nil
-}

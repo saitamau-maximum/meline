@@ -41,7 +41,7 @@ func (r *UserRepository) FindByGithubID(ctx context.Context, githubID string) (*
 	return &user, nil
 }
 
-func (r *UserRepository) Insert(ctx context.Context, githubID, name string) error {
+func (r *UserRepository) Create(ctx context.Context, githubID, name string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	
@@ -64,14 +64,6 @@ func (r *UserRepository) Insert(ctx context.Context, githubID, name string) erro
 		return err
 	}
 
-	return nil
-}
-
-func (r *UserRepository) Update(ctx context.Context, id uint64, githubID, name string) error {
-	return nil
-}
-
-func (r *UserRepository) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 

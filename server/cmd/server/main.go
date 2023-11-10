@@ -38,10 +38,10 @@ func main() {
 	authHandler := handler.NewAuthHandler(authInteractor, userInteractor)
 	userHandler := handler.NewUserHandler(userInteractor)
 
-	g := e.Group("/api", authGatetway.Auth)
-	g.GET("/", func(c echo.Context) error {
+	g := e.Group("/api")
+	g.GET("/", authGatetway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
-	})
+	}))
 	// auth
 	g.GET("/auth/login", authHandler.Login)
 	g.GET("/auth/callback", authHandler.CallBack)

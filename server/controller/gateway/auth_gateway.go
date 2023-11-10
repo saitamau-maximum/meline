@@ -15,17 +15,17 @@ type IAuthGateway interface {
 	Auth(next echo.HandlerFunc) echo.HandlerFunc
 }
 
-type AuthHandler struct {
+type AuthGateway struct {
 	userInteractor usecase.IUserInteractor
 }
 
 func NewAuthGateway(userInteractor usecase.IUserInteractor) IAuthGateway {
-	return &AuthHandler{
+	return &AuthGateway{
 		userInteractor: userInteractor,
 	}
 }
 
-func (h *AuthHandler) Auth(next echo.HandlerFunc) echo.HandlerFunc {
+func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
@@ -54,7 +54,7 @@ func (h *AuthHandler) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		// Get User
 		userId := claims["id"].(uint64)
 
-		user, err := h.userInteractor.GetUser(ctx, userId)
+		user, err := h.userInteractor.GetUserByID(ctx, userId)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)
 		}

@@ -8,11 +8,9 @@ import (
 )
 
 type IUserInteractor interface {
-	GetUser(ctx context.Context, id uint64) (*entity.User, error)
+	GetUserByID(ctx context.Context, id uint64) (*entity.User, error)
 	GetUserByGithubID(ctx context.Context, githubID string) (*entity.User, error)
-	CreateUser(ctx context.Context, githubID, name string) error
-	UpdateUser(ctx context.Context, id uint64, githubID, name string) error
-	DeleteUser(ctx context.Context, id uint64) error
+	CreateUser(ctx context.Context, user *entity.User) error
 }
 
 type UserInteractor struct {
@@ -25,7 +23,7 @@ func NewUserInteractor(repository repository.IUserRepository) IUserInteractor {
 	}
 }
 
-func (i *UserInteractor) GetUser(ctx context.Context, id uint64) (*entity.User, error) {
+func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*entity.User, error) {
 	user, err := i.repository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -43,26 +41,6 @@ func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string)
 	return user.ToUserEntity(), nil
 }
 
-func (i *UserInteractor) CreateUser(ctx context.Context, githubID, name string) error {
-	if err := i.repository.Insert(ctx, githubID, name); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (i *UserInteractor) UpdateUser(ctx context.Context, id uint64, githubID, name string) error {
-	if err := i.repository.Update(ctx, id, githubID, name); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (i *UserInteractor) DeleteUser(ctx context.Context, id uint64) error {
-	if err := i.repository.Delete(ctx, id); err != nil {
-		return err
-	}
-
-	return nil
+func (i *UserInteractor) CreateUser(ctx context.Context, user *entity.User) error {
+	return i.repository.Create(ctx, user.GithubID, user.Name)
 }

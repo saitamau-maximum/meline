@@ -1,11 +1,19 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/usecase"
+	"github.com/saitamau-maximum/meline/utils"
+)
+
+const (
+	b = 32
 )
 
 type IAuthHandler interface {
@@ -25,34 +33,35 @@ func NewAuthHandler( authInteractor usecase.IAuthInteractor, userInteractor usec
 	}
 }
 
-
-
 func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	// Get Github OAuth URL
-	state := "state"
+	state := utils.SecureRandomStr(b)
 	url := h.authInteractor.GetGithubOAuthURL(ctx, state)
 
 	return c.Redirect(http.StatusMovedPermanently, url)
 }
 
 func (h *AuthHandler) CallBack(c echo.Context) error {
-	ctx := c.Request().Context()
+	ctx := context.Background()
 
 	code := c.QueryParam("code")
 	gitToken, err := h.authInteractor.GetGithubOAuthToken(ctx, code)
 	if err != nil {
+		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
 	resByte, err := h.authInteractor.GetGithubUser(ctx, gitToken)
 	if err != nil {
+		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
 	var res map[string]interface{}
 	if err := json.Unmarshal(resByte, &res); err != nil {
+		log.Default().Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
@@ -60,17 +69,19 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 	githubId := res["login"].(string)
 
 	user, err := h.userInteractor.GetUserByGithubID(ctx, githubId)
+	log.Default().Println(user)
 	if err != nil {
+		if (err == sql.ErrNoRows) {
+			return c.Redirect(http.StatusMovedPermanently, "/signup")
+		}
+		log.Default().Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	if user == nil {
-		return c.Redirect(http.StatusMovedPermanently, "/signup")
 	}
 
 	// Set Access Token
 	token, err := h.authInteractor.CreateAccessToken(ctx, user)
 	if err != nil {
+		log.Default().Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
@@ -81,5 +92,5 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 
 	c.SetCookie(cookie)
 
-	return c.Redirect(http.StatusMovedPermanently, "/")
+	return c.JSON(http.StatusOK, "success")
 }
