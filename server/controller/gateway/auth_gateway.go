@@ -1,8 +1,9 @@
 package gateway
 
 import (
-	"net/http"
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -31,8 +32,9 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// Get Access Token
 		cookie, err := c.Cookie("access_token")
+
 		if err != nil {
-			return c.Redirect(http.StatusTemporaryRedirect, "/login")
+			return c.JSON(http.StatusUnauthorized, err)
 		}
 
 		token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
