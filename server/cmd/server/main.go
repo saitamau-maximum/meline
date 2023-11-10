@@ -8,8 +8,8 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 
-	"github.com/saitamau-maximum/meline/handler"
-	"github.com/saitamau-maximum/meline/handler/gateway"
+	"github.com/saitamau-maximum/meline/controller/handler"
+	"github.com/saitamau-maximum/meline/controller/gateway"
 	"github.com/saitamau-maximum/meline/infra/auth"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 	"github.com/saitamau-maximum/meline/usecase"
