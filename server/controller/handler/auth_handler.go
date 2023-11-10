@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/usecase"
@@ -69,7 +70,7 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 	githubId := res["login"].(string)
 
 	user, err := h.userInteractor.GetUserByGithubID(ctx, githubId)
-	log.Default().Println(user)
+
 	if err != nil {
 		if (err == sql.ErrNoRows) {
 			return c.Redirect(http.StatusMovedPermanently, "/signup")
@@ -85,10 +86,14 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	cookie := &http.Cookie{
-		Name: "access_token",
-		Value: token,
-	}
+	cookie := new(http.Cookie)
+	cookie.Name = "access_token"
+	cookie.Value = token
+	cookie.Path = "/"
+	cookie.HttpOnly = true
+	cookie.Secure = true
+	cookie.SameSite = http.SameSiteLaxMode
+	cookie.Expires = time.Now().Add(24 * time.Hour)
 
 	c.SetCookie(cookie)
 

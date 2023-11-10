@@ -2,7 +2,6 @@ package gateway
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -32,7 +31,6 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// Get Access Token
 		cookie, err := c.Cookie("access_token")
-
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)
 		}
@@ -54,17 +52,17 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// Get User
-		userId := claims["id"].(uint64)
+		userId := claims["user_id"].(float64)
 
-		user, err := h.userInteractor.GetUserByID(ctx, userId)
+		user, err := h.userInteractor.GetUserByID(ctx, uint64(userId))
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)
 		}
 
 		c.Set("user", user)
 
-		exp := claims["exp"].(int64)
-		if exp < time.Now().Unix() {
+		exp := claims["exp"].(float64)
+		if int64(exp) < time.Now().Unix() {
 			return c.JSON(http.StatusForbidden, err)
 		}
 
