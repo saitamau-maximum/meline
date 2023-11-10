@@ -19,6 +19,12 @@ type AuthHandler struct {
 	userInteractor usecase.IUserInteractor
 }
 
+func NewAuthGateway(userInteractor usecase.IUserInteractor) IAuthGateway {
+	return &AuthHandler{
+		userInteractor: userInteractor,
+	}
+}
+
 func (h *AuthHandler) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
