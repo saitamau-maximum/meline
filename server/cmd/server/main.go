@@ -42,10 +42,10 @@ func main() {
 	g.GET("/", authGatetway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	}))
-	// auth
-	g.GET("/auth/login", authHandler.Login)
-	g.GET("/auth/callback", authHandler.CallBack)
-	g.POST("/signup", userHandler.CreateUser)
+	authGroup := g.Group("/auth")
+	authGroup.GET("/login", authHandler.Login)
+	authGroup.GET("/callback", authHandler.CallBack)
+	authGroup.POST("/signup", userHandler.CreateUser)
 
 	e.Start(":8000")
 }
