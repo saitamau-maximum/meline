@@ -1,19 +1,14 @@
-package auth
+package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"os"
-	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
 type IAuthHandler interface {
-	Auth(next echo.HandlerFunc) echo.HandlerFunc
 	Login(c echo.Context) error
 	CallBack(c echo.Context) error
 }
@@ -30,50 +25,7 @@ func NewAuthHandler( authInteractor usecase.IAuthInteractor, userInteractor usec
 	}
 }
 
-func (h *AuthHandler) Auth(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		ctx := c.Request().Context()
 
-		// Get Access Token
-		cookie, err := c.Cookie("access_token")
-		if err != nil {
-			return c.Redirect(http.StatusTemporaryRedirect, "/login")
-		}
-
-		token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
-			if token.Method.Alg() != "HS256" {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-			}
-
-			return []byte(os.Getenv("JWT_SECRET")), nil
-		})
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, err)
-		}
-
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
-			return c.JSON(http.StatusUnauthorized, err)
-		}
-
-		// Get User
-		userId := claims["id"].(uint64)
-
-		user, err := h.userInteractor.GetUser(ctx, userId)
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, err)
-		}
-
-		c.Set("user", user)
-
-		exp := claims["exp"].(int64)
-		if exp < time.Now().Unix() {
-			return c.JSON(http.StatusForbidden, err)
-		}
-
-		return next(c)
-	}
-}
 
 func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
