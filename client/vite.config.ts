@@ -10,4 +10,11 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  server: {
+    port: 3000,
+    hmr: {
+      clientPort: 80,
+      protocol: "ws",
+    },
+  },
 });
