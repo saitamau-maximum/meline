@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -27,7 +26,7 @@ type AuthHandler struct {
 	userInteractor usecase.IUserInteractor
 }
 
-func NewAuthHandler( authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) IAuthHandler {
+func NewAuthHandler(authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) IAuthHandler {
 	return &AuthHandler{
 		authInteractor: authInteractor,
 		userInteractor: userInteractor,
@@ -38,7 +37,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	// Get Github OAuth URL
-	state := utils.SecureRandomStr(b)
+	state := utils.GenerateState(b)
 	url := h.authInteractor.GetGithubOAuthURL(ctx, state)
 
 	return c.Redirect(http.StatusMovedPermanently, url)
@@ -54,23 +53,16 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
-	resByte, err := h.authInteractor.GetGithubUser(ctx, gitToken)
+	res, err := h.authInteractor.GetGithubUser(ctx, gitToken)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
-	}
-
-	var res map[string]interface{}
-	if err := json.Unmarshal(resByte, &res); err != nil {
-		log.Default().Println(err)
-		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	// Get User
 	githubId := res["login"].(string)
 
 	user, err := h.userInteractor.GetUserByGithubID(ctx, githubId)
-
 	if err != nil {
 		if (err == sql.ErrNoRows) {
 			return c.Redirect(http.StatusMovedPermanently, "/signup")

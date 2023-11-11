@@ -40,7 +40,12 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
 
-			return []byte(os.Getenv("JWT_SECRET")), nil
+			jwtSecret := os.Getenv("JWT_SECRET")
+			if jwtSecret == "" {
+				return nil, fmt.Errorf("JWT_SECRET is not set")
+			}
+
+			return []byte(jwtSecret), nil
 		})
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)

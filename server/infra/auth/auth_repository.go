@@ -2,15 +2,12 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
-	"os"
-	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 
-	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
 )
 
@@ -19,18 +16,21 @@ const (
 )
 
 type AuthRepository struct {
+	OAuthConf *oauth2.Config
 }
 
-func NewAuthRepository() repository.IAuthRepository {
-	return &AuthRepository{}
+func NewAuthRepository(conf *oauth2.Config) repository.IAuthRepository {
+	return &AuthRepository{
+		OAuthConf: conf,
+	}
 }
 
 func (r *AuthRepository) GetGithubOAuthURL(ctx context.Context, state string) string {
-	return NewGithubOAuthConf().AuthCodeURL(state)
+	return r.OAuthConf.AuthCodeURL(state)
 }
 
 func (r *AuthRepository) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
-	token, err := NewGithubOAuthConf().Exchange(ctx, code)
+	token, err := r.OAuthConf.Exchange(ctx, code)
 	if err != nil {
 		return "", err
 	}
@@ -38,7 +38,7 @@ func (r *AuthRepository) GetGithubOAuthToken(ctx context.Context, code string) (
 	return token.AccessToken, nil
 }
 
-func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) ([]byte, error) {
+func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) (map[string]interface{}, error) {
 	client := oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	))
@@ -58,19 +58,11 @@ func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) ([]byt
 		return nil, err
 	}
 
-	return resBody, nil
-}
-
-func (r *AuthRepository) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
-	claims := jwt.MapClaims{
-		"iss": "meline",
-		"user_id": user.ID,
-		"github_id": user.GithubID,
-		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(time.Hour * 3).Unix(),
+	var gitRes map[string]interface{}
+	if err := json.Unmarshal(resBody, &gitRes); err != nil {
+		return nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	return gitRes, nil
 }
+

@@ -30,7 +30,8 @@ func main() {
 	bunDB := bun.NewDB(db, mysqldialect.New())
 	defer bunDB.Close()
 
-	authRepository := auth.NewAuthRepository()
+	oAuthConf := auth.NewGithubOAuthConf()
+	authRepository := auth.NewAuthRepository(oAuthConf)
 	userRepository := infra.NewUserRepository(bunDB)
 	authInteractor := usecase.NewAuthInteractor(authRepository)
 	userInteractor := usecase.NewUserInteractor(userRepository)
@@ -38,11 +39,11 @@ func main() {
 	authHandler := handler.NewAuthHandler(authInteractor, userInteractor)
 	userHandler := handler.NewUserHandler(userInteractor)
 
-	g := e.Group("/api")
-	g.GET("/", authGatetway.Auth(func(c echo.Context) error {
+	apiGroup := e.Group("/api")
+	apiGroup.GET("/", authGatetway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	}))
-	authGroup := g.Group("/auth")
+	authGroup := apiGroup.Group("/auth")
 	authGroup.GET("/login", authHandler.Login)
 	authGroup.GET("/callback", authHandler.CallBack)
 	authGroup.POST("/signup", userHandler.CreateUser)

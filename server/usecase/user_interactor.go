@@ -5,6 +5,7 @@ import (
 
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
+	model "github.com/saitamau-maximum/meline/models"
 )
 
 type IUserInteractor interface {
@@ -14,17 +15,17 @@ type IUserInteractor interface {
 }
 
 type UserInteractor struct {
-	repository repository.IUserRepository
+	userRepository repository.IUserRepository
 }
 
 func NewUserInteractor(repository repository.IUserRepository) IUserInteractor {
 	return &UserInteractor{
-		repository: repository,
+		userRepository: repository,
 	}
 }
 
 func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*entity.User, error) {
-	user, err := i.repository.FindByID(ctx, id)
+	user, err := i.userRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*entity.Us
 }
 
 func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string) (*entity.User, error) {
-	user, err := i.repository.FindByGithubID(ctx, githubID)
+	user, err := i.userRepository.FindByGithubID(ctx, githubID)
 	if err != nil {
 		return nil, err
 	}
@@ -42,5 +43,10 @@ func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string)
 }
 
 func (i *UserInteractor) CreateUser(ctx context.Context, user *entity.User) error {
-	return i.repository.Create(ctx, user.GithubID, user.Name)
+	userModel := &model.User{
+		GithubID: user.GithubID,
+		Name: user.Name,
+	}
+	
+	return i.userRepository.Create(ctx, userModel)
 }
