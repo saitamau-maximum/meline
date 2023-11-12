@@ -1,4 +1,4 @@
-package infra
+package mysql
 
 import (
 	"database/sql"

@@ -11,7 +11,7 @@ import (
 type IUserInteractor interface {
 	GetUserByID(ctx context.Context, id uint64) (*entity.User, error)
 	GetUserByGithubID(ctx context.Context, githubID string) (*entity.User, error)
-	CreateUser(ctx context.Context, user *entity.User) error
+	CreateUserAndGetByGithubID(ctx context.Context, githubID, name, imageURL string) (*entity.User, error)
 }
 
 type UserInteractor struct {
@@ -42,11 +42,21 @@ func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string)
 	return user.ToUserEntity(), nil
 }
 
-func (i *UserInteractor) CreateUser(ctx context.Context, user *entity.User) error {
+func (i *UserInteractor) CreateUserAndGetByGithubID(ctx context.Context, githubID, name, imageURL string) (*entity.User, error) {
 	userModel := &model.User{
-		GithubID: user.GithubID,
-		Name: user.Name,
+		GithubID: githubID,
+		Name: name,
+		ImageURL: imageURL,
 	}
 	
-	return i.userRepository.Create(ctx, userModel)
+	if err := i.userRepository.Create(ctx, userModel); err != nil {
+		return nil, err
+	}
+
+	createdUser, err := i.userRepository.FindByGithubID(ctx, githubID)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdUser.ToUserEntity(), nil
 }

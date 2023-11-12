@@ -9,35 +9,33 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/usecase"
-	"github.com/saitamau-maximum/meline/utils"
 )
 
 const (
 	b = 32
 )
 
-type IAuthHandler interface {
-	Login(c echo.Context) error
-	CallBack(c echo.Context) error
-}
-
 type AuthHandler struct {
 	authInteractor usecase.IAuthInteractor
 	userInteractor usecase.IUserInteractor
 }
 
-func NewAuthHandler(authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) IAuthHandler {
-	return &AuthHandler{
+func NewAuthHandler(apiGroup *echo.Group, authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) {
+	authHandler := &AuthHandler{
 		authInteractor: authInteractor,
 		userInteractor: userInteractor,
 	}
+
+	authGroup := apiGroup.Group("/auth")
+	authGroup.GET("/login", authHandler.Login)
+	authGroup.GET("/callback", authHandler.CallBack)
 }
 
 func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	// Get Github OAuth URL
-	state := utils.GenerateState(b)
+	state := h.authInteractor.GenerateState(b)
 	url := h.authInteractor.GetGithubOAuthURL(ctx, state)
 
 	return c.Redirect(http.StatusMovedPermanently, url)
@@ -61,14 +59,22 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 
 	// Get User
 	githubId := res["login"].(string)
+	githubName := res["name"].(string)
 
 	user, err := h.userInteractor.GetUserByGithubID(ctx, githubId)
 	if err != nil {
 		if (err == sql.ErrNoRows) {
-			return c.Redirect(http.StatusMovedPermanently, "/signup")
+			githubImageURL := res["avatar_url"].(string)
+
+			user, err = h.userInteractor.CreateUserAndGetByGithubID(ctx, githubId, githubName, githubImageURL)
+			if err != nil {
+				log.Default().Println(err)
+				return c.JSON(http.StatusInternalServerError, err)
+			}
+		} else {
+			log.Default().Println(err)
+			return c.JSON(http.StatusInternalServerError, err)
 		}
-		log.Default().Println(err)
-		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	// Set Access Token

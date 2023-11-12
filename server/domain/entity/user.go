@@ -8,6 +8,7 @@ type User struct {
 	ID uint64 `json:"id"`
 	GithubID string `json:"github_id"`
 	Name string `json:"name"`
+	ImageURL string `json:"image_url"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`

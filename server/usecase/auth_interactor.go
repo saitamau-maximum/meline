@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"context"
+	crand "crypto/rand"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -17,28 +19,29 @@ type IAuthInteractor interface {
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
 	GetGithubUser(ctx context.Context, token string) (map[string]interface{}, error)
 	CreateAccessToken(ctx context.Context, user *entity.User) (string, error)
+	GenerateState(b int) string
 }
 
 type AuthInteractor struct {
-	repository repository.IAuthRepository
+	authRepository repository.IAuthRepository
 }
 
 func NewAuthInteractor(r repository.IAuthRepository) IAuthInteractor {
 	return &AuthInteractor{
-		repository: r,
+		authRepository: r,
 	}
 }
 
 func (i *AuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
-	return i.repository.GetGithubOAuthURL(ctx, state)
+	return i.authRepository.GetGithubOAuthURL(ctx, state)
 }
 
 func (i *AuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
-	return i.repository.GetGithubOAuthToken(ctx, code)
+	return i.authRepository.GetGithubOAuthToken(ctx, code)
 }
 
 func (i *AuthInteractor) GetGithubUser(ctx context.Context, token string) (map[string]interface{}, error) {
-	return i.repository.GetGithubUser(ctx, token)
+	return i.authRepository.GetGithubUser(ctx, token)
 }
 
 func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
@@ -58,4 +61,12 @@ func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.Use
 	}
 
 	return token.SignedString([]byte(jwtSecret))
+}
+
+func (i *AuthInteractor) GenerateState(b int) string {
+    k := make([]byte, b)
+    if _, err := crand.Read(k); err != nil {
+        panic(err)
+    }
+    return fmt.Sprintf("%x", k)
 }

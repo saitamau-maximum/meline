@@ -11,18 +11,16 @@ import (
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
-type IAuthGateway interface {
-	Auth(next echo.HandlerFunc) echo.HandlerFunc
-}
-
 type AuthGateway struct {
 	userInteractor usecase.IUserInteractor
 }
 
-func NewAuthGateway(userInteractor usecase.IUserInteractor) IAuthGateway {
-	return &AuthGateway{
+func NewAuthGateway(apiGroup *echo.Group, userInteractor usecase.IUserInteractor) *echo.Group {
+	gateway := &AuthGateway{
 		userInteractor: userInteractor,
 	}
+
+	return apiGroup.Group("/app", gateway.Auth)
 }
 
 func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
