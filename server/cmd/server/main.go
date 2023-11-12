@@ -37,14 +37,13 @@ func main() {
 	userRepository := mysql.NewUserRepository(bunDB)
 	authInteractor := usecase.NewAuthInteractor(authRepository)
 	userInteractor := usecase.NewUserInteractor(userRepository)
-
-	requiredAuthGroup := gateway.NewAuthGateway(apiGroup, userInteractor)
+	authGateway := gateway.NewAuthGateway(userInteractor)
 	
 	handler.NewAuthHandler(apiGroup, authInteractor, userInteractor)
 
-	requiredAuthGroup.GET("/", func(c echo.Context) error {
+	apiGroup.GET("/", authGateway.Auth(func (c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
-	})
+	}))
 
 	e.Start(":8000")
 }

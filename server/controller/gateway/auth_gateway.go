@@ -15,12 +15,10 @@ type AuthGateway struct {
 	userInteractor usecase.IUserInteractor
 }
 
-func NewAuthGateway(apiGroup *echo.Group, userInteractor usecase.IUserInteractor) *echo.Group {
-	gateway := &AuthGateway{
+func NewAuthGateway(userInteractor usecase.IUserInteractor) *AuthGateway {
+	return &AuthGateway{
 		userInteractor: userInteractor,
 	}
-
-	return apiGroup.Group("/app", gateway.Auth)
 }
 
 func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
