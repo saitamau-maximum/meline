@@ -39,7 +39,6 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 	cookie.Value = state
 	cookie.Path = "/"
 	cookie.HttpOnly = true
-	cookie.Secure = true
 
 	c.SetCookie(cookie)
 	
@@ -103,8 +102,6 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	newCookie.Value = token
 	newCookie.Path = "/"
 	newCookie.HttpOnly = true
-	newCookie.Secure = true
-	newCookie.SameSite = http.SameSiteLaxMode
 	newCookie.Expires = time.Now().Add(24 * time.Hour)
 
 	c.SetCookie(newCookie)
