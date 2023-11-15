@@ -46,6 +46,7 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteLaxMode
 	cookie.Secure = !isDev
+	cookie.Expires = time.Now().Add(5 * time.Minute)
 
 	c.SetCookie(cookie)
 	
