@@ -35,7 +35,7 @@ func main() {
 	oAuthConf := github.NewGithubOAuthConf()
 	oAuthRepository := github.NewOAuthRepository(oAuthConf)
 	userRepository := mysql.NewUserRepository(bunDB)
-	authInteractor := usecase.NewOAuthInteractor(oAuthRepository)
+	authInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	userInteractor := usecase.NewUserInteractor(userRepository)
 	authGateway := gateway.NewAuthGateway(userInteractor)
 	

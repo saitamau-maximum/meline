@@ -14,7 +14,7 @@ import (
 	"github.com/saitamau-maximum/meline/domain/repository"
 )
 
-type IOAuthInteractor interface {
+type IGithubOAuthInteractor interface {
 	GetGithubOAuthURL(ctx context.Context, state string) string
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
 	GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error)
@@ -22,29 +22,29 @@ type IOAuthInteractor interface {
 	GenerateState(b int) string
 }
 
-type OAuthInteractor struct {
+type GithubOAuthInteractor struct {
 	authRepository repository.IOAuthRepository
 }
 
-func NewOAuthInteractor(r repository.IOAuthRepository) IOAuthInteractor {
-	return &OAuthInteractor{
+func NewGithubOAuthInteractor(r repository.IOAuthRepository) IGithubOAuthInteractor {
+	return &GithubOAuthInteractor{
 		authRepository: r,
 	}
 }
 
-func (i *OAuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
+func (i *GithubOAuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
 	return i.authRepository.GetOAuthURL(ctx, state)
 }
 
-func (i *OAuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
+func (i *GithubOAuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
 	return i.authRepository.GetOAuthToken(ctx, code)
 }
 
-func (i *OAuthInteractor) GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
+func (i *GithubOAuthInteractor) GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
 	return i.authRepository.GetUser(ctx, token)
 }
 
-func (i *OAuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
+func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
 	claims := jwt.MapClaims{
 		"iss": "meline",
 		"user_id": user.ID,
@@ -63,7 +63,7 @@ func (i *OAuthInteractor) CreateAccessToken(ctx context.Context, user *entity.Us
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (i *OAuthInteractor) GenerateState(b int) string {
+func (i *GithubOAuthInteractor) GenerateState(b int) string {
     k := make([]byte, b)
     if _, err := crand.Read(k); err != nil {
         panic(err)

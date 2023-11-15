@@ -16,11 +16,11 @@ const (
 )
 
 type OAuthHandler struct {
-	authInteractor usecase.IOAuthInteractor
+	authInteractor usecase.IGithubOAuthInteractor
 	userInteractor usecase.IUserInteractor
 }
 
-func NewOAuthHandler(authGroup *echo.Group, authInteractor usecase.IOAuthInteractor, userInteractor usecase.IUserInteractor) {
+func NewOAuthHandler(authGroup *echo.Group, authInteractor usecase.IGithubOAuthInteractor, userInteractor usecase.IUserInteractor) {
 	oAuthHandler := &OAuthHandler{
 		authInteractor: authInteractor,
 		userInteractor: userInteractor,
