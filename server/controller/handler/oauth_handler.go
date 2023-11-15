@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"database/sql"
 	"log"
 	"net/http"
@@ -12,7 +11,7 @@ import (
 )
 
 const (
-	b = 32
+	STATE_LENGTH = 32
 )
 
 type OAuthHandler struct {
@@ -32,16 +31,38 @@ func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithu
 
 func (h *OAuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
+	
+	state := h.githubOAuthInteractor.GenerateState(STATE_LENGTH)
 
-	// Get Github OAuth URL
-	state := h.githubOAuthInteractor.GenerateState(b)
+	cookie := new(http.Cookie)
+	cookie.Name = "state"
+	cookie.Value = state
+	cookie.Path = "/"
+	cookie.HttpOnly = true
+	cookie.Secure = true
+
+	c.SetCookie(cookie)
+	
 	url := h.githubOAuthInteractor.GetGithubOAuthURL(ctx, state)
 
-	return c.Redirect(http.StatusMovedPermanently, url)
+	return c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 func (h *OAuthHandler) CallBack(c echo.Context) error {
-	ctx := context.Background()
+	ctx := c.Request().Context()
+
+	// Check State
+	state := c.QueryParam("state")
+	cookie, err := c.Cookie("state")
+	if err != nil {
+		log.Default().Println(err)
+		return c.JSON(http.StatusUnauthorized, err)
+	}
+
+	if state != cookie.Value {
+		log.Default().Println(err)
+		return c.JSON(http.StatusUnauthorized, err)
+	}
 
 	code := c.QueryParam("code")
 	gitToken, err := h.githubOAuthInteractor.GetGithubOAuthToken(ctx, code)
@@ -77,16 +98,16 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "access_token"
-	cookie.Value = token
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-	cookie.Secure = true
-	cookie.SameSite = http.SameSiteLaxMode
-	cookie.Expires = time.Now().Add(24 * time.Hour)
+	newCookie := new(http.Cookie)
+	newCookie.Name = "access_token"
+	newCookie.Value = token
+	newCookie.Path = "/"
+	newCookie.HttpOnly = true
+	newCookie.Secure = true
+	newCookie.SameSite = http.SameSiteLaxMode
+	newCookie.Expires = time.Now().Add(24 * time.Hour)
 
-	c.SetCookie(cookie)
+	c.SetCookie(newCookie)
 
 	return c.JSON(http.StatusOK, "success")
 }

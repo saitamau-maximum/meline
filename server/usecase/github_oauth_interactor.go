@@ -19,36 +19,36 @@ type IGithubOAuthInteractor interface {
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
 	GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error)
 	CreateAccessToken(ctx context.Context, user *entity.User) (string, error)
-	GenerateState(b int) string
+	GenerateState(stateLength int) string
 }
 
 type GithubOAuthInteractor struct {
-	authRepository repository.IOAuthRepository
+	oAuthRepository repository.IOAuthRepository
 }
 
 func NewGithubOAuthInteractor(r repository.IOAuthRepository) IGithubOAuthInteractor {
 	return &GithubOAuthInteractor{
-		authRepository: r,
+		oAuthRepository: r,
 	}
 }
 
 func (i *GithubOAuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
-	return i.authRepository.GetOAuthURL(ctx, state)
+	return i.oAuthRepository.GetOAuthURL(ctx, state)
 }
 
 func (i *GithubOAuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
-	return i.authRepository.GetOAuthToken(ctx, code)
+	return i.oAuthRepository.GetOAuthToken(ctx, code)
 }
 
 func (i *GithubOAuthInteractor) GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
-	return i.authRepository.GetUser(ctx, token)
+	return i.oAuthRepository.GetUser(ctx, token)
 }
 
 func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
 	claims := jwt.MapClaims{
 		"iss": "meline",
 		"user_id": user.ID,
-		"github_id": user.ProviderID,
+		"provider_id": user.ProviderID,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 3).Unix(),
 	}
@@ -63,8 +63,8 @@ func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *ent
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (i *GithubOAuthInteractor) GenerateState(b int) string {
-    k := make([]byte, b)
+func (i *GithubOAuthInteractor) GenerateState(stateLength int) string {
+    k := make([]byte, stateLength)
     if _, err := crand.Read(k); err != nil {
         panic(err)
     }
