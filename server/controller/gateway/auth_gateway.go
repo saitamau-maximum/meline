@@ -38,7 +38,7 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 			jwtSecret := os.Getenv("JWT_SECRET")
 			if jwtSecret == "" {
-				return nil, fmt.Errorf("JWT_SECRET is not set")
+				os.Exit(1)
 			}
 
 			return []byte(jwtSecret), nil

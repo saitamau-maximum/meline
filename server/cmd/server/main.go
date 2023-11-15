@@ -39,7 +39,8 @@ func main() {
 	userInteractor := usecase.NewUserInteractor(userRepository)
 	authGateway := gateway.NewAuthGateway(userInteractor)
 	
-	handler.NewAuthHandler(apiGroup, authInteractor, userInteractor)
+	authGroup := apiGroup.Group("/auth")
+	handler.NewAuthHandler(authGroup, authInteractor, userInteractor)
 
 	apiGroup.GET("/", authGateway.Auth(func (c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

@@ -8,6 +8,7 @@ import (
 
 	"golang.org/x/oauth2"
 
+	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
 )
 
@@ -25,11 +26,11 @@ func NewAuthRepository(conf *oauth2.Config) repository.IAuthRepository {
 	}
 }
 
-func (r *AuthRepository) GetGithubOAuthURL(ctx context.Context, state string) string {
+func (r *AuthRepository) GetOAuthURL(ctx context.Context, state string) string {
 	return r.OAuthConf.AuthCodeURL(state)
 }
 
-func (r *AuthRepository) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
+func (r *AuthRepository) GetOAuthToken(ctx context.Context, code string) (string, error) {
 	token, err := r.OAuthConf.Exchange(ctx, code)
 	if err != nil {
 		return "", err
@@ -38,7 +39,7 @@ func (r *AuthRepository) GetGithubOAuthToken(ctx context.Context, code string) (
 	return token.AccessToken, nil
 }
 
-func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) (map[string]interface{}, error) {
+func (r *AuthRepository) GetUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
 	client := oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	))
@@ -63,6 +64,10 @@ func (r *AuthRepository) GetGithubUser(ctx context.Context, token string) (map[s
 		return nil, err
 	}
 
-	return gitRes, nil
+	return &entity.OAuthUserResponse{
+		OAuthUserID:   gitRes["login"].(string),
+		Name:     	   gitRes["name"].(string),
+		ImageURL:	   gitRes["avatar_url"].(string),
+	}, nil
 }
 

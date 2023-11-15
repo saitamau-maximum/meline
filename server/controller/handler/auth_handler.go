@@ -20,13 +20,12 @@ type AuthHandler struct {
 	userInteractor usecase.IUserInteractor
 }
 
-func NewAuthHandler(apiGroup *echo.Group, authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) {
+func NewAuthHandler(authGroup *echo.Group, authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) {
 	authHandler := &AuthHandler{
 		authInteractor: authInteractor,
 		userInteractor: userInteractor,
 	}
 
-	authGroup := apiGroup.Group("/auth")
 	authGroup.GET("/login", authHandler.Login)
 	authGroup.GET("/callback", authHandler.CallBack)
 }
@@ -51,22 +50,16 @@ func (h *AuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
-	res, err := h.authInteractor.GetGithubUser(ctx, gitToken)
+	userRes, err := h.authInteractor.GetGithubUser(ctx, gitToken)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
-	// Get User
-	githubId := res["login"].(string)
-	githubName := res["name"].(string)
-
-	user, err := h.userInteractor.GetUserByGithubID(ctx, githubId)
+	user, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID)
 	if err != nil {
 		if (err == sql.ErrNoRows) {
-			githubImageURL := res["avatar_url"].(string)
-
-			user, err = h.userInteractor.CreateUserAndGetByGithubID(ctx, githubId, githubName, githubImageURL)
+			user, err = h.userInteractor.CreateUser(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
 			if err != nil {
 				log.Default().Println(err)
 				return c.JSON(http.StatusInternalServerError, err)

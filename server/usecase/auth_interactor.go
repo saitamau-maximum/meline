@@ -17,7 +17,7 @@ import (
 type IAuthInteractor interface {
 	GetGithubOAuthURL(ctx context.Context, state string) string
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
-	GetGithubUser(ctx context.Context, token string) (map[string]interface{}, error)
+	GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error)
 	CreateAccessToken(ctx context.Context, user *entity.User) (string, error)
 	GenerateState(b int) string
 }
@@ -33,22 +33,22 @@ func NewAuthInteractor(r repository.IAuthRepository) IAuthInteractor {
 }
 
 func (i *AuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
-	return i.authRepository.GetGithubOAuthURL(ctx, state)
+	return i.authRepository.GetOAuthURL(ctx, state)
 }
 
 func (i *AuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
-	return i.authRepository.GetGithubOAuthToken(ctx, code)
+	return i.authRepository.GetOAuthToken(ctx, code)
 }
 
-func (i *AuthInteractor) GetGithubUser(ctx context.Context, token string) (map[string]interface{}, error) {
-	return i.authRepository.GetGithubUser(ctx, token)
+func (i *AuthInteractor) GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
+	return i.authRepository.GetUser(ctx, token)
 }
 
 func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
 	claims := jwt.MapClaims{
 		"iss": "meline",
 		"user_id": user.ID,
-		"github_id": user.GithubID,
+		"github_id": user.ProviderID,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 3).Unix(),
 	}

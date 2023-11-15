@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	ID uint64 `json:"id"`
-	GithubID string `json:"github_id"`
+	ProviderID string `json:"provider_id"`
 	Name string `json:"name"`
 	ImageURL string `json:"image_url"`
 	CreatedAt time.Time `json:"created_at"`
@@ -14,10 +14,10 @@ type User struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func NewUserEntity(id uint64, githubID, name string, createdAt, updatedAt, deletedAt time.Time) *User {
+func NewUserEntity(id uint64, providerID, name string, createdAt, updatedAt, deletedAt time.Time) *User {
 	return &User{
 		ID: id,
-		GithubID: githubID,
+		ProviderID: providerID,
 		Name: name,
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,

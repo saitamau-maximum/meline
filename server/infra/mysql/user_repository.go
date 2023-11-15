@@ -34,7 +34,7 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*model.User, 
 func (r *UserRepository) FindByGithubID(ctx context.Context, githubID string) (*model.User, error) {
 	var user model.User
 
-	if err := r.db.NewSelect().Model(&model.User{}).Where("github_id = ?", githubID).Where("deleted_at IS NULL").Scan(ctx, &user); err != nil {
+	if err := r.db.NewSelect().Model(&model.User{}).Where("provider_id = ?", githubID).Where("deleted_at IS NULL").Scan(ctx, &user); err != nil {
 		return nil, err
 	}
 
