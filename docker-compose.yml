@@ -46,11 +46,18 @@ services:
       target: dev
     volumes:
       - ./server:/app
+    ports:
+      - 8000:8000
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ENV=${ENV}
+      - FRONT_CALLBACK_URL=${FRONT_CALLBACK_URL}
     depends_on:
       database:
         condition: service_healthy

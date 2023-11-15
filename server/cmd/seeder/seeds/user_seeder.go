@@ -5,21 +5,21 @@ import (
 	"errors"
 
 	"github.com/uptrace/bun"
-	"github.com/saitamau-maximum/meline/usecase/model"
+	"github.com/saitamau-maximum/meline/models"
 )
 
 var (
 	users = []model.User{
 		{
-			GithubID: "sample-1",
+			ProviderID: "sample-1",
 			Name: "test-user-1",
 		},
 		{
-			GithubID: "sample-2",
+			ProviderID: "sample-2",
 			Name: "test-user-2",
 		},
 		{
-			GithubID: "sample-3",
+			ProviderID: "sample-3",
 			Name: "test-user-3",
 		},
 	}
