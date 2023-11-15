@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,10 @@ import (
 
 const (
 	STATE_LENGTH = 32
+)
+
+var (
+	isDev = os.Getenv("ENV") == "dev"
 )
 
 type OAuthHandler struct {
@@ -39,6 +44,8 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 	cookie.Value = state
 	cookie.Path = "/"
 	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteLaxMode
+	cookie.Secure = !isDev
 
 	c.SetCookie(cookie)
 	
@@ -102,9 +109,11 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	newCookie.Value = token
 	newCookie.Path = "/"
 	newCookie.HttpOnly = true
-	newCookie.Expires = time.Now().Add(24 * time.Hour)
+	newCookie.SameSite = http.SameSiteLaxMode
+	newCookie.Secure = !isDev
+	newCookie.Expires = time.Now().Add(3 * time.Hour)
 
 	c.SetCookie(newCookie)
 
-	return c.JSON(http.StatusOK, "success")
+	return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONT_CALLBACK_URL"))
 }
