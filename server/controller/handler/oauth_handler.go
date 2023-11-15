@@ -15,22 +15,22 @@ const (
 	b = 32
 )
 
-type AuthHandler struct {
-	authInteractor usecase.IAuthInteractor
+type OAuthHandler struct {
+	authInteractor usecase.IOAuthInteractor
 	userInteractor usecase.IUserInteractor
 }
 
-func NewAuthHandler(authGroup *echo.Group, authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) {
-	authHandler := &AuthHandler{
+func NewOAuthHandler(authGroup *echo.Group, authInteractor usecase.IOAuthInteractor, userInteractor usecase.IUserInteractor) {
+	oAuthHandler := &OAuthHandler{
 		authInteractor: authInteractor,
 		userInteractor: userInteractor,
 	}
 
-	authGroup.GET("/login", authHandler.Login)
-	authGroup.GET("/callback", authHandler.CallBack)
+	authGroup.GET("/login", oAuthHandler.Login)
+	authGroup.GET("/callback", oAuthHandler.CallBack)
 }
 
-func (h *AuthHandler) Login(c echo.Context) error {
+func (h *OAuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	// Get Github OAuth URL
@@ -40,7 +40,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	return c.Redirect(http.StatusMovedPermanently, url)
 }
 
-func (h *AuthHandler) CallBack(c echo.Context) error {
+func (h *OAuthHandler) CallBack(c echo.Context) error {
 	ctx := context.Background()
 
 	code := c.QueryParam("code")

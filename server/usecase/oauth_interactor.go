@@ -14,7 +14,7 @@ import (
 	"github.com/saitamau-maximum/meline/domain/repository"
 )
 
-type IAuthInteractor interface {
+type IOAuthInteractor interface {
 	GetGithubOAuthURL(ctx context.Context, state string) string
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
 	GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error)
@@ -22,29 +22,29 @@ type IAuthInteractor interface {
 	GenerateState(b int) string
 }
 
-type AuthInteractor struct {
-	authRepository repository.IAuthRepository
+type OAuthInteractor struct {
+	authRepository repository.IOAuthRepository
 }
 
-func NewAuthInteractor(r repository.IAuthRepository) IAuthInteractor {
-	return &AuthInteractor{
+func NewOAuthInteractor(r repository.IOAuthRepository) IOAuthInteractor {
+	return &OAuthInteractor{
 		authRepository: r,
 	}
 }
 
-func (i *AuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
+func (i *OAuthInteractor) GetGithubOAuthURL(ctx context.Context, state string) string {
 	return i.authRepository.GetOAuthURL(ctx, state)
 }
 
-func (i *AuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
+func (i *OAuthInteractor) GetGithubOAuthToken(ctx context.Context, code string) (string, error) {
 	return i.authRepository.GetOAuthToken(ctx, code)
 }
 
-func (i *AuthInteractor) GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
+func (i *OAuthInteractor) GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
 	return i.authRepository.GetUser(ctx, token)
 }
 
-func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
+func (i *OAuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
 	claims := jwt.MapClaims{
 		"iss": "meline",
 		"user_id": user.ID,
@@ -63,7 +63,7 @@ func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.Use
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (i *AuthInteractor) GenerateState(b int) string {
+func (i *OAuthInteractor) GenerateState(b int) string {
     k := make([]byte, b)
     if _, err := crand.Read(k); err != nil {
         panic(err)

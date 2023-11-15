@@ -16,21 +16,21 @@ const (
 	GITHUB_ROOT_URL = "https://api.github.com/user"
 )
 
-type AuthRepository struct {
+type OAuthRepository struct {
 	OAuthConf *oauth2.Config
 }
 
-func NewAuthRepository(conf *oauth2.Config) repository.IAuthRepository {
-	return &AuthRepository{
+func NewOAuthRepository(conf *oauth2.Config) repository.IOAuthRepository {
+	return &OAuthRepository{
 		OAuthConf: conf,
 	}
 }
 
-func (r *AuthRepository) GetOAuthURL(ctx context.Context, state string) string {
+func (r *OAuthRepository) GetOAuthURL(ctx context.Context, state string) string {
 	return r.OAuthConf.AuthCodeURL(state)
 }
 
-func (r *AuthRepository) GetOAuthToken(ctx context.Context, code string) (string, error) {
+func (r *OAuthRepository) GetOAuthToken(ctx context.Context, code string) (string, error) {
 	token, err := r.OAuthConf.Exchange(ctx, code)
 	if err != nil {
 		return "", err
@@ -39,7 +39,7 @@ func (r *AuthRepository) GetOAuthToken(ctx context.Context, code string) (string
 	return token.AccessToken, nil
 }
 
-func (r *AuthRepository) GetUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
+func (r *OAuthRepository) GetUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error) {
 	client := oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	))
