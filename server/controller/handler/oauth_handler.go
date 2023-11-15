@@ -16,13 +16,13 @@ const (
 )
 
 type OAuthHandler struct {
-	authInteractor usecase.IGithubOAuthInteractor
+	githubOAuthInteractor usecase.IGithubOAuthInteractor
 	userInteractor usecase.IUserInteractor
 }
 
-func NewOAuthHandler(authGroup *echo.Group, authInteractor usecase.IGithubOAuthInteractor, userInteractor usecase.IUserInteractor) {
+func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithubOAuthInteractor, userInteractor usecase.IUserInteractor) {
 	oAuthHandler := &OAuthHandler{
-		authInteractor: authInteractor,
+		githubOAuthInteractor: githubOAuthInteractor,
 		userInteractor: userInteractor,
 	}
 
@@ -34,8 +34,8 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	// Get Github OAuth URL
-	state := h.authInteractor.GenerateState(b)
-	url := h.authInteractor.GetGithubOAuthURL(ctx, state)
+	state := h.githubOAuthInteractor.GenerateState(b)
+	url := h.githubOAuthInteractor.GetGithubOAuthURL(ctx, state)
 
 	return c.Redirect(http.StatusMovedPermanently, url)
 }
@@ -44,13 +44,13 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	ctx := context.Background()
 
 	code := c.QueryParam("code")
-	gitToken, err := h.authInteractor.GetGithubOAuthToken(ctx, code)
+	gitToken, err := h.githubOAuthInteractor.GetGithubOAuthToken(ctx, code)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
-	userRes, err := h.authInteractor.GetGithubUser(ctx, gitToken)
+	userRes, err := h.githubOAuthInteractor.GetGithubUser(ctx, gitToken)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
@@ -71,7 +71,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	}
 
 	// Set Access Token
-	token, err := h.authInteractor.CreateAccessToken(ctx, user)
+	token, err := h.githubOAuthInteractor.CreateAccessToken(ctx, user)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
