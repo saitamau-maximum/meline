@@ -7,7 +7,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
-	"github.com/saitamau-maximum/meline/models"
+	model "github.com/saitamau-maximum/meline/models"
 )
 
 type UserRepository struct {
@@ -31,10 +31,10 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*model.User, 
 	return &user, nil
 }
 
-func (r *UserRepository) FindByGithubID(ctx context.Context, githubID string) (*model.User, error) {
+func (r *UserRepository) FindByProviderID(ctx context.Context, providerID string) (*model.User, error) {
 	var user model.User
 
-	if err := r.db.NewSelect().Model(&model.User{}).Where("provider_id = ?", githubID).Where("deleted_at IS NULL").Scan(ctx, &user); err != nil {
+	if err := r.db.NewSelect().Model(&model.User{}).Where("provider_id = ?", providerID).Where("deleted_at IS NULL").Scan(ctx, &user); err != nil {
 		return nil, err
 	}
 
@@ -48,8 +48,6 @@ func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
 	if _, err := r.db.NewInsert().Model(user).Exec(ctx); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
-
-
