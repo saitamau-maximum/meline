@@ -44,7 +44,7 @@ func main() {
 	defer bunDB.Close()
 
 	if err := checkMigrationsTable(context.Background(), bunDB); err != nil {
-		log.Println("Migrations table does not exist \n\n\t run `./scripts/migrate.sh init` first \n")
+		log.Println("Migrations table does not exist \n\n\t run `./scripts/migrate.sh init` first")
 		return
 	}
 
