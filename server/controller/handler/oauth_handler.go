@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/config"
@@ -22,13 +21,13 @@ var (
 
 type OAuthHandler struct {
 	githubOAuthInteractor usecase.IGithubOAuthInteractor
-	userInteractor usecase.IUserInteractor
+	userInteractor        usecase.IUserInteractor
 }
 
 func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithubOAuthInteractor, userInteractor usecase.IUserInteractor) {
 	oAuthHandler := &OAuthHandler{
 		githubOAuthInteractor: githubOAuthInteractor,
-		userInteractor: userInteractor,
+		userInteractor:        userInteractor,
 	}
 
 	authGroup.GET("/login", oAuthHandler.Login)
@@ -40,16 +39,8 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 
 	state := h.githubOAuthInteractor.GenerateState(STATE_LENGTH)
 
-	cookie := new(http.Cookie)
-	cookie.Name = config.OAUTH_STATE_COOKIE_NAME
-	cookie.Value = state
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	cookie.Secure = !isDev
-	cookie.Expires = time.Now().Add(5 * time.Minute)
-
-	c.SetCookie(cookie)
+	stateCookie := h.githubOAuthInteractor.GenerateStateCookie(state, isDev)
+	c.SetCookie(stateCookie)
 
 	url := h.githubOAuthInteractor.GetGithubOAuthURL(ctx, state)
 
@@ -61,13 +52,13 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 
 	// Check State
 	state := c.QueryParam("state")
-	cookie, err := c.Cookie(config.OAUTH_STATE_COOKIE_NAME)
+	stateCookie, err := c.Cookie(config.OAUTH_STATE_COOKIE_NAME)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
-	if state != cookie.Value {
+	if state != stateCookie.Value {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
 	}
@@ -87,7 +78,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 
 	user, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID)
 	if err != nil {
-		if (err == sql.ErrNoRows) {
+		if err == sql.ErrNoRows {
 			user, err = h.userInteractor.CreateUser(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
 			if err != nil {
 				log.Default().Println(err)
@@ -106,16 +97,9 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	newCookie := new(http.Cookie)
-	newCookie.Name = config.ACCESS_TOKEN_COOKIE_NAME
-	newCookie.Value = token
-	newCookie.Path = "/"
-	newCookie.HttpOnly = true
-	newCookie.SameSite = http.SameSiteLaxMode
-	newCookie.Secure = !isDev
-	newCookie.Expires = time.Now().Add(3 * time.Hour)
+	atCookie := h.githubOAuthInteractor.GenerateAccessTokenCookie(token, isDev)
 
-	c.SetCookie(newCookie)
+	c.SetCookie(atCookie)
 
 	return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONT_CALLBACK_URL"))
 }
