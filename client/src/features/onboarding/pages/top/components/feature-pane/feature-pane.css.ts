@@ -49,12 +49,11 @@ export const styles = {
       },
     },
   }),
-  logo: style({
-    width: "100%",
-    maxWidth: "24px",
-    height: "auto",
-  }),
   icon: style({
+    position: "fixed",
+    top: vars.spacing[8],
+    left: vars.spacing[8],
+    fontSize: vars.font.size.xl,
     color: vars.color.gray[11],
   }),
 };
