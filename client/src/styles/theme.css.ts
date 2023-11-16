@@ -106,6 +106,10 @@ const zIndexVars = createGlobalTheme(":root", {
   overlay: "10000",
 });
 
+/**
+ * @deprecated 
+ * styles/theme.cssではなく、styles/indexをimportしてください
+ */
 export const vars = {
   color: colorVars,
   font: fontVars,

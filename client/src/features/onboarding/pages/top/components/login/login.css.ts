@@ -1,4 +1,4 @@
-import { vars } from "@/styles/theme.css";
+import { vars } from "@/styles";
 import { style } from "@vanilla-extract/css";
 
 export const styles = {
@@ -6,6 +6,7 @@ export const styles = {
     height: vars.spacing.full,
     width: vars.spacing.full,
     position: "relative",
+    borderLeft: `1px solid ${vars.color.gray[6]}`,
     flex: 2,
   }),
   content: style({
@@ -21,6 +22,11 @@ export const styles = {
     margin: "auto auto auto 48px",
     position: "absolute",
     inset: 0,
+    borderRadius: vars.spacing[2],
+    ":hover": {
+      backgroundColor: vars.color.gray[4],
+      transition: vars.transition.normal("background-color"),
+    },
   }),
   logo: style({
     width: "100%",
