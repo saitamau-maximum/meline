@@ -1,5 +1,5 @@
 import { GithubIcon } from "@/components/icons/github";
-import { styles } from "./authPane.css";
+import { styles } from "./auth-pane.css";
 
 export const AuthPane = () => {
   return (

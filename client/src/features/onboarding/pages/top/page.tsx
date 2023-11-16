@@ -1,5 +1,5 @@
-import { AuthPane } from "./components/authPane";
-import { FeaturePane } from "./components/featurePane";
+import { AuthPane } from "./components/auth-pane";
+import { FeaturePane } from "./components/feature-pane";
 import { Wrapper } from "./components/wrapper";
 
 export const OnboardingPage = () => {

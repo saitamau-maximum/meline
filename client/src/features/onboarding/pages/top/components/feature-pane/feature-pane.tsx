@@ -1,5 +1,5 @@
 import { MaximumIcon } from "@/components/icons/maximum";
-import { styles } from "./featurePane.css";
+import { styles } from "./feature-pane.css";
 
 export const FeaturePane = () => {
   return (
