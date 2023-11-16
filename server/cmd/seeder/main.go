@@ -8,6 +8,7 @@ import (
 	"github.com/uptrace/bun/dialect/mysqldialect"
 
 	"github.com/saitamau-maximum/meline/cmd/seeder/seeds"
+	"github.com/saitamau-maximum/meline/config"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 )
 
@@ -16,6 +17,10 @@ const (
 )
 
 func main() {
+	err := config.ValidateDBEnv()
+	if err != nil {
+		panic(err)
+	}
 	db, err := infra.ConnectDB(HOST)
 	if err != nil {
 		log.Printf("failed to connect db: %v", err)

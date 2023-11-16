@@ -3,11 +3,11 @@ package gateway
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
+	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
@@ -26,22 +26,17 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx := c.Request().Context()
 
 		// Get Access Token
-		cookie, err := c.Cookie("access_token")
+		cookie, err := c.Cookie(config.ACCESS_TOKEN_COOKIE_NAME)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)
 		}
 
 		token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
 			if token.Method.Alg() != "HS256" {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+				return nil, fmt.Errorf("unsupported signing method")
 			}
 
-			jwtSecret := os.Getenv("JWT_SECRET")
-			if jwtSecret == "" {
-				os.Exit(1)
-			}
-
-			return []byte(jwtSecret), nil
+			return []byte(config.JWT_SECRET), nil
 		})
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)

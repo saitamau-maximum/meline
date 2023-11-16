@@ -9,23 +9,28 @@ import (
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
-	"github.com/uptrace/bun/migrate"
 	"github.com/uptrace/bun/extra/bundebug"
+	"github.com/uptrace/bun/migrate"
 	"github.com/urfave/cli/v2"
 
-	"github.com/saitamau-maximum/meline/migrations"
+	"github.com/saitamau-maximum/meline/config"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
+	"github.com/saitamau-maximum/meline/migrations"
 )
 
 const (
-	DRIVER = "mysql"
-	PORT = "3306"
-	NET = "tcp"
-	HOST = "localhost"
+	DRIVER          = "mysql"
+	PORT            = "3306"
+	NET             = "tcp"
+	HOST            = "localhost"
 	MIGRATION_TABLE = "bun_migrations"
 )
 
 func main() {
+	err := config.ValidateDBEnv()
+	if err != nil {
+		panic(err)
+	}
 	db, err := infra.ConnectDB(HOST)
 	if err != nil {
 		panic(err)
@@ -57,18 +62,18 @@ func main() {
 
 func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 	return &cli.Command{
-		Name: "db",
+		Name:  "db",
 		Usage: "database migration",
 		Subcommands: []*cli.Command{
 			{
-				Name: "init",
+				Name:  "init",
 				Usage: "initialize database",
 				Action: func(c *cli.Context) error {
-					return migrator.Init(c.Context)	
+					return migrator.Init(c.Context)
 				},
 			},
 			{
-				Name: "migrate",
+				Name:  "migrate",
 				Usage: "migrate database",
 				Action: func(c *cli.Context) error {
 					if err := migrator.Lock(c.Context); err != nil {
@@ -77,21 +82,21 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 					defer migrator.Unlock(c.Context)
 
 					group, err := migrator.Migrate(c.Context)
-					if err != nil {	
+					if err != nil {
 						return err
 					}
 					if group.IsZero() {
 						fmt.Printf("there are no new migrations to run (database is up to date)\n")
 						return nil
 					}
-					
+
 					fmt.Printf("migrated %d migrations\n", len(group.Migrations))
 
 					return nil
 				},
 			},
 			{
-				Name: "rollback",
+				Name:  "rollback",
 				Usage: "rollback database",
 				Action: func(c *cli.Context) error {
 					if err := migrator.Lock(c.Context); err != nil {
@@ -127,7 +132,7 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 				},
 			},
 			{
-				Name: "create_go",
+				Name:  "create_go",
 				Usage: "create go migration",
 				Action: func(c *cli.Context) error {
 					name := strings.Join(c.Args().Slice(), "_")
