@@ -4,9 +4,6 @@ import { Theme } from "./Theme";
 
 const meta = {
   title: "Styles/Color Tokens",
-  parameters: {
-    layout: "fullscreen",
-  },
 } satisfies Meta;
 
 export default meta;

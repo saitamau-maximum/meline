@@ -5,15 +5,18 @@ import { Theme } from "@/styles/__stories__/Theme";
 
 const meta = {
   title: "Pages/Onboarding",
-  parameters: {
-    layout: "fullscreen",
-  },
 } satisfies Meta;
 
 export default meta;
 
-export const Overview = () => (
-  <Theme.Light>
+export const Light = () => (
+  <Theme.Light full>
     <OnboardingPage />
   </Theme.Light>
+);
+
+export const Dark = () => (
+  <Theme.Dark full>
+    <OnboardingPage />
+  </Theme.Dark>
 );

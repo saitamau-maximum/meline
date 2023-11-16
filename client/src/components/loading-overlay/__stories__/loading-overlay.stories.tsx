@@ -9,12 +9,22 @@ const meta = {
 
 export default meta;
 
-export const Overview = () => (
+const Common = () => (
+  <LoadingOverlayContext.Provider
+    value={{ isLoading: true, setIsLoading: () => {} }}
+  >
+    <LoadingOverlay />
+  </LoadingOverlayContext.Provider>
+);
+
+export const Light = () => (
   <Theme.Light>
-    <LoadingOverlayContext.Provider
-      value={{ isLoading: true, setIsLoading: () => {} }}
-    >
-      <LoadingOverlay />
-    </LoadingOverlayContext.Provider>
+    <Common />
   </Theme.Light>
+);
+
+export const Dark = () => (
+  <Theme.Dark>
+    <Common />
+  </Theme.Dark>
 );
