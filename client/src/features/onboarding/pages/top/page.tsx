@@ -1,12 +1,12 @@
-import { Login } from "./components/login";
-import { Title } from "./components/title";
+import { AuthPane } from "./components/authPane";
+import { FeaturePane } from "./components/featurePane";
 import { Wrapper } from "./components/wrapper";
 
 export const OnboardingPage = () => {
   return (
     <Wrapper>
-      <Title />
-      <Login />
+      <FeaturePane />
+      <AuthPane />
     </Wrapper>
   );
 };

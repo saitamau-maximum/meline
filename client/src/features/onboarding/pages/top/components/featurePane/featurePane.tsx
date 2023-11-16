@@ -1,7 +1,7 @@
 import { MaximumIcon } from "@/components/icons/maximum";
-import { styles } from "./title.css";
+import { styles } from "./featurePane.css";
 
-export const Title = () => {
+export const FeaturePane = () => {
   return (
     <div className={styles.container}>
       <div className={styles.icon}>

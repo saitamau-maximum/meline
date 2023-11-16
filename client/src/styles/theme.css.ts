@@ -106,6 +106,12 @@ const zIndexVars = createGlobalTheme(":root", {
   overlay: "10000",
 });
 
+const breakpointVars =  {
+  mobile: "768px",
+  tablet: "1024px",
+};
+
+
 /**
  * @deprecated 
  * styles/theme.cssではなく、styles/indexをimportしてください
@@ -115,4 +121,5 @@ export const vars = {
   font: fontVars,
   spacing: spacingVars,
   zIndex: zIndexVars,
+  breakpoint: breakpointVars,
 };

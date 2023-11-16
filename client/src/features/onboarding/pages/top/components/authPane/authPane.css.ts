@@ -9,7 +9,7 @@ export const styles = {
     borderLeft: `1px solid ${vars.color.gray[6]}`,
     flex: 2,
     "@media": {
-      "screen and (max-width: 768px)": {
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         flex: 1,
         backgroundColor: vars.color.gray[1],
         borderLeft: "none",
@@ -35,8 +35,8 @@ export const styles = {
       transition: vars.transition.normal("background-color"),
     },
     "@media": {
-      "screen and (max-width: 768px)": {
-       margin : "16px auto auto auto",
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
+        margin: "16px auto auto auto",
       },
     },
   }),

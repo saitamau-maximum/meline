@@ -9,7 +9,7 @@ export const styles = {
     position: "relative",
     flex: 3,
     "@media": {
-      "screen and (max-width: 768px)": {
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         flex: 1,
       },
     },
@@ -25,7 +25,7 @@ export const styles = {
     position: "absolute",
     inset: 0,
     "@media": {
-      "screen and (max-width: 768px)": {
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         margin: "auto auto 16px auto",
       },
     },
@@ -34,7 +34,7 @@ export const styles = {
     fontSize: vars.font.size["4xl"],
     color: vars.color.gray[12],
     "@media": {
-      "screen and (max-width: 768px)": {
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         fontSize: vars.font.size["3xl"],
       },
     },
@@ -44,7 +44,7 @@ export const styles = {
     color: vars.color.gray[11],
     textAlign: "center",
     "@media": {
-      "screen and (max-width: 768px)": {
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         fontSize: vars.font.size.sm,
       },
     },

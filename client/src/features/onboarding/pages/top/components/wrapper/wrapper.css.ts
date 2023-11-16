@@ -1,4 +1,5 @@
 import { style } from "@vanilla-extract/css";
+import { vars } from "@/styles";
 
 export const styles = {
   container: style({
@@ -8,7 +9,7 @@ export const styles = {
     height: "100vh",
     justifyContent: "center",
     "@media": {
-      "screen and (max-width: 768px)": {
+      [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         flexDirection: "column",
       },
     },
