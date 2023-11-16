@@ -1,8 +1,10 @@
+import { MaximumIcon } from "@/components/icons/maximum";
 import { styles } from "./title.css";
 
 export const Title = () => {
   return (
     <div className={styles.container}>
+      <MaximumIcon />
       <div className={styles.content}>
         <h1 className={styles.title}>MELINE</h1>
         <p className={styles.description}>

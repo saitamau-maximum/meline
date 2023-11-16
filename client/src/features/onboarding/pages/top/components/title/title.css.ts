@@ -29,4 +29,9 @@ export const styles = {
     color: vars.color.gray[11],
     textAlign: "center",
   }),
+  logo : style({
+    width: "100%",
+    maxWidth: "24px",
+    height: "auto",
+  }),
 };
