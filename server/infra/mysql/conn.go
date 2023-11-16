@@ -3,40 +3,26 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/saitamau-maximum/meline/config"
 )
 
 const (
 	DRIVER = "mysql"
-	PORT = "3306"
-	NET = "tcp"
+	PORT   = "3306"
+	NET    = "tcp"
 )
 
 func ConnectDB(host string) (*sql.DB, error) {
-	user := os.Getenv("MYSQL_USER")
-	if user == "" {
-		os.Exit(1)
-	} 
-	pass := os.Getenv("MYSQL_PASSWORD")
-	if pass== "" {
-		os.Exit(1)
-	}
-	dbname := os.Getenv("MYSQL_DATABASE")
-	if dbname == "" {
-		os.Exit(1)
-	}
-	
-
 	c := mysql.Config{
-		User: user,
-		Passwd: pass,
-		Net: NET,
-		Addr: fmt.Sprintf("%s:%s", host, PORT),
-		DBName: dbname,
+		User:                 config.MYSQL_USER,
+		Passwd:               config.MYSQL_PASSWORD,
+		Net:                  NET,
+		Addr:                 fmt.Sprintf("%s:%s", host, PORT),
+		DBName:               config.MYSQL_DATABASE,
 		AllowNativePasswords: true,
-		ParseTime: true,
+		ParseTime:            true,
 	}
 
 	db, err := sql.Open(DRIVER, c.FormatDSN())

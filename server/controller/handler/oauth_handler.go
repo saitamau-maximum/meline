@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/config"
@@ -13,10 +12,6 @@ import (
 
 const (
 	STATE_LENGTH = 32
-)
-
-var (
-	isDev = os.Getenv("ENV") == "dev"
 )
 
 type OAuthHandler struct {
@@ -39,7 +34,7 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 
 	state := h.githubOAuthInteractor.GenerateState(STATE_LENGTH)
 
-	stateCookie := h.githubOAuthInteractor.GenerateStateCookie(state, isDev)
+	stateCookie := h.githubOAuthInteractor.GenerateStateCookie(state, config.IsDev)
 	c.SetCookie(stateCookie)
 
 	url := h.githubOAuthInteractor.GetGithubOAuthURL(ctx, state)
@@ -97,9 +92,9 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	atCookie := h.githubOAuthInteractor.GenerateAccessTokenCookie(token, isDev)
+	atCookie := h.githubOAuthInteractor.GenerateAccessTokenCookie(token, config.IsDev)
 
 	c.SetCookie(atCookie)
 
-	return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONT_CALLBACK_URL"))
+	return c.Redirect(http.StatusTemporaryRedirect, config.FRONT_OAUTH_SUCCESS_URL)
 }

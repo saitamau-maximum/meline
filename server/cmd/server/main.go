@@ -8,8 +8,9 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 
-	"github.com/saitamau-maximum/meline/controller/handler"
+	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/controller/gateway"
+	"github.com/saitamau-maximum/meline/controller/handler"
 	"github.com/saitamau-maximum/meline/infra/github"
 	"github.com/saitamau-maximum/meline/infra/mysql"
 	"github.com/saitamau-maximum/meline/usecase"
@@ -20,6 +21,11 @@ const (
 )
 
 func main() {
+	err := config.ValidateAppEnv()
+	if err != nil {
+		panic(err)
+	}
+
 	e := echo.New()
 
 	db, err := mysql.ConnectDB(HOST)
@@ -38,14 +44,13 @@ func main() {
 	authInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	userInteractor := usecase.NewUserInteractor(userRepository)
 	authGateway := gateway.NewAuthGateway(userInteractor)
-	
+
 	authGroup := apiGroup.Group("/auth")
 	handler.NewOAuthHandler(authGroup, authInteractor, userInteractor)
 
-	apiGroup.GET("/", authGateway.Auth(func (c echo.Context) error {
+	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	}))
 
 	e.Start(":8000")
 }
-

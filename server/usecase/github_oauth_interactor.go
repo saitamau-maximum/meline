@@ -3,10 +3,8 @@ package usecase
 import (
 	"context"
 	crand "crypto/rand"
-	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -59,12 +57,7 @@ func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *ent
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if jwtSecret == "" {
-		return "", errors.New("JWT_SECRET is not set")
-	}
-
-	return token.SignedString([]byte(jwtSecret))
+	return token.SignedString([]byte(config.JWT_SECRET))
 }
 
 func (i *GithubOAuthInteractor) GenerateState(stateLength int) string {
