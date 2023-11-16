@@ -8,6 +8,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
+	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
@@ -26,7 +27,7 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx := c.Request().Context()
 
 		// Get Access Token
-		cookie, err := c.Cookie("access_token")
+		cookie, err := c.Cookie(config.ACCESS_TOKEN_COOKIE_NAME)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, err)
 		}

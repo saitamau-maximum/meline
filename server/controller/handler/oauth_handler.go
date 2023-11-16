@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
@@ -36,11 +37,11 @@ func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithu
 
 func (h *OAuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
-	
+
 	state := h.githubOAuthInteractor.GenerateState(STATE_LENGTH)
 
 	cookie := new(http.Cookie)
-	cookie.Name = "state"
+	cookie.Name = config.OAUTH_STATE_COOKIE_NAME
 	cookie.Value = state
 	cookie.Path = "/"
 	cookie.HttpOnly = true
@@ -49,7 +50,7 @@ func (h *OAuthHandler) Login(c echo.Context) error {
 	cookie.Expires = time.Now().Add(5 * time.Minute)
 
 	c.SetCookie(cookie)
-	
+
 	url := h.githubOAuthInteractor.GetGithubOAuthURL(ctx, state)
 
 	return c.Redirect(http.StatusTemporaryRedirect, url)
@@ -60,7 +61,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 
 	// Check State
 	state := c.QueryParam("state")
-	cookie, err := c.Cookie("state")
+	cookie, err := c.Cookie(config.OAUTH_STATE_COOKIE_NAME)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusUnauthorized, err)
@@ -106,7 +107,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	}
 
 	newCookie := new(http.Cookie)
-	newCookie.Name = "access_token"
+	newCookie.Name = config.ACCESS_TOKEN_COOKIE_NAME
 	newCookie.Value = token
 	newCookie.Path = "/"
 	newCookie.HttpOnly = true
