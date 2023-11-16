@@ -5,15 +5,15 @@ import { AppRoutes } from "./routes";
 import { Suspense, useContext, useEffect } from "react";
 
 function App() {
-  const { setIsLoading } = useContext(LoadingOverlayContext);
+  // const { setIsLoading } = useContext(LoadingOverlayContext);
 
-  useEffect(() => {
-    setIsLoading(true);
+  // useEffect(() => {
+  //   setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }, [setIsLoading]);
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 3000);
+  // }, [setIsLoading]);
 
   return (
     <>
