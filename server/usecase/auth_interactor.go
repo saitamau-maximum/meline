@@ -51,7 +51,7 @@ func (i *AuthInteractor) GenerateAccessTokenCookie(token string, isDev bool) *ht
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteLaxMode
 	cookie.Secure = !isDev
-	cookie.Expires = time.Now().Add(3 * time.Hour)
+	cookie.Expires = time.Now().Add(config.ACCESS_TOKEN_EXPIRE)
 
 	return cookie
 }

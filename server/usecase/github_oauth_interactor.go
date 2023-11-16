@@ -46,7 +46,7 @@ func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *ent
 		"user_id":     user.ID,
 		"provider_id": user.ProviderID,
 		"iat":         time.Now().Unix(),
-		"exp":         time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"exp":         time.Now().Add(config.ACCESS_TOKEN_EXPIRE).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
