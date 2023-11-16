@@ -14,12 +14,12 @@ type User struct {
 	DeletedAt  time.Time `json:"deleted_at"`
 }
 
-func NewUserEntity(id uint64, providerID, name, ImageURL string, createdAt, updatedAt, deletedAt time.Time) *User {
+func NewUserEntity(id uint64, providerID, name, imageURL string, createdAt, updatedAt, deletedAt time.Time) *User {
 	return &User{
 		ID:         id,
 		ProviderID: providerID,
 		Name:       name,
-		ImageURL:   ImageURL,
+		ImageURL:   imageURL,
 		CreatedAt:  createdAt,
 		UpdatedAt:  updatedAt,
 		DeletedAt:  deletedAt,
