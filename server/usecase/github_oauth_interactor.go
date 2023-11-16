@@ -50,7 +50,7 @@ func (i *GithubOAuthInteractor) GetGithubUser(ctx context.Context, token string)
 
 func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
 	claims := jwt.MapClaims{
-		"iss":         "meline",
+		"iss":         config.APP_IDENTIFIER,
 		"user_id":     user.ID,
 		"provider_id": user.ProviderID,
 		"iat":         time.Now().Unix(),
