@@ -8,6 +8,13 @@ export const styles = {
     position: "relative",
     borderLeft: `1px solid ${vars.color.gray[6]}`,
     flex: 2,
+    "@media": {
+      "screen and (max-width: 768px)": {
+        flex: 1,
+        backgroundColor: vars.color.gray[1],
+        borderLeft: "none",
+      },
+    },
   }),
   content: style({
     display: "flex",
@@ -26,6 +33,11 @@ export const styles = {
     ":hover": {
       backgroundColor: vars.color.gray[4],
       transition: vars.transition.normal("background-color"),
+    },
+    "@media": {
+      "screen and (max-width: 768px)": {
+       margin : "16px auto auto auto",
+      },
     },
   }),
   logo: style({
