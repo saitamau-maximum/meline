@@ -78,6 +78,8 @@ const fontVars = createGlobalTheme(":root", {
     lg: "1.125rem",
     xl: "1.25rem",
     "2xl": "1.5rem",
+    "3xl": "2rem",
+    "4xl": "3rem",
   },
 });
 
@@ -104,9 +106,20 @@ const zIndexVars = createGlobalTheme(":root", {
   overlay: "10000",
 });
 
+const breakpointVars =  {
+  mobile: "768px",
+  tablet: "1024px",
+};
+
+
+/**
+ * @deprecated 
+ * styles/theme.cssではなく、styles/indexをimportしてください
+ */
 export const vars = {
   color: colorVars,
   font: fontVars,
   spacing: spacingVars,
   zIndex: zIndexVars,
+  breakpoint: breakpointVars,
 };
