@@ -16,12 +16,14 @@ const (
 
 type OAuthHandler struct {
 	githubOAuthInteractor usecase.IGithubOAuthInteractor
+	authInteractor        usecase.IAuthInteractor
 	userInteractor        usecase.IUserInteractor
 }
 
-func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithubOAuthInteractor, userInteractor usecase.IUserInteractor) {
+func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithubOAuthInteractor, authInteractor usecase.IAuthInteractor, userInteractor usecase.IUserInteractor) {
 	oAuthHandler := &OAuthHandler{
 		githubOAuthInteractor: githubOAuthInteractor,
+		authInteractor:        authInteractor,
 		userInteractor:        userInteractor,
 	}
 
@@ -32,9 +34,9 @@ func NewOAuthHandler(authGroup *echo.Group, githubOAuthInteractor usecase.IGithu
 func (h *OAuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	state := h.githubOAuthInteractor.GenerateState(STATE_LENGTH)
+	state := h.authInteractor.GenerateState(STATE_LENGTH)
 
-	stateCookie := h.githubOAuthInteractor.GenerateStateCookie(state, config.IsDev)
+	stateCookie := h.authInteractor.GenerateStateCookie(state, config.IsDev)
 	c.SetCookie(stateCookie)
 
 	url := h.githubOAuthInteractor.GetGithubOAuthURL(ctx, state)
@@ -92,7 +94,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	atCookie := h.githubOAuthInteractor.GenerateAccessTokenCookie(token, config.IsDev)
+	atCookie := h.authInteractor.GenerateAccessTokenCookie(token, config.IsDev)
 
 	c.SetCookie(atCookie)
 

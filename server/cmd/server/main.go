@@ -41,12 +41,13 @@ func main() {
 	oAuthConf := github.NewGithubOAuthConf()
 	oAuthRepository := github.NewOAuthRepository(oAuthConf)
 	userRepository := mysql.NewUserRepository(bunDB)
-	authInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
+	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
+	authInteractor := usecase.NewAuthInteractor()
 	userInteractor := usecase.NewUserInteractor(userRepository)
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
 	authGroup := apiGroup.Group("/auth")
-	handler.NewOAuthHandler(authGroup, authInteractor, userInteractor)
+	handler.NewOAuthHandler(authGroup, githubOAuthInteractor, authInteractor, userInteractor)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

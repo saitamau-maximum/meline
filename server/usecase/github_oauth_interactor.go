@@ -2,9 +2,6 @@ package usecase
 
 import (
 	"context"
-	crand "crypto/rand"
-	"fmt"
-	"net/http"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -19,9 +16,6 @@ type IGithubOAuthInteractor interface {
 	GetGithubOAuthToken(ctx context.Context, code string) (string, error)
 	GetGithubUser(ctx context.Context, token string) (*entity.OAuthUserResponse, error)
 	CreateAccessToken(ctx context.Context, user *entity.User) (string, error)
-	GenerateState(stateLength int) string
-	GenerateStateCookie(state string, isDev bool) *http.Cookie
-	GenerateAccessTokenCookie(token string, isDev bool) *http.Cookie
 }
 
 type GithubOAuthInteractor struct {
@@ -58,38 +52,4 @@ func (i *GithubOAuthInteractor) CreateAccessToken(ctx context.Context, user *ent
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(config.JWT_SECRET))
-}
-
-func (i *GithubOAuthInteractor) GenerateState(stateLength int) string {
-	k := make([]byte, stateLength)
-	if _, err := crand.Read(k); err != nil {
-		panic(err)
-	}
-	return fmt.Sprintf("%x", k)
-}
-
-func (i *GithubOAuthInteractor) GenerateStateCookie(state string, isDev bool) *http.Cookie {
-	cookie := new(http.Cookie)
-	cookie.Name = config.OAUTH_STATE_COOKIE_NAME
-	cookie.Value = state
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	cookie.Secure = !isDev
-	cookie.Expires = time.Now().Add(5 * time.Minute)
-
-	return cookie
-}
-
-func (i *GithubOAuthInteractor) GenerateAccessTokenCookie(token string, isDev bool) *http.Cookie {
-	cookie := new(http.Cookie)
-	cookie.Name = config.ACCESS_TOKEN_COOKIE_NAME
-	cookie.Value = token
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	cookie.Secure = !isDev
-	cookie.Expires = time.Now().Add(3 * time.Hour)
-
-	return cookie
 }
