@@ -1,15 +1,19 @@
 package usecase
 
 import (
+	"context"
 	crand "crypto/rand"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/saitamau-maximum/meline/config"
+	"github.com/saitamau-maximum/meline/domain/entity"
 )
 
 type IAuthInteractor interface {
+	CreateAccessToken(ctx context.Context, user *entity.User) (string, error)
 	GenerateState(stateLength int) string
 	GenerateStateCookie(state string, isDev bool) *http.Cookie
 	GenerateAccessTokenCookie(token string, isDev bool) *http.Cookie
@@ -20,6 +24,20 @@ type AuthInteractor struct {
 
 func NewAuthInteractor() IAuthInteractor {
 	return &AuthInteractor{}
+}
+
+func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
+	claims := jwt.MapClaims{
+		"iss":         config.APP_IDENTIFIER,
+		"user_id":     user.ID,
+		"provider_id": user.ProviderID,
+		"iat":         time.Now().Unix(),
+		"exp":         time.Now().Add(config.ACCESS_TOKEN_EXPIRE).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString([]byte(config.JWT_SECRET))
 }
 
 func (i *AuthInteractor) GenerateState(stateLength int) string {

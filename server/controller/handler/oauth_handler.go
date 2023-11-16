@@ -88,7 +88,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	}
 
 	// Set Access Token
-	token, err := h.githubOAuthInteractor.CreateAccessToken(ctx, user)
+	token, err := h.authInteractor.CreateAccessToken(ctx, user)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
