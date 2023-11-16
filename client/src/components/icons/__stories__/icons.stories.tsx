@@ -20,7 +20,6 @@ export const Overview = () => (
     <div
       style={{
         display: "flex",
-        justifyContent: "space-between",
         alignItems: "center",
         flexWrap: "wrap",
         width: "100%",

@@ -1,5 +1,5 @@
 import type { Meta } from "@storybook/react";
-import { vars } from "../theme.css";
+import { vars } from "..";
 import { Theme } from "./Theme";
 
 const meta = {

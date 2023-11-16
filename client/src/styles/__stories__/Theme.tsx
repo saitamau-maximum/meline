@@ -1,23 +1,31 @@
 import "../global.css";
-import { vars } from "../theme.css";
+import { vars } from "..";
 
-const styles = {
-  background: vars.color.gray[1],
+const styles = (full: boolean) => ({
+  background: vars.color.gray[2],
   color: vars.color.gray[12],
-  padding: "16px",
-  border: `1px solid ${vars.color.gray[6]}`,
-  borderRadius: "8px",
-  width: "fit-content",
-};
+  padding: full ? "0" : "16px",
+});
 
-const LightWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="light" style={styles}>
+const LightWrapper = ({
+  children,
+  full = false,
+}: {
+  children: React.ReactNode;
+  full?: boolean;
+}) => (
+  <div className="light" style={styles(full)}>
     {children}
   </div>
 );
-
-const DarkWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="dark" style={styles}>
+const DarkWrapper = ({
+  children,
+  full = false,
+}: {
+  children: React.ReactNode;
+  full?: boolean;
+}) => (
+  <div className="dark" style={styles(full)}>
     {children}
   </div>
 );
