@@ -54,4 +54,7 @@ export const styles = {
     maxWidth: "24px",
     height: "auto",
   }),
+  icon: style({
+    color: vars.color.gray[11],
+  }),
 };
