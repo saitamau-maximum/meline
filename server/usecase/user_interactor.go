@@ -34,7 +34,7 @@ func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*entity.Us
 }
 
 func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string) (*entity.User, error) {
-	user, err := i.userRepository.FindByGithubID(ctx, githubID)
+	user, err := i.userRepository.FindByProviderID(ctx, githubID)
 	if err != nil {
 		return nil, err
 	}
@@ -45,15 +45,15 @@ func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string)
 func (i *UserInteractor) CreateUser(ctx context.Context, providerID, name, imageURL string) (*entity.User, error) {
 	userModel := &model.User{
 		ProviderID: providerID,
-		Name: name,
-		ImageURL: imageURL,
+		Name:       name,
+		ImageURL:   imageURL,
 	}
-	
+
 	if err := i.userRepository.Create(ctx, userModel); err != nil {
 		return nil, err
 	}
 
-	createdUser, err := i.userRepository.FindByGithubID(ctx, providerID)
+	createdUser, err := i.userRepository.FindByProviderID(ctx, providerID)
 	if err != nil {
 		return nil, err
 	}
