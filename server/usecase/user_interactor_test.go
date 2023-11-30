@@ -20,7 +20,7 @@ func TestUserInteractor_Success_GetUserByID(t *testing.T) {
 
 	interactor := usecase.NewUserInteractor(repo, pre)
 
-	expectedUser := &presenter.UserMeResponse{
+	expectedUser := &presenter.GetUserByIdResponse{
 		ID:         1,
 		Name:       "John Doe",
 		ImageURL:   "https://example.com/image.jpg",
@@ -163,10 +163,24 @@ func (r *mockUserRepository) Create(ctx context.Context, user *model.User) error
 
 type mockUserPresenter struct{}
 
-func (p *mockUserPresenter) GenreateUserMeResponse(user *entity.User) *presenter.UserMeResponse {
-	return &presenter.UserMeResponse{
+func (p *mockUserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {
+	return &presenter.GetUserByIdResponse{
 		ID:         user.ID,
 		Name:       user.Name,
 		ImageURL:   user.ImageURL,
+	}
+}
+
+func (p *mockUserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *presenter.GetUserByGithubIdResponse {
+	return &presenter.GetUserByGithubIdResponse{
+		ID:         user.ID,
+		Name:       user.Name,
+		ImageURL:   user.ImageURL,
+	}
+}
+
+func (p *mockUserPresenter) GenerateCreateUserResponse(user *entity.User) *presenter.CreateUserResponse {
+	return &presenter.CreateUserResponse{
+		ID:         user.ID,
 	}
 }

@@ -11,10 +11,24 @@ func NewUserPresenter() presenter.IUserPresenter {
 	return &UserPresenter{}
 }
 
-func (p *UserPresenter) GenreateUserMeResponse(user *entity.User) *presenter.UserMeResponse {
-	return &presenter.UserMeResponse{
+func (p *UserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {
+	return &presenter.GetUserByIdResponse{
 		ID:       user.ID,
 		Name:     user.Name,
 		ImageURL: user.ImageURL,
+	}
+}
+
+func (p *UserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *presenter.GetUserByGithubIdResponse {
+	return &presenter.GetUserByGithubIdResponse{
+		ID:       user.ID,
+		Name:     user.Name,
+		ImageURL: user.ImageURL,
+	}
+}
+
+func (p *UserPresenter) GenerateCreateUserResponse(user *entity.User) *presenter.CreateUserResponse {
+	return &presenter.CreateUserResponse{
+		ID: user.ID,
 	}
 }

@@ -73,22 +73,27 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, err)
 	}
 
-	user, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID)
+	var userId uint64
+	
+	getUserRes, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			user, err = h.userInteractor.CreateUser(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
+			newUserRes, _err := h.userInteractor.CreateUser(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
 			if err != nil {
-				log.Default().Println(err)
-				return c.JSON(http.StatusInternalServerError, err)
+				log.Default().Println(_err)
+				return c.JSON(http.StatusInternalServerError, _err)
 			}
+			userId = newUserRes.ID
 		} else {
 			log.Default().Println(err)
 			return c.JSON(http.StatusInternalServerError, err)
 		}
+	} else {
+		userId = getUserRes.ID
 	}
 
 	// Set Access Token
-	token, err := h.authInteractor.CreateAccessToken(ctx, user)
+	token, err := h.authInteractor.CreateAccessToken(ctx, userId)
 	if err != nil {
 		log.Default().Println(err)
 		return c.JSON(http.StatusInternalServerError, err)

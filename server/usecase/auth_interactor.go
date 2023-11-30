@@ -9,11 +9,10 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/saitamau-maximum/meline/config"
-	"github.com/saitamau-maximum/meline/domain/entity"
 )
 
 type IAuthInteractor interface {
-	CreateAccessToken(ctx context.Context, user *entity.User) (string, error)
+	CreateAccessToken(ctx context.Context, user uint64) (string, error)
 	GenerateState(stateLength int) string
 	GenerateStateCookie(state string, isDev bool) *http.Cookie
 	GenerateAccessTokenCookie(token string, isDev bool) *http.Cookie
@@ -26,11 +25,10 @@ func NewAuthInteractor() IAuthInteractor {
 	return &AuthInteractor{}
 }
 
-func (i *AuthInteractor) CreateAccessToken(ctx context.Context, user *entity.User) (string, error) {
+func (i *AuthInteractor) CreateAccessToken(ctx context.Context, userId uint64) (string, error) {
 	claims := jwt.MapClaims{
 		"iss":         config.APP_IDENTIFIER,
-		"user_id":     user.ID,
-		"provider_id": user.ProviderID,
+		"user_id":     userId,
 		"iat":         time.Now().Unix(),
 		"exp":         time.Now().Add(config.ACCESS_TOKEN_EXPIRE).Unix(),
 	}

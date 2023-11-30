@@ -3,16 +3,15 @@ package usecase
 import (
 	"context"
 
-	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
-	model "github.com/saitamau-maximum/meline/models"
+	"github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
 
 type IUserInteractor interface {
-	GetUserByID(ctx context.Context, id uint64) (*presenter.UserMeResponse, error)
-	GetUserByGithubID(ctx context.Context, githubID string) (*entity.User, error)
-	CreateUser(ctx context.Context, githubID, name, imageURL string) (*entity.User, error)
+	GetUserByID(ctx context.Context, id uint64) (*presenter.GetUserByIdResponse, error)
+	GetUserByGithubID(ctx context.Context, githubID string) (*presenter.GetUserByGithubIdResponse, error)
+	CreateUser(ctx context.Context, githubID, name, imageURL string) (*presenter.CreateUserResponse, error)
 }
 
 type UserInteractor struct {
@@ -27,26 +26,26 @@ func NewUserInteractor(repository repository.IUserRepository, userPresenter pres
 	}
 }
 
-func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*presenter.UserMeResponse, error) {
+func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*presenter.GetUserByIdResponse, error) {
 	user, err := i.userRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return i.userPresenter.GenreateUserMeResponse(user.ToUserEntity()), nil
+	return i.userPresenter.GenerateGetUserByIdResponse(user.ToUserEntity()), nil
 }
 
-func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string) (*entity.User, error) {
+func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string) (*presenter.GetUserByGithubIdResponse, error) {
 	user, err := i.userRepository.FindByProviderID(ctx, githubID)
 	if err != nil {
 		return nil, err
 	}
 
-	return user.ToUserEntity(), nil
+	return i.userPresenter.GenerateGetUserByGithubIdResponse(user.ToUserEntity()), nil
 }
 
-func (i *UserInteractor) CreateUser(ctx context.Context, providerID, name, imageURL string) (*entity.User, error) {
-	userModel := &model.User{
+func (i *UserInteractor) CreateUser(ctx context.Context, providerID, name, imageURL string) (*presenter.CreateUserResponse, error) {
+	userModel := &models.User{
 		ProviderID: providerID,
 		Name:       name,
 		ImageURL:   imageURL,
@@ -61,5 +60,5 @@ func (i *UserInteractor) CreateUser(ctx context.Context, providerID, name, image
 		return nil, err
 	}
 
-	return createdUser.ToUserEntity(), nil
+	return i.userPresenter.GenerateCreateUserResponse(createdUser.ToUserEntity()), nil
 }

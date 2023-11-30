@@ -6,7 +6,6 @@ import (
 
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase"
-
 	"github.com/stretchr/testify/assert"
 )
 
