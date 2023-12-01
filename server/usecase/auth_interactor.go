@@ -27,10 +27,10 @@ func NewAuthInteractor() IAuthInteractor {
 
 func (i *AuthInteractor) CreateAccessToken(ctx context.Context, userId uint64) (string, error) {
 	claims := jwt.MapClaims{
-		"iss":         config.APP_IDENTIFIER,
-		"user_id":     userId,
-		"iat":         time.Now().Unix(),
-		"exp":         time.Now().Add(config.ACCESS_TOKEN_EXPIRE).Unix(),
+		"iss":     config.APP_IDENTIFIER,
+		"user_id": userId,
+		"iat":     time.Now().Unix(),
+		"exp":     time.Now().Add(config.ACCESS_TOKEN_EXPIRE).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

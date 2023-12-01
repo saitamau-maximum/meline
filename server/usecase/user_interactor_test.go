@@ -21,9 +21,9 @@ func TestUserInteractor_Success_GetUserByID(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 
 	expectedUser := &presenter.GetUserByIdResponse{
-		ID:         1,
-		Name:       "John Doe",
-		ImageURL:   "https://example.com/image.jpg",
+		ID:       1,
+		Name:     "John Doe",
+		ImageURL: "https://example.com/image.jpg",
 	}
 
 	result, err := interactor.GetUserByID(ctx, 1)
@@ -51,9 +51,8 @@ func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 
 	interactor := usecase.NewUserInteractor(repo, pre)
 
-	expectedUser := &entity.User{
+	expectedUser := &presenter.GetUserByGithubIdResponse{
 		ID:         1,
-		ProviderID: "test-provider-id",
 		Name:       "John Doe",
 		ImageURL:   "https://example.com/image.jpg",
 	}
@@ -84,9 +83,13 @@ func TestUserInteractor_Success_CreateUser(t *testing.T) {
 
 	interactor := usecase.NewUserInteractor(repo, pre)
 
+	expectedUser := &presenter.CreateUserResponse{
+		ID: 1,
+	}
+
 	user, err := interactor.CreateUser(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
 	assert.NoError(t, err)
-	assert.Equal(t, uint64(1), user.ID)
+	assert.Equal(t, expectedUser, user)
 }
 
 func TestUserInteractor_Failed_CreateUser_CreateFailed(t *testing.T) {
@@ -165,22 +168,22 @@ type mockUserPresenter struct{}
 
 func (p *mockUserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {
 	return &presenter.GetUserByIdResponse{
-		ID:         user.ID,
-		Name:       user.Name,
-		ImageURL:   user.ImageURL,
+		ID:       user.ID,
+		Name:     user.Name,
+		ImageURL: user.ImageURL,
 	}
 }
 
 func (p *mockUserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *presenter.GetUserByGithubIdResponse {
 	return &presenter.GetUserByGithubIdResponse{
-		ID:         user.ID,
-		Name:       user.Name,
-		ImageURL:   user.ImageURL,
+		ID:       user.ID,
+		Name:     user.Name,
+		ImageURL: user.ImageURL,
 	}
 }
 
 func (p *mockUserPresenter) GenerateCreateUserResponse(user *entity.User) *presenter.CreateUserResponse {
 	return &presenter.CreateUserResponse{
-		ID:         user.ID,
+		ID: user.ID,
 	}
 }
