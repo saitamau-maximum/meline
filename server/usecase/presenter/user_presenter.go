@@ -5,19 +5,19 @@ import (
 )
 
 type GetUserByIdResponse struct {
-	ID         uint64 `json:"id"`
-	Name	   string `json:"name"`
-	ImageURL   string `json:"image_url"`
+	ID       uint64 `json:"id"`
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
 }
 
 type GetUserByGithubIdResponse struct {
-	ID         uint64 `json:"id"`
-	Name	   string `json:"name"`
-	ImageURL   string `json:"image_url"`
+	ID       uint64 `json:"id"`
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
 }
 
 type CreateUserResponse struct {
-	ID         uint64 `json:"id"`
+	ID uint64 `json:"id"`
 }
 
 type IUserPresenter interface {

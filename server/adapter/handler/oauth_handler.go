@@ -74,7 +74,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 	}
 
 	var userId uint64
-	
+
 	getUserRes, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID)
 	if err != nil {
 		if err == sql.ErrNoRows {
