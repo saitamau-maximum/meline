@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	users = []models.User{
+	users = []model.User{
 		{
 			ProviderID: "sample-1",
 			Name: "test-user-1",
@@ -26,7 +26,7 @@ var (
 )
 
 func UserSeeds(ctx context.Context, db *bun.DB) error {
-	if  isExists, err := db.NewSelect().Model(&models.User{}).Exists(ctx); err != nil {
+	if  isExists, err := db.NewSelect().Model(&model.User{}).Exists(ctx); err != nil {
 		return err
 	} else if isExists {
 		return errors.New("user data already exists")

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
-	model "github.com/saitamau-maximum/meline/models"
+	"github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
 

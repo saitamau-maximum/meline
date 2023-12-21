@@ -45,7 +45,7 @@ func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string)
 }
 
 func (i *UserInteractor) CreateUser(ctx context.Context, providerID, name, imageURL string) (*presenter.CreateUserResponse, error) {
-	userModel := &models.User{
+	userModel := &model.User{
 		ProviderID: providerID,
 		Name:       name,
 		ImageURL:   imageURL,

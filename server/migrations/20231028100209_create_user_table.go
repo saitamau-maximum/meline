@@ -1,4 +1,4 @@
-package migrations
+package migration
 
 import (
 	"context"
@@ -11,11 +11,11 @@ import (
 func init() {
 	Migrations.MustRegister(func(ctx context.Context, db *bun.DB) error {
 		fmt.Print(" [up migration] ")
-		db.NewCreateTable().Model((*models.User)(nil)).Exec(ctx)
+		db.NewCreateTable().Model((*model.User)(nil)).Exec(ctx)
 		return nil
 	}, func(ctx context.Context, db *bun.DB) error {
 		fmt.Print(" [down migration] ")
-		db.NewDropTable().Model((*models.User)(nil)).IfExists().Exec(ctx)
+		db.NewDropTable().Model((*model.User)(nil)).IfExists().Exec(ctx)
 		return nil
 	})
 }

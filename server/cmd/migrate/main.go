@@ -52,7 +52,7 @@ func main() {
 		Name: "bun",
 
 		Commands: []*cli.Command{
-			newDBCommand(migrate.NewMigrator(bunDB, migrations.Migrations)),
+			newDBCommand(migrate.NewMigrator(bunDB, migration.Migrations)),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
