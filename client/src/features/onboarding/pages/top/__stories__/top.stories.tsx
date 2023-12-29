@@ -1,7 +1,7 @@
+import { DESKTOP_STORY_CONFIG } from "@/__stories__/config";
 import { OnboardingPage } from "../page";
 
 import { Meta } from "@storybook/react";
-import { Theme } from "@/styles/__stories__/Theme";
 
 const meta = {
   title: "Pages/Onboarding",
@@ -9,14 +9,5 @@ const meta = {
 
 export default meta;
 
-export const Light = () => (
-  <Theme.Light full>
-    <OnboardingPage />
-  </Theme.Light>
-);
-
-export const Dark = () => (
-  <Theme.Dark full>
-    <OnboardingPage />
-  </Theme.Dark>
-);
+export const Overview = () => <OnboardingPage />;
+Overview.story = DESKTOP_STORY_CONFIG;
