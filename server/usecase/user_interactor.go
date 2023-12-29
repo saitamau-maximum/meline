@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
 	"github.com/saitamau-maximum/meline/models"
@@ -10,7 +11,7 @@ import (
 
 type IUserInteractor interface {
 	GetUserByID(ctx context.Context, id uint64) (*presenter.GetUserByIdResponse, error)
-	GetUserByGithubID(ctx context.Context, githubID string) (*presenter.GetUserByGithubIdResponse, error)
+	GetUserByGithubID(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error)
 	CreateUser(ctx context.Context, githubID, name, imageURL string) (*presenter.CreateUserResponse, error)
 }
 
@@ -35,10 +36,33 @@ func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*presenter
 	return i.userPresenter.GenerateGetUserByIdResponse(user.ToUserEntity()), nil
 }
 
-func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID string) (*presenter.GetUserByGithubIdResponse, error) {
+func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error) {
 	user, err := i.userRepository.FindByProviderID(ctx, githubID)
 	if err != nil {
-		return nil, err
+		if err := sql.ErrNoRows; err != nil {
+			newUser := &model.User{
+				ProviderID: githubID,
+				Name:       userName,
+				ImageURL:   imageUrl,
+			}
+	
+			if _err := i.userRepository.Create(ctx, newUser); _err != nil {
+				return &presenter.GetUserByGithubIdResponse{}, _err
+			}
+	
+			createdUser, _err := i.userRepository.FindByProviderID(ctx, githubID)
+			if _err != nil {
+				return &presenter.GetUserByGithubIdResponse{}, _err
+			}
+	
+			user = createdUser
+		} else {
+			return &presenter.GetUserByGithubIdResponse{}, err
+		}
+	}
+
+	if err != nil {
+		return &presenter.GetUserByGithubIdResponse{}, err
 	}
 
 	return i.userPresenter.GenerateGetUserByGithubIdResponse(user.ToUserEntity()), nil

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
@@ -75,22 +74,12 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 
 	var userId uint64
 
-	getUserRes, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID)
+	getUserRes, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			newUserRes, _err := h.userInteractor.CreateUser(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
-			if err != nil {
-				log.Default().Println(_err)
-				return c.JSON(http.StatusInternalServerError, _err)
-			}
-			userId = newUserRes.ID
-		} else {
-			log.Default().Println(err)
-			return c.JSON(http.StatusInternalServerError, err)
-		}
-	} else {
-		userId = getUserRes.ID
+		return err
 	}
+
+	userId = getUserRes.ID
 
 	// Set Access Token
 	token, err := h.authInteractor.CreateAccessToken(ctx, userId)

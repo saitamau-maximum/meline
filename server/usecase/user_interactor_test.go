@@ -57,7 +57,7 @@ func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 		ImageURL:   "https://example.com/image.jpg",
 	}
 
-	result, err := interactor.GetUserByGithubID(ctx, "test-provider-id")
+	result, err := interactor.GetUserByGithubID(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedUser, result)
 }
@@ -71,7 +71,7 @@ func TestUserInteractor_Failed_GetUserByGithubID_NotFound(t *testing.T) {
 
 	ctx = context.WithValue(ctx, FindByProviderIDFailedValue, true)
 
-	result, err := interactor.GetUserByGithubID(ctx, "test-provider-id")
+	result, err := interactor.GetUserByGithubID(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
 	assert.Error(t, err)
 	assert.Nil(t, result)
 }
