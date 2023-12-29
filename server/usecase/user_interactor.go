@@ -11,7 +11,7 @@ import (
 
 type IUserInteractor interface {
 	GetUserByID(ctx context.Context, id uint64) (*presenter.GetUserByIdResponse, error)
-	GetUserByGithubID(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error)
+	GetUserByGithubIDOrCreate(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error)
 	CreateUser(ctx context.Context, githubID, name, imageURL string) (*presenter.CreateUserResponse, error)
 }
 
@@ -36,7 +36,7 @@ func (i *UserInteractor) GetUserByID(ctx context.Context, id uint64) (*presenter
 	return i.userPresenter.GenerateGetUserByIdResponse(user.ToUserEntity()), nil
 }
 
-func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error) {
+func (i *UserInteractor) GetUserByGithubIDOrCreate(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error) {
 	user, err := i.userRepository.FindByProviderID(ctx, githubID)
 	if err != nil {
 		if err := sql.ErrNoRows; err != nil {

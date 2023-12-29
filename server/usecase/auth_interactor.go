@@ -12,7 +12,7 @@ import (
 )
 
 type IAuthInteractor interface {
-	CreateAccessToken(ctx context.Context, user uint64) (string, error)
+	CreateAccessToken(ctx context.Context, userId uint64) (string, error)
 	GenerateState(stateLength int) string
 	GenerateStateCookie(state string, isDev bool) *http.Cookie
 	GenerateAccessTokenCookie(token string, isDev bool) *http.Cookie
