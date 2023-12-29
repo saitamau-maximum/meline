@@ -1,6 +1,5 @@
 import type { Meta } from "@storybook/react";
 import { vars } from "..";
-import { Theme } from "./Theme";
 
 const meta = {
   title: "Styles/Color Tokens",
@@ -8,7 +7,7 @@ const meta = {
 
 export default meta;
 
-const ColorTokens = () => (
+export const Overview = () => (
   <>
     <h1>Color Tokens</h1>
     <div
@@ -50,16 +49,4 @@ const ColorTokens = () => (
       ))}
     </div>
   </>
-);
-
-export const Light = () => (
-  <Theme.Light>
-    <ColorTokens />
-  </Theme.Light>
-);
-
-export const Dark = () => (
-  <Theme.Dark>
-    <ColorTokens />
-  </Theme.Dark>
 );
