@@ -1,3 +1,4 @@
+import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
 
 const preview: Preview = {
@@ -9,8 +10,42 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
-    layout: "fullscreen",
+    viewport: {
+      viewports: {
+        desktop: {
+          name: "Desktop",
+          styles: {
+            width: "1280px",
+            height: "800px",
+          },
+        },
+        tablet: {
+          name: "Tablet",
+          styles: {
+            width: "767px",
+            height: "1024px",
+          },
+        },
+        mobile: {
+          name: "Mobile",
+          styles: {
+            width: "375px",
+            height: "667px",
+          },
+        },
+      },
+    },
   },
+  decorators: [
+    // @ts-ignore
+    withThemeByClassName({
+      themes: {
+        light: "light",
+        dark: "dark",
+      },
+      defaultTheme: "light",
+    }),
+  ],
 };
 
 export default preview;
