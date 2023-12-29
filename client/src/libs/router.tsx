@@ -1,6 +1,7 @@
 import { CHANNEL_TOP_ROUTE } from "@/features/channel/routes";
 import { TOP_ROUTE } from "@/features/onboarding/routes";
-import { useAuth } from "@/providers/auth";
+import { AuthContext } from "@/providers/auth";
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 
 interface AuthProtectionWrapperProps {
@@ -8,7 +9,7 @@ interface AuthProtectionWrapperProps {
 }
 
 export const AuthRequired = ({ children }: AuthProtectionWrapperProps) => {
-  const { state } = useAuth();
+  const { state } = useContext(AuthContext);
 
   if (!state.isAuthenticated) {
     return <Navigate to={TOP_ROUTE} />;
@@ -18,7 +19,7 @@ export const AuthRequired = ({ children }: AuthProtectionWrapperProps) => {
 };
 
 export const UnAuthRequired = ({ children }: AuthProtectionWrapperProps) => {
-  const { state } = useAuth();
+  const { state } = useContext(AuthContext);
 
   if (state.isAuthenticated) {
     return <Navigate to={CHANNEL_TOP_ROUTE} />;

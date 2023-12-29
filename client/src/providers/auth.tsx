@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useState } from "react";
 import { object, string, safeParse, number } from "valibot";
 
 const UserMeResponse = object({
@@ -24,16 +24,18 @@ type UserState =
 
 type AuthContextProps = {
   state: UserState;
-  fetchUser: () => Promise<void>;
+  fetchUser: () => Promise<User | null>;
 };
 
-const AuthContext = createContext<AuthContextProps>({
+export const AuthContext = createContext<AuthContextProps>({
   state: {
     user: null,
     isAuthenticated: false,
   },
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  fetchUser: async () => {},
+  // eslint-disable-next-line @typescript-eslint/require-await
+  fetchUser: async () => {
+    return null;
+  },
 });
 
 interface AuthProviderProps {
@@ -48,23 +50,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchUser = useCallback(async () => {
     const res = await fetch("/api/user/me");
-    if (!res.ok) return setState({ user: null, isAuthenticated: false });
+    if (!res.ok) {
+      setState({ user: null, isAuthenticated: false });
+      return null;
+    }
+
     const validated = safeParse(UserMeResponse, await res.json());
-    if (!validated.success)
-      return setState({ user: null, isAuthenticated: false });
-    const user = validated.output;
+    if (!validated.success) {
+      setState({ user: null, isAuthenticated: false });
+      return null;
+    }
+
+    const user = {
+      name: validated.output.name,
+      imageURL: validated.output.image_url,
+    };
     setState({
-      user: {
-        name: user.name,
-        imageURL: user.image_url,
-      },
+      user,
       isAuthenticated: true,
     });
-  }, [setState]);
 
-  useEffect(() => {
-    void fetchUser();
-  }, [fetchUser]);
+    return user;
+  }, [setState]);
 
   return (
     <AuthContext.Provider
@@ -77,5 +84,3 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => React.useContext(AuthContext);

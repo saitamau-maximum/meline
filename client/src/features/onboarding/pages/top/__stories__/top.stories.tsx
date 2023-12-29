@@ -3,7 +3,7 @@ import { Meta } from "@storybook/react";
 import { OnboardingPageTemplate } from "../template";
 
 const meta = {
-  title: "Pages/Onboarding",
+  title: "Features/Onboarding/Top",
 } satisfies Meta;
 
 export default meta;
