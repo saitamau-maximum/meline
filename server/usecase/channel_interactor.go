@@ -23,19 +23,21 @@ type IChannelInteractor interface {
 type ChannelInteractor struct {
 	channelRepository      repository.IChannelRepository
 	channelUsersRepository repository.IChannelUsersRepository
+	userRepository         repository.IUserRepository
 	channelPresenter       presenter.IChannelPresenter
 }
 
-func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, channelPresenter presenter.IChannelPresenter) IChannelInteractor {
+func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) IChannelInteractor {
 	return &ChannelInteractor{
 		channelRepository:      channelRepository,
 		channelUsersRepository: channelUsersRepository,
+		userRepository:         userRepository,
 		channelPresenter:       channelPresenter,
 	}
 }
 
 func (i *ChannelInteractor) GetAllChannels(ctx context.Context, userId uint64) (*presenter.GetAllChannelsResponse, error) {
-	channels, err := i.channelRepository.FindByUserID(ctx, userId)
+	channels, err := i.userRepository.FindChannelsByUserID(ctx, userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &presenter.GetAllChannelsResponse{}, nil

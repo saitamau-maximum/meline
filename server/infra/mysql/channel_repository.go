@@ -30,18 +30,6 @@ func (r *ChannelRepository) FindByID(ctx context.Context, id uint64) (*model.Cha
 	return &channel, nil
 }
 
-func (r *ChannelRepository) FindByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error) {
-	var channels []*model.Channel
-
-	if err := r.db.NewSelect().Model(&channels).Relation("Users", func(q *bun.SelectQuery) *bun.SelectQuery {
-		return q.Where("user_id = ?", userID)
-	}).Scan(ctx); err != nil {
-		return nil, err
-	}
-
-	return channels, nil
-}
-
 func (r *ChannelRepository) Create(ctx context.Context, channel *model.Channel) (uint64, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

@@ -128,6 +128,7 @@ const (
 	FindFailedValue             FindFailed             = "find_failed"
 	FindByProviderIDFailedValue FindByProviderIDFailed = "find_by_provider_id_failed"
 	CreateFailedValue           CreateFailed           = "create_failed"
+	FindChannelFailedValue      string                 = "find_channel_failed"
 )
 
 func (r *mockUserRepository) FindByID(ctx context.Context, id uint64) (*model.User, error) {
@@ -162,6 +163,19 @@ func (r *mockUserRepository) Create(ctx context.Context, user *model.User) error
 	}
 
 	return nil
+}
+
+func (r *mockUserRepository) FindChannelsByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error) {
+	if ctx.Value(FindChannelFailedValue) != nil {
+		return nil, fmt.Errorf("failed to find channels")
+	}
+
+	return []*model.Channel{
+		{
+			ID:   1,
+			Name: "test-channel",
+		},
+	}, nil
 }
 
 type mockUserPresenter struct{}

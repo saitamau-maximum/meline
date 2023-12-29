@@ -48,7 +48,7 @@ func main() {
 	channelUsersRepository := mysql.NewChannelUsersRepository(bunDB)
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
-	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, presenter.NewChannelPresenter())
+	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, userRepository, presenter.NewChannelPresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	authGateway := gateway.NewAuthGateway(userInteractor)
