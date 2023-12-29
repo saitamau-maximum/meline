@@ -52,9 +52,9 @@ func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 
 	expectedUser := &presenter.GetUserByGithubIdResponse{
-		ID:         1,
-		Name:       "John Doe",
-		ImageURL:   "https://example.com/image.jpg",
+		ID:       1,
+		Name:     "John Doe",
+		ImageURL: "https://example.com/image.jpg",
 	}
 
 	result, err := interactor.GetUserByGithubIDOrCreate(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
@@ -72,8 +72,11 @@ func TestUserInteractor_Failed_GetUserByGithubID_NotFound(t *testing.T) {
 	ctx = context.WithValue(ctx, FindByProviderIDFailedValue, true)
 
 	result, err := interactor.GetUserByGithubIDOrCreate(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
+
+	expectedUser := &presenter.GetUserByGithubIdResponse{}
+
 	assert.Error(t, err)
-	assert.Nil(t, result)
+	assert.Equal(t, expectedUser, result)
 }
 
 func TestUserInteractor_Success_CreateUser(t *testing.T) {
@@ -123,11 +126,13 @@ type mockUserRepository struct{}
 type FindFailed string
 type FindByProviderIDFailed string
 type CreateFailed string
+type FindChannelsFailed string
 
 const (
 	FindFailedValue             FindFailed             = "find_failed"
 	FindByProviderIDFailedValue FindByProviderIDFailed = "find_by_provider_id_failed"
 	CreateFailedValue           CreateFailed           = "create_failed"
+	FindChannelsFailedValue     FindChannelsFailed     = "find_channel_failed"
 )
 
 func (r *mockUserRepository) FindByID(ctx context.Context, id uint64) (*model.User, error) {
@@ -162,6 +167,19 @@ func (r *mockUserRepository) Create(ctx context.Context, user *model.User) error
 	}
 
 	return nil
+}
+
+func (r *mockUserRepository) FindChannelsByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error) {
+	if ctx.Value(FindChannelsFailedValue) != nil {
+		return nil, fmt.Errorf("failed to find channels")
+	}
+
+	return []*model.Channel{
+		{
+			ID:   1,
+			Name: "test-channel",
+		},
+	}, nil
 }
 
 type mockUserPresenter struct{}

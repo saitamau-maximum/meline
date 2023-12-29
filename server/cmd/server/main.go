@@ -14,6 +14,7 @@ import (
 	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/infra/github"
 	"github.com/saitamau-maximum/meline/infra/mysql"
+	model "github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
@@ -35,6 +36,7 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.Channel)(nil), (*model.User)(nil))
 	defer bunDB.Close()
 
 	apiGroup := e.Group("/api")
@@ -42,14 +44,18 @@ func main() {
 	oAuthConf := github.NewGithubOAuthConf()
 	oAuthRepository := github.NewOAuthRepository(oAuthConf)
 	userRepository := mysql.NewUserRepository(bunDB)
+	channelRepository := mysql.NewChannelRepository(bunDB)
+	channelUsersRepository := mysql.NewChannelUsersRepository(bunDB)
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
+	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, userRepository, presenter.NewChannelPresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
 	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
 	handler.NewUserHandler(apiGroup.Group("/user", authGateway.Auth), userInteractor)
+	handler.NewChannelHandler(apiGroup.Group("/channels", authGateway.Auth), channelInteractor)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

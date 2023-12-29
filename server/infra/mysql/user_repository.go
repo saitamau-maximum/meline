@@ -51,3 +51,14 @@ func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
 
 	return nil
 }
+
+func (r *UserRepository) FindChannelsByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error) {
+	var user = &model.User{}
+
+	// UsersリレーションにuserIdが含まれるchannelを取得する
+	if err := r.db.NewSelect().Model(user).Where("id = ?", userID).Relation("Channels").Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return user.Channels, nil
+}

@@ -45,16 +45,16 @@ func (i *UserInteractor) GetUserByGithubIDOrCreate(ctx context.Context, githubID
 				Name:       userName,
 				ImageURL:   imageUrl,
 			}
-	
+
 			if _err := i.userRepository.Create(ctx, newUser); _err != nil {
 				return &presenter.GetUserByGithubIdResponse{}, _err
 			}
-	
+
 			createdUser, _err := i.userRepository.FindByProviderID(ctx, githubID)
 			if _err != nil {
 				return &presenter.GetUserByGithubIdResponse{}, _err
 			}
-	
+
 			user = createdUser
 		} else {
 			return &presenter.GetUserByGithubIdResponse{}, err

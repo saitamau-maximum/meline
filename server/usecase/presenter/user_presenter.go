@@ -4,6 +4,12 @@ import (
 	"github.com/saitamau-maximum/meline/domain/entity"
 )
 
+type User struct {
+	ID       uint64 `json:"id"`
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
+}
+
 type GetUserByIdResponse struct {
 	ID       uint64 `json:"id"`
 	Name     string `json:"name"`

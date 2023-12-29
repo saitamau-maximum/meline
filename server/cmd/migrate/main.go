@@ -16,6 +16,7 @@ import (
 	"github.com/saitamau-maximum/meline/config"
 	infra "github.com/saitamau-maximum/meline/infra/mysql"
 	"github.com/saitamau-maximum/meline/migrations"
+	model "github.com/saitamau-maximum/meline/models"
 )
 
 const (
@@ -36,6 +37,7 @@ func main() {
 		panic(err)
 	}
 	bunDB := bun.NewDB(db, mysqldialect.New())
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.Channel)(nil), (*model.User)(nil))
 	bunDB.AddQueryHook(bundebug.NewQueryHook(
 		bundebug.WithEnabled(false),
 		bundebug.FromEnv(""),
