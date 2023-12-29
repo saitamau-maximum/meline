@@ -4,9 +4,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/uptrace/bun"
 	"github.com/saitamau-maximum/meline/domain/repository"
 	"github.com/saitamau-maximum/meline/models"
+	"github.com/uptrace/bun"
 )
 
 type ChannelUsersRepository struct {

@@ -14,17 +14,19 @@ import (
 )
 
 type FindByIDFailed string
+type FindByNameFailed string
 type JoinFailed string
 type LeaveFailed string
 type UpdateFailed string
 type DeleteFailed string
 
 const (
-	FindByIDFailedValue FindByIDFailed = "find_by_id_failed"
-	JoinFailedValue     JoinFailed = "join_failed"
-	LeaveFailedValue    LeaveFailed = "leave_failed"
-	UpdateFailedValue   UpdateFailed = "update_failed"
-	DeleteFailedValue   DeleteFailed = "delete_failed"
+	FindByIDFailedValue   FindByIDFailed   = "find_by_id_failed"
+	FindByNameFailedValue FindByNameFailed = "find_by_name_failed"
+	JoinFailedValue       JoinFailed       = "join_failed"
+	LeaveFailedValue      LeaveFailed      = "leave_failed"
+	UpdateFailedValue     UpdateFailed     = "update_failed"
+	DeleteFailedValue     DeleteFailed     = "delete_failed"
 )
 
 func TestChannelInteractor_Success_GetAllChannels(t *testing.T) {
@@ -73,7 +75,7 @@ func TestChannelInteractor_Success_GetChannelByID(t *testing.T) {
 	pre := &mockChannelPresenter{}
 
 	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoUser, pre)
-	
+
 	expectedChannel := &presenter.ChannelDetail{
 		Name: "test-channel",
 		Users: []*presenter.User{
@@ -106,6 +108,45 @@ func TestChannelInteractor_Failed_GetChannelByID(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Equal(t, expectedChannel, result)
+}
+
+func TestChannelInteractor_Success_GetChannelsByName(t *testing.T) {
+	ctx := context.Background()
+	repo := &mockChannelRepository{}
+	repoChannelUser := &mockChannelUsersRepository{}
+	repoUser := &mockUserRepository{}
+	pre := &mockChannelPresenter{}
+
+	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoUser, pre)
+
+	expectedChannels := []*presenter.Channel{
+		{
+			ID:   1,
+			Name: "test-channel",
+		},
+	}
+
+	result, err := interactor.GetChannelsByName(ctx, "test-channel")
+	assert.NoError(t, err)
+	assert.Equal(t, expectedChannels, result.Channels)
+}
+
+func TestChannelInteractor_Failed_GetChannelsByName(t *testing.T) {
+	ctx := context.Background()
+	repo := &mockChannelRepository{}
+	repoChannelUser := &mockChannelUsersRepository{}
+	repoUser := &mockUserRepository{}
+	pre := &mockChannelPresenter{}
+
+	ctx = context.WithValue(ctx, FindByNameFailedValue, true)
+
+	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoUser, pre)
+
+	expectedChannels := &presenter.GetChannelsByNameResponse{}
+
+	result, err := interactor.GetChannelsByName(ctx, "test-channel")
+	assert.Error(t, err)
+	assert.Equal(t, expectedChannels, result)
 }
 
 func TestChannelInteractor_Success_CreateChannel(t *testing.T) {
@@ -176,7 +217,7 @@ func TestChannelInteractor_Success_DeleteChannel(t *testing.T) {
 	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoUser, pre)
 
 	err := interactor.DeleteChannel(ctx, 1)
-	
+
 	assert.NoError(t, err)
 }
 
@@ -273,6 +314,26 @@ func (m *mockChannelRepository) FindByID(ctx context.Context, id uint64) (*model
 	}, nil
 }
 
+func (m *mockChannelRepository) FindByName(ctx context.Context, name string) ([]*model.Channel, error) {
+	if ctx.Value(FindByNameFailedValue) != nil {
+		return nil, fmt.Errorf("find all failed")
+	}
+
+	return []*model.Channel{
+		{
+			ID:   1,
+			Name: "test-channel",
+			Users: []*model.User{
+				{
+					ID:       1,
+					Name:     "John Doe",
+					ImageURL: "https://example.com/image.jpg",
+				},
+			},
+		},
+	}, nil
+}
+
 func (m *mockChannelRepository) Create(ctx context.Context, channel *model.Channel) (uint64, error) {
 	if ctx.Value(CreateFailedValue) != nil {
 		return 0, fmt.Errorf("create failed")
@@ -303,15 +364,15 @@ func (m *mockChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Ch
 	users := make([]*presenter.User, len(channel.Users))
 	for i, u := range channel.Users {
 		users[i] = &presenter.User{
-			ID:         u.ID,
-			Name:       u.Name,
-			ImageURL:   u.ImageURL,
+			ID:       u.ID,
+			Name:     u.Name,
+			ImageURL: u.ImageURL,
 		}
 	}
 
 	return &presenter.GetChannelByIdResponse{
 		Channel: &presenter.ChannelDetail{
-			Name: channel.Name,
+			Name:  channel.Name,
 			Users: users,
 		},
 	}
@@ -327,6 +388,20 @@ func (m *mockChannelPresenter) GenerateGetAllChannelsResponse(channels []*entity
 	}
 
 	return &presenter.GetAllChannelsResponse{
+		Channels: res,
+	}
+}
+
+func (m *mockChannelPresenter) GenerateGetChannelsByNameResponse(channels []*entity.Channel) *presenter.GetChannelsByNameResponse {
+	res := make([]*presenter.Channel, len(channels))
+	for i, c := range channels {
+		res[i] = &presenter.Channel{
+			ID:   c.ID,
+			Name: c.Name,
+		}
+	}
+
+	return &presenter.GetChannelsByNameResponse{
 		Channels: res,
 	}
 }
@@ -356,5 +431,3 @@ func (m *mockChannelUsersRepository) DeleteByChannelID(ctx context.Context, chan
 
 	return nil
 }
-
-

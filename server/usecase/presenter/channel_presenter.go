@@ -22,6 +22,10 @@ type GetChannelByIdResponse struct {
 	Channel *ChannelDetail `json:"channel"`
 }
 
+type GetChannelsByNameResponse struct {
+	Channels []*Channel `json:"channels"`
+}
+
 type CreateChannelResponse struct {
 	ID uint64 `json:"id"`
 }
@@ -33,4 +37,5 @@ type UpdateChannelResponse struct {
 type IChannelPresenter interface {
 	GenerateGetAllChannelsResponse(channels []*entity.Channel) *GetAllChannelsResponse
 	GenerateGetChannelByIdResponse(channel *entity.Channel) *GetChannelByIdResponse
+	GenerateGetChannelsByNameResponse(channels []*entity.Channel) *GetChannelsByNameResponse
 }

@@ -20,6 +20,7 @@ func NewChannelHandler(channelGroup *echo.Group, channelInteractor usecase.IChan
 
 	channelGroup.GET("", channelHandler.GetAllChannels)
 	channelGroup.GET("/:id", channelHandler.GetChannelByID)
+	channelGroup.GET("/", channelHandler.GetAllChannels)
 	channelGroup.POST("/:id/join", channelHandler.JoinChannel)
 	channelGroup.POST("", channelHandler.CreateChannel)
 	channelGroup.PUT("/:id", channelHandler.UpdateChannel)
@@ -54,9 +55,20 @@ func (h *ChannelHandler) GetChannelByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, channelResponse)
 }
 
+func (h *ChannelHandler) GetChannelsByName(c echo.Context) error {
+	name := c.Param("name")
+
+	channelsResponse, err := h.channelInteractor.GetChannelsByName(c.Request().Context(), name)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, channelsResponse)
+}
+
 func (h *ChannelHandler) CreateChannel(c echo.Context) error {
 	userId := c.Get("user_id").(uint64)
-	
+
 	req := new(struct {
 		Name string `json:"name"`
 	})
@@ -143,4 +155,3 @@ func (h *ChannelHandler) LeaveChannel(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, nil)
 }
-

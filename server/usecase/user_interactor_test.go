@@ -132,7 +132,7 @@ const (
 	FindFailedValue             FindFailed             = "find_failed"
 	FindByProviderIDFailedValue FindByProviderIDFailed = "find_by_provider_id_failed"
 	CreateFailedValue           CreateFailed           = "create_failed"
-	FindChannelsFailedValue     FindChannelsFailed        = "find_channel_failed"
+	FindChannelsFailedValue     FindChannelsFailed     = "find_channel_failed"
 )
 
 func (r *mockUserRepository) FindByID(ctx context.Context, id uint64) (*model.User, error) {
