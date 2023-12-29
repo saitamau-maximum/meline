@@ -4,7 +4,7 @@
  * @returns Joined CSS class names.
  */
 export function clsx(
-  ...classes: Array<string | Record<string, boolean> | undefined | null>
+  ...classes: Array<string | Record<string, boolean> | false | undefined | null>
 ): string {
   const classNames: string[] = [];
 

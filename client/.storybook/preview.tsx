@@ -1,5 +1,8 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
+import { MemoryRouter } from "react-router-dom";
+import React from "react";
+
 import "../src/styles/global.css";
 
 const preview: Preview = {
@@ -46,6 +49,11 @@ const preview: Preview = {
       },
       defaultTheme: "light",
     }),
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
   ],
 };
 

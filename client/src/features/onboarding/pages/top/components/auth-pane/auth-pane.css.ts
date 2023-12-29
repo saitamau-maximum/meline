@@ -6,6 +6,7 @@ export const styles = {
     height: vars.spacing.full,
     width: vars.spacing.full,
     position: "relative",
+    backgroundColor: vars.color.gray[2],
     borderLeft: `1px solid ${vars.color.gray[6]}`,
     flex: 2,
     "@media": {

@@ -3,7 +3,6 @@ import { style } from "@vanilla-extract/css";
 
 export const styles = {
   container: style({
-    backgroundColor: vars.color.gray[1],
     height: vars.spacing.full,
     width: vars.spacing.full,
     position: "relative",

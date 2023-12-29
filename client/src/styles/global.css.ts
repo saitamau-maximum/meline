@@ -3,7 +3,7 @@ import { globalStyle } from "@vanilla-extract/css";
 import { colorVars } from "./contract.css";
 
 globalStyle("body", {
-  backgroundColor: colorVars.gray[2],
+  backgroundColor: colorVars.gray[1],
   fontFamily:
     'X, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
   margin: 0,
