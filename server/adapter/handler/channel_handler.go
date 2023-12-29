@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/saitamau-maximum/meline/adapter/request"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
@@ -69,11 +70,9 @@ func (h *ChannelHandler) GetChannelsByName(c echo.Context) error {
 func (h *ChannelHandler) CreateChannel(c echo.Context) error {
 	userId := c.Get("user_id").(uint64)
 
-	req := new(struct {
-		Name string `json:"name"`
-	})
+	req := request.CreateChannelRequest{}
 
-	if err := c.Bind(req); err != nil {
+	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
@@ -81,7 +80,7 @@ func (h *ChannelHandler) CreateChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.NoContent(http.StatusOK)
 }
 
 func (h *ChannelHandler) UpdateChannel(c echo.Context) error {
@@ -92,11 +91,9 @@ func (h *ChannelHandler) UpdateChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	req := new(struct {
-		Name string `json:"name"`
-	})
+	req := request.UpdateChannelRequest{}
 
-	if err := c.Bind(req); err != nil {
+	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
@@ -104,7 +101,7 @@ func (h *ChannelHandler) UpdateChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.NoContent(http.StatusOK)
 }
 
 func (h *ChannelHandler) DeleteChannel(c echo.Context) error {
@@ -119,7 +116,7 @@ func (h *ChannelHandler) DeleteChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.NoContent(http.StatusOK)
 }
 
 func (h *ChannelHandler) JoinChannel(c echo.Context) error {
@@ -136,7 +133,7 @@ func (h *ChannelHandler) JoinChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.NoContent(http.StatusOK)
 }
 
 func (h *ChannelHandler) LeaveChannel(c echo.Context) error {
@@ -153,5 +150,5 @@ func (h *ChannelHandler) LeaveChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.NoContent(http.StatusOK)
 }
