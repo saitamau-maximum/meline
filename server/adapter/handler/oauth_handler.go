@@ -74,7 +74,7 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 
 	var userId uint64
 
-	getUserRes, err := h.userInteractor.GetUserByGithubID(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
+	getUserRes, err := h.userInteractor.GetUserByGithubIDOrCreate(ctx, userRes.OAuthUserID, userRes.Name, userRes.ImageURL)
 	if err != nil {
 		return err
 	}
