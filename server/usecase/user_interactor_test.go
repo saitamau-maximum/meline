@@ -6,8 +6,9 @@ import (
 	"testing"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
-	model "github.com/saitamau-maximum/meline/models"
+	"github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase"
+	"github.com/saitamau-maximum/meline/usecase/presenter"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -15,14 +16,14 @@ import (
 func TestUserInteractor_Success_GetUserByID(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
 
-	expectedUser := &entity.User{
-		ID:         1,
-		ProviderID: "test-provider-id",
-		Name:       "John Doe",
-		ImageURL:   "https://example.com/image.jpg",
+	expectedUser := &presenter.GetUserByIdResponse{
+		ID:       1,
+		Name:     "John Doe",
+		ImageURL: "https://example.com/image.jpg",
 	}
 
 	result, err := interactor.GetUserByID(ctx, 1)
@@ -33,8 +34,9 @@ func TestUserInteractor_Success_GetUserByID(t *testing.T) {
 func TestUserInteractor_Failed_GetUserByID_NotFound(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
 	ctx = context.WithValue(ctx, FindFailedValue, true)
 
 	result, err := interactor.GetUserByID(ctx, 2)
@@ -45,17 +47,17 @@ func TestUserInteractor_Failed_GetUserByID_NotFound(t *testing.T) {
 func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
 
-	expectedUser := &entity.User{
+	expectedUser := &presenter.GetUserByGithubIdResponse{
 		ID:         1,
-		ProviderID: "test-provider-id",
 		Name:       "John Doe",
 		ImageURL:   "https://example.com/image.jpg",
 	}
 
-	result, err := interactor.GetUserByGithubID(ctx, "test-provider-id")
+	result, err := interactor.GetUserByGithubIDOrCreate(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedUser, result)
 }
@@ -63,12 +65,13 @@ func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 func TestUserInteractor_Failed_GetUserByGithubID_NotFound(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
 
 	ctx = context.WithValue(ctx, FindByProviderIDFailedValue, true)
 
-	result, err := interactor.GetUserByGithubID(ctx, "test-provider-id")
+	result, err := interactor.GetUserByGithubIDOrCreate(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
 	assert.Error(t, err)
 	assert.Nil(t, result)
 }
@@ -76,19 +79,25 @@ func TestUserInteractor_Failed_GetUserByGithubID_NotFound(t *testing.T) {
 func TestUserInteractor_Success_CreateUser(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
+
+	expectedUser := &presenter.CreateUserResponse{
+		ID: 1,
+	}
 
 	user, err := interactor.CreateUser(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
 	assert.NoError(t, err)
-	assert.Equal(t, uint64(1), user.ID)
+	assert.Equal(t, expectedUser, user)
 }
 
 func TestUserInteractor_Failed_CreateUser_CreateFailed(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
 	ctx = context.WithValue(ctx, CreateFailedValue, true)
 
 	user, err := interactor.CreateUser(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
@@ -99,8 +108,9 @@ func TestUserInteractor_Failed_CreateUser_CreateFailed(t *testing.T) {
 func TestUserInteractor_Failed_CreateUser_FindFailed(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
 
-	interactor := usecase.NewUserInteractor(repo)
+	interactor := usecase.NewUserInteractor(repo, pre)
 	ctx = context.WithValue(ctx, FindByProviderIDFailedValue, true)
 
 	user, err := interactor.CreateUser(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
@@ -152,4 +162,28 @@ func (r *mockUserRepository) Create(ctx context.Context, user *model.User) error
 	}
 
 	return nil
+}
+
+type mockUserPresenter struct{}
+
+func (p *mockUserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {
+	return &presenter.GetUserByIdResponse{
+		ID:       user.ID,
+		Name:     user.Name,
+		ImageURL: user.ImageURL,
+	}
+}
+
+func (p *mockUserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *presenter.GetUserByGithubIdResponse {
+	return &presenter.GetUserByGithubIdResponse{
+		ID:       user.ID,
+		Name:     user.Name,
+		ImageURL: user.ImageURL,
+	}
+}
+
+func (p *mockUserPresenter) GenerateCreateUserResponse(user *entity.User) *presenter.CreateUserResponse {
+	return &presenter.CreateUserResponse{
+		ID: user.ID,
+	}
 }

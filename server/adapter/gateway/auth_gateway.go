@@ -23,8 +23,6 @@ func NewAuthGateway(userInteractor usecase.IUserInteractor) *AuthGateway {
 
 func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx := c.Request().Context()
-
 		// Get Access Token
 		cookie, err := c.Cookie(config.ACCESS_TOKEN_COOKIE_NAME)
 		if err != nil {
@@ -47,15 +45,9 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, err)
 		}
 
-		// Get User
 		userId := claims["user_id"].(float64)
 
-		user, err := h.userInteractor.GetUserByID(ctx, uint64(userId))
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, err)
-		}
-
-		c.Set("user", user)
+		c.Set("user_id", uint64(userId))
 
 		exp := claims["exp"].(float64)
 		if int64(exp) < time.Now().Unix() {

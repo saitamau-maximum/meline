@@ -8,9 +8,10 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mysqldialect"
 
+	"github.com/saitamau-maximum/meline/adapter/gateway"
+	"github.com/saitamau-maximum/meline/adapter/handler"
+	"github.com/saitamau-maximum/meline/adapter/presenter"
 	"github.com/saitamau-maximum/meline/config"
-	"github.com/saitamau-maximum/meline/controller/gateway"
-	"github.com/saitamau-maximum/meline/controller/handler"
 	"github.com/saitamau-maximum/meline/infra/github"
 	"github.com/saitamau-maximum/meline/infra/mysql"
 	"github.com/saitamau-maximum/meline/usecase"
@@ -43,11 +44,12 @@ func main() {
 	userRepository := mysql.NewUserRepository(bunDB)
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
-	userInteractor := usecase.NewUserInteractor(userRepository)
+	userPresenter := presenter.NewUserPresenter()
+	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
-	authGroup := apiGroup.Group("/auth")
-	handler.NewOAuthHandler(authGroup, githubOAuthInteractor, authInteractor, userInteractor)
+	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
+	handler.NewUserHandler(apiGroup.Group("/user", authGateway.Auth), userInteractor)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

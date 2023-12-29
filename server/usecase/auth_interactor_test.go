@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -15,12 +14,9 @@ import (
 func TestAuthInteractor_CreateAccessToken(t *testing.T) {
 	interactor := usecase.NewAuthInteractor()
 
-	user := &entity.User{
-		ID:         1,
-		ProviderID: "github-123",
-	}
+	var userId uint64 = 1
 
-	result, err := interactor.CreateAccessToken(context.Background(), user)
+	result, err := interactor.CreateAccessToken(context.Background(), userId)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result)
 }
