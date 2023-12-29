@@ -52,15 +52,21 @@ func (r *ChannelRepository) FindByUserID(ctx context.Context, userID uint64) ([]
 	return channels, nil
 }
 
-func (r *ChannelRepository) Create(ctx context.Context, channel *model.Channel) error {
+func (r *ChannelRepository) Create(ctx context.Context, channel *model.Channel) (uint64, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if _, err := r.db.NewInsert().Model(channel).Exec(ctx); err != nil {
-		return err
+	res, err := r.db.NewInsert().Model(channel).Exec(ctx)
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	
+	return uint64(id), err
 }
 
 func (r *ChannelRepository) Update(ctx context.Context, channel *model.Channel) error {

@@ -52,9 +52,9 @@ func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 
 	expectedUser := &presenter.GetUserByGithubIdResponse{
-		ID:         1,
-		Name:       "John Doe",
-		ImageURL:   "https://example.com/image.jpg",
+		ID:       1,
+		Name:     "John Doe",
+		ImageURL: "https://example.com/image.jpg",
 	}
 
 	result, err := interactor.GetUserByGithubIDOrCreate(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")

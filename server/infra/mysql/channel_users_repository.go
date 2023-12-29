@@ -41,3 +41,14 @@ func (r *ChannelUsersRepository) Delete(ctx context.Context, channelID uint64, u
 
 	return nil
 }
+
+func (r *ChannelUsersRepository) DeleteByChannelID(ctx context.Context, channelID uint64) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, err := r.db.NewDelete().Model(&model.ChannelUsers{}).Where("channel_id = ?", channelID).Exec(ctx); err != nil {
+		return err
+	}
+
+	return nil
+}
