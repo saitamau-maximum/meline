@@ -12,7 +12,9 @@ func NewChannelPresenter() presenter.IChannelPresenter {
 }
 
 func (p *ChannelPresenter) GenerateGetAllChannelsResponse(channels []*entity.Channel) *presenter.GetAllChannelsResponse {
-	channelsResponse := &presenter.GetAllChannelsResponse{}
+	channelsResponse := &presenter.GetAllChannelsResponse{
+		Channels: []*presenter.Channel{},
+	}
 	for _, channel := range channels {
 		channelsResponse.Channels = append(channelsResponse.Channels, &presenter.Channel{
 			ID:   channel.ID,
@@ -42,7 +44,9 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 }
 
 func (p *ChannelPresenter) GenerateGetChannelsByNameResponse(channels []*entity.Channel) *presenter.GetChannelsByNameResponse {
-	channelsResponse := &presenter.GetChannelsByNameResponse{}
+	channelsResponse := &presenter.GetChannelsByNameResponse{
+		Channels: []*presenter.Channel{},
+	}
 	for _, channel := range channels {
 		channelsResponse.Channels = append(channelsResponse.Channels, &presenter.Channel{
 			ID:   channel.ID,

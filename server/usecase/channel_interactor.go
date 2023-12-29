@@ -41,10 +41,10 @@ func (i *ChannelInteractor) GetAllChannels(ctx context.Context, userId uint64) (
 	channels, err := i.userRepository.FindChannelsByUserID(ctx, userId)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return &presenter.GetAllChannelsResponse{}, nil
+			return i.channelPresenter.GenerateGetAllChannelsResponse([]*entity.Channel{}), nil
 		}
 
-		return &presenter.GetAllChannelsResponse{}, err
+		return i.channelPresenter.GenerateGetAllChannelsResponse([]*entity.Channel{}), err
 	}
 
 	entitiedChannels := make([]*entity.Channel, len(channels))
@@ -67,7 +67,11 @@ func (i *ChannelInteractor) GetChannelByID(ctx context.Context, id uint64) (*pre
 func (i *ChannelInteractor) GetChannelsByName(ctx context.Context, name string) (*presenter.GetChannelsByNameResponse, error) {
 	channels, err := i.channelRepository.FindByName(ctx, name)
 	if err != nil {
-		return &presenter.GetChannelsByNameResponse{}, err
+		if err == sql.ErrNoRows {
+			return i.channelPresenter.GenerateGetChannelsByNameResponse([]*entity.Channel{}), nil
+		}
+
+		return i.channelPresenter.GenerateGetChannelsByNameResponse([]*entity.Channel{}), err
 	}
 
 	entitiedChannels := make([]*entity.Channel, len(channels))
