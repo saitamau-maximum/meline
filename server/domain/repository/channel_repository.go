@@ -7,7 +7,6 @@ import (
 )
 
 type IChannelRepository interface {
-	FindAll(ctx context.Context) ([]*model.Channel, error)
 	FindByID(ctx context.Context, id uint64) (*model.Channel, error)
 	FindByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error)
 	Create(ctx context.Context, channel *model.Channel) (uint64, error)

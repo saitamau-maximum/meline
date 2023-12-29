@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
@@ -16,6 +17,7 @@ type IChannelInteractor interface {
 	UpdateChannel(ctx context.Context, id uint64, name string) error
 	DeleteChannel(ctx context.Context, id uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
+	LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error
 }
 
 type ChannelInteractor struct {
@@ -35,6 +37,10 @@ func NewChannelInteractor(channelRepository repository.IChannelRepository, chann
 func (i *ChannelInteractor) GetAllChannels(ctx context.Context, userId uint64) (*presenter.GetAllChannelsResponse, error) {
 	channels, err := i.channelRepository.FindByUserID(ctx, userId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return &presenter.GetAllChannelsResponse{}, nil
+		}
+
 		return &presenter.GetAllChannelsResponse{}, err
 	}
 
@@ -64,8 +70,8 @@ func (i *ChannelInteractor) CreateChannel(ctx context.Context, name string, user
 	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: id, UserID: userId}); err != nil {
 		return err
 	}
-	
-	return  nil
+
+	return nil
 }
 
 func (i *ChannelInteractor) UpdateChannel(ctx context.Context, id uint64, name string) error {
@@ -96,6 +102,14 @@ func (i *ChannelInteractor) DeleteChannel(ctx context.Context, id uint64) error 
 
 func (i *ChannelInteractor) JoinChannel(ctx context.Context, channelID uint64, userID uint64) error {
 	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: channelID, UserID: userID}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *ChannelInteractor) LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error {
+	if err := i.channelUsersRepository.Delete(ctx, channelID, userID); err != nil {
 		return err
 	}
 

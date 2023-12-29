@@ -20,20 +20,10 @@ func NewChannelRepository(db *bun.DB) repository.IChannelRepository {
 	}
 }
 
-func (r *ChannelRepository) FindAll(ctx context.Context) ([]*model.Channel, error) {
-	var channels []*model.Channel
-
-	if err := r.db.NewSelect().Model(&channels).Relation("users").Scan(ctx); err != nil {
-		return nil, err
-	}
-
-	return channels, nil
-}
-
 func (r *ChannelRepository) FindByID(ctx context.Context, id uint64) (*model.Channel, error) {
 	var channel model.Channel
 
-	if err := r.db.NewSelect().Model(&channel).Where("id = ?", id).Relation("users").Scan(ctx); err != nil {
+	if err := r.db.NewSelect().Model(&channel).Where("id = ?", id).Relation("Users").Scan(ctx); err != nil {
 		return nil, err
 	}
 
@@ -43,7 +33,7 @@ func (r *ChannelRepository) FindByID(ctx context.Context, id uint64) (*model.Cha
 func (r *ChannelRepository) FindByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error) {
 	var channels []*model.Channel
 
-	if err := r.db.NewSelect().Model(&channels).Relation("users", func(q *bun.SelectQuery) *bun.SelectQuery {
+	if err := r.db.NewSelect().Model(&channels).Relation("Users", func(q *bun.SelectQuery) *bun.SelectQuery {
 		return q.Where("user_id = ?", userID)
 	}).Scan(ctx); err != nil {
 		return nil, err
