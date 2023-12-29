@@ -61,10 +61,6 @@ func (i *UserInteractor) GetUserByGithubID(ctx context.Context, githubID, userNa
 		}
 	}
 
-	if err != nil {
-		return &presenter.GetUserByGithubIdResponse{}, err
-	}
-
 	return i.userPresenter.GenerateGetUserByGithubIdResponse(user.ToUserEntity()), nil
 }
 
