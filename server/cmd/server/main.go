@@ -14,6 +14,7 @@ import (
 	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/infra/github"
 	"github.com/saitamau-maximum/meline/infra/mysql"
+	model "github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
@@ -35,6 +36,7 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.Channel)(nil), (*model.User)(nil))
 	defer bunDB.Close()
 
 	apiGroup := e.Group("/api")
