@@ -12,15 +12,13 @@ type Message struct {
 	User           *User
 	ReplyToID      string
 	ReplyToMessage *Message
-	ThreadID       string
-	Comments	   []*Message
 	Content        string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	DeletedAt      time.Time
 }
 
-func NewMessageEntity(id string, channelID uint64, channel *Channel, userID uint64, user *User, replyToID string, replyToMessage *Message, threadID string, comments []*Message, content string, createdAt, updatedAt, deletedAt time.Time) *Message {
+func NewMessageEntity(id string, channelID uint64, channel *Channel, userID uint64, user *User, replyToID string, replyToMessage *Message, content string, createdAt, updatedAt, deletedAt time.Time) *Message {
 	return &Message{
 		ID:             id,
 		ChannelID:      channelID,
@@ -29,8 +27,6 @@ func NewMessageEntity(id string, channelID uint64, channel *Channel, userID uint
 		User:           user,
 		ReplyToID:      replyToID,
 		ReplyToMessage: replyToMessage,
-		ThreadID:       threadID,
-		Comments:       comments,
 		Content:        content,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,

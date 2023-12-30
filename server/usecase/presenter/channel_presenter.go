@@ -10,8 +10,9 @@ type Channel struct {
 }
 
 type ChannelDetail struct {
-	Name  string  `json:"name"`
-	Users []*User `json:"users"`
+	Name     string     `json:"name"`
+	Channels []*Channel `json:"channels"`
+	Users    []*User    `json:"users"`
 	Messages []*Message `json:"messages"`
 }
 

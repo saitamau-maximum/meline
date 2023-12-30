@@ -3,14 +3,11 @@ package usecase
 import (
 	"context"
 
-	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
 	"github.com/saitamau-maximum/meline/models"
-	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
 
 type IMessageInteractor interface {
-	FindByID(ctx context.Context, id string) (*presenter.GetMessageByIDResponse, error)
 	Create(ctx context.Context, userID, channelID uint64, replyToID, threadID, content string) error
 	Update(ctx context.Context, id string, content string) error
 	Delete(ctx context.Context, id string) error
@@ -18,23 +15,12 @@ type IMessageInteractor interface {
 
 type messageInteractor struct {
 	messageRepository repository.IMessageRepository
-	messagePresenter  presenter.IMessagePresenter
 }
 
-func NewMessageInteractor(messageRepository repository.IMessageRepository, messagePresenter presenter.IMessagePresenter) IMessageInteractor {
+func NewMessageInteractor(messageRepository repository.IMessageRepository) IMessageInteractor {
 	return &messageInteractor{
 		messageRepository: messageRepository,
-		messagePresenter:  messagePresenter,
 	}
-}
-
-func (i *messageInteractor) FindByID(ctx context.Context, id string) (*presenter.GetMessageByIDResponse, error) {
-	message, err := i.messageRepository.FindByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return i.messagePresenter.GenerateGetMessageByIDResponse(message.ToMessageEntity()), nil
 }
 
 func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, replyToID, threadID, content string) error {
