@@ -8,7 +8,6 @@ export const styles = {
     display: "flex",
     flexDirection: "column",
     gap: vars.spacing[2],
-    padding: vars.spacing[4],
     boxSizing: "border-box",
     overflowY: "auto",
   }),

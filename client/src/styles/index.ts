@@ -13,6 +13,6 @@ export const vars = {
 
 export const constants = {
   sizes: {
-    channelLayoutSidePanelWidth: "192px",
+    channelLayoutSidePanelWidth: "240px",
   },
 };
