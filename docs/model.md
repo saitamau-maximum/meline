@@ -34,6 +34,7 @@ ProviderType {
 Channel {
     string id "PK"
     string name ""
+    string parent_channel_id "FK"
     string created_at ""
     string deleted_at "IDX"
 }
@@ -49,7 +50,6 @@ Message {
     string channel_id "FK"
     string user_id "FK"
     string reply_to_id "FK"
-    string thread_id "FK"
     string content ""
     string created_at ""
     string updated_at ""
@@ -76,12 +76,12 @@ User ||--o{ ChannelUser : "1"
 ProviderTypeUser }o--|| ProviderType : "1"
 
 Channel ||--o{ Message : "1"
+Channel ||--o{ Channel : "Nest(parent_channle_id)"
 ChannelUser }o--|| Channel : "1"
 
 Message }o--|| User : "1"
 Message ||--o{ Reaction : "1"
 Message ||--o{ Message : "Reply(reply_to_id)"
-Message ||--o{ Message : "Reply to Threads(thread_id)"
 Message ||--o{ MessageReaction : "1"
 Message ||--o{ MessageReaction : "1"
 
