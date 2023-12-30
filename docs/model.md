@@ -49,6 +49,7 @@ Message {
     string channel_id "FK"
     string user_id "FK"
     string reply_to_id "FK"
+    string thread_id "FK"
     string content ""
     string created_at ""
     string updated_at ""
@@ -79,7 +80,8 @@ ChannelUser }o--|| Channel : "1"
 
 Message }o--|| User : "1"
 Message ||--o{ Reaction : "1"
-Message ||--o{ Message : "1"
+Message ||--o{ Message : "Reply(reply_to_id)"
+Message ||--o{ Message : "Reply to Threads(thread_id)"
 Message ||--o{ MessageReaction : "1"
 Message ||--o{ MessageReaction : "1"
 
