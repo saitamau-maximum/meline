@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 
 export const MockUsers = [
   {
@@ -14,5 +14,8 @@ export const MockUsers = [
 ];
 
 export const userHandlers = [
-  http.get("/api/user/me", () => HttpResponse.json(MockUsers[0])),
+  http.get("/api/user/me", async () => {
+    await delay();
+    return HttpResponse.json(MockUsers[0]);
+  }),
 ];
