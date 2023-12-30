@@ -10,26 +10,25 @@ import (
 )
 
 type IMessageInteractor interface {
-	FindByID(ctx context.Context, id uint64) (*presenter.GetMessageByIDResponse, error)
-	FindByChannelID(ctx context.Context, channelID uint64) (*presenter.GetMessagesByChannelIDResponse, error)
-	Create(ctx context.Context, userID, channelID uint64, replyToID, content string) error
-	Update(ctx context.Context, id uint64, content string) error
-	Delete(ctx context.Context, id uint64) error
+	FindByID(ctx context.Context, id string) (*presenter.GetMessageByIDResponse, error)
+	Create(ctx context.Context, userID, channelID uint64, replyToID, threadID, content string) error
+	Update(ctx context.Context, id string, content string) error
+	Delete(ctx context.Context, id string) error
 }
 
 type messageInteractor struct {
-	messageRepository repository.MessageRepository
+	messageRepository repository.IMessageRepository
 	messagePresenter  presenter.IMessagePresenter
 }
 
-func NewMessageInteractor(messageRepository repository.MessageRepository, messagePresenter presenter.IMessagePresenter) IMessageInteractor {
+func NewMessageInteractor(messageRepository repository.IMessageRepository, messagePresenter presenter.IMessagePresenter) IMessageInteractor {
 	return &messageInteractor{
 		messageRepository: messageRepository,
 		messagePresenter:  messagePresenter,
 	}
 }
 
-func (i *messageInteractor) FindByID(ctx context.Context, id uint64) (*presenter.GetMessageByIDResponse, error) {
+func (i *messageInteractor) FindByID(ctx context.Context, id string) (*presenter.GetMessageByIDResponse, error) {
 	message, err := i.messageRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -38,22 +37,8 @@ func (i *messageInteractor) FindByID(ctx context.Context, id uint64) (*presenter
 	return i.messagePresenter.GenerateGetMessageByIDResponse(message.ToMessageEntity()), nil
 }
 
-func (i *messageInteractor) FindByChannelID(ctx context.Context, channelID uint64) (*presenter.GetMessagesByChannelIDResponse, error) {
-	messages, err := i.messageRepository.FindByChannelID(ctx, channelID)
-	if err != nil {
-		return nil, err
-	}
-
-	entitiedMessages := make([]*entity.Message, len(messages))
-	for i, message := range messages {
-		entitiedMessages[i] = message.ToMessageEntity()
-	}
-
-	return i.messagePresenter.GenerateGetMessagesByChannelIDResponse(entitiedMessages), nil
-}
-
-func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, replyToID, content string) error {
-	message := model.NewMessageModel(userID, channelID, replyToID, content)
+func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, replyToID, threadID, content string) error {
+	message := model.NewMessageModel(userID, channelID, replyToID, threadID, content)
 
 	if err := i.messageRepository.Create(ctx, message); err != nil {
 		return err
@@ -62,7 +47,7 @@ func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64
 	return nil
 }
 
-func (i *messageInteractor) Update(ctx context.Context, id uint64, content string) error {
+func (i *messageInteractor) Update(ctx context.Context, id string, content string) error {
 	message, err := i.messageRepository.FindByID(ctx, id)
 	if err != nil {
 		return err
@@ -77,7 +62,7 @@ func (i *messageInteractor) Update(ctx context.Context, id uint64, content strin
 	return nil
 }
 
-func (i *messageInteractor) Delete(ctx context.Context, id uint64) error {
+func (i *messageInteractor) Delete(ctx context.Context, id string) error {
 	if err := i.messageRepository.Delete(ctx, id); err != nil {
 		return err
 	}

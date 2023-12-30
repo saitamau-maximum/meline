@@ -10,24 +10,27 @@ type Message struct {
 	Channel        *Channel
 	UserID         uint64
 	User           *User
-	ReplyToMessage *Message
 	ReplyToID      string
-	Replys         []*Message
+	ReplyToMessage *Message
+	ThreadID       string
+	Comments	   []*Message
 	Content        string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	DeletedAt      time.Time
 }
 
-func NewMessageEntity(id string, channelID uint64, channel *Channel, userID uint64, user *User, replyToMessage *Message, replyToID string, content string, createdAt time.Time, updatedAt time.Time, deletedAt time.Time) *Message {
+func NewMessageEntity(id string, channelID uint64, channel *Channel, userID uint64, user *User, replyToID string, replyToMessage *Message, threadID string, comments []*Message, content string, createdAt, updatedAt, deletedAt time.Time) *Message {
 	return &Message{
 		ID:             id,
 		ChannelID:      channelID,
 		Channel:        channel,
 		UserID:         userID,
 		User:           user,
-		ReplyToMessage: replyToMessage,
 		ReplyToID:      replyToID,
+		ReplyToMessage: replyToMessage,
+		ThreadID:       threadID,
+		Comments:       comments,
 		Content:        content,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,

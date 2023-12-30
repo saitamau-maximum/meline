@@ -12,6 +12,7 @@ type Channel struct {
 type ChannelDetail struct {
 	Name  string  `json:"name"`
 	Users []*User `json:"users"`
+	Messages []*Message `json:"messages"`
 }
 
 type GetAllChannelsResponse struct {

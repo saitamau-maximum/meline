@@ -6,27 +6,38 @@ type Message struct {
 	ID             string   `json:"id"`
 	User           *User    `json:"user"`
 	Content        string   `json:"content"`
-	ReplyToMessage *Message `json:"reply_to_message"`
+	ReplyToMessage *ReplyToMessage `json:"reply_to_message"`
+	CreatedAt      string   `json:"created_at"`
+	UpdatedAt      string   `json:"updated_at"`
 }
 
-type MessageDetail struct {
+type Thread struct {
 	ID             string     `json:"id"`
 	User           *User      `json:"user"`
-	Channel        *Channel   `json:"channel"`
 	Content        string     `json:"content"`
-	ReplyToMessage *Message   `json:"reply_to_message"`
-	Replys         []*Message `json:"replys"`
+	Comments       []*Comments `json:"comments"`
+	CreatedAt      string     `json:"created_at"`
+	UpdatedAt      string     `json:"updated_at"`
+}
+
+type ReplyToMessage struct {
+	ID        string `json:"id"`
+	User      *User  `json:"user"`
+	Content   string `json:"content"`
+}
+
+type Comments struct {
+	ID      string `json:"id"`
+	User    *User  `json:"user"`
+	Content string `json:"content"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 type GetMessageByIDResponse struct {
-	Message *MessageDetail `json:"message"`
-}
-
-type GetMessagesByChannelIDResponse struct {
-	Messages []*Message `json:"messages"`
+	Thread *Thread `json:"thread"`
 }
 
 type IMessagePresenter interface {
 	GenerateGetMessageByIDResponse(message *entity.Message) *GetMessageByIDResponse
-	GenerateGetMessagesByChannelIDResponse(messages []*entity.Message) *GetMessagesByChannelIDResponse
 }

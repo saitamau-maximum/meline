@@ -14,8 +14,9 @@ type Message struct {
 	UserID         uint64     `bun:"user_id,notnull"`
 	User           *User      `bun:"rel:belongs-to,join:user_id=id"`
 	ReplyToMessage *Message   `bun:"rel:belongs-to,join:reply_to_id=id"`
-	Replys         []*Message `bun:"rel:has-many,join:id=reply_to_id"`
 	ReplyToID      string     `bun:"reply_to_id,default:null"`
+	ThreadID       string     `bun:"thread_id,default:null"`
+	Comments       []*Message `bun:"rel:has-many,join:id=thread_id"`
 	Content        string     `bun:"content,notnull,type:varchar(2000)"`
 	CreatedAt      time.Time  `bun:"created_at,notnull,default:current_timestamp"`
 	UpdatedAt      time.Time  `bun:"updated_at,notnull,default:current_timestamp"`
@@ -23,20 +24,36 @@ type Message struct {
 }
 
 func (m *Message) ToMessageEntity() *entity.Message {
-	replys := make([]*entity.Message, len(m.Replys))
-	for i, r := range m.Replys {
-		replys[i] = r.ToMessageEntity()
+	var entitiedChannel *entity.Channel
+	if m.Channel != nil {
+		entitiedChannel = m.Channel.ToChannelEntity()
 	}
 
-	return entity.NewMessageEntity(m.ID, m.ChannelID, m.Channel.ToChannelEntity(), m.UserID, m.User.ToUserEntity(), m.ReplyToMessage.ToMessageEntity(), m.ReplyToID, m.Content, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
+	var entitiedUser *entity.User
+	if m.User != nil {
+		entitiedUser = m.User.ToUserEntity()
+	}
+
+	var entitiedReplyToMessage *entity.Message
+	if m.ReplyToMessage != nil {
+		entitiedReplyToMessage = m.ReplyToMessage.ToMessageEntity()
+	}
+
+	entitiedComments := make([]*entity.Message, len(m.Comments))
+	for i, c := range m.Comments {
+		entitiedComments[i] = c.ToMessageEntity()
+	}
+
+	return entity.NewMessageEntity(m.ID, m.ChannelID, entitiedChannel, m.UserID, entitiedUser, m.ReplyToID, entitiedReplyToMessage, m.ThreadID, entitiedComments, m.Content, m.CreatedAt, m.UpdatedAt, m.DeletedAt)	
 }
 
-func NewMessageModel(channelID uint64, userID uint64, replyToID string, content string) *Message {
+func NewMessageModel(channelID uint64, userID uint64, replyToID string, threadID string, content string) *Message {
 	return &Message{
 		ID:        utils.GenerateUUID(),
 		ChannelID: channelID,
 		UserID:    userID,
 		ReplyToID: replyToID,
+		ThreadID:  threadID,
 		Content:   content,
 	}
 }
