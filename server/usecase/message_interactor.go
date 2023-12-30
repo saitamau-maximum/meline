@@ -8,7 +8,7 @@ import (
 )
 
 type IMessageInteractor interface {
-	Create(ctx context.Context, userID, channelID uint64, replyToID, threadID, content string) error
+	Create(ctx context.Context, userID, channelID uint64, replyToID, content string) error
 	Update(ctx context.Context, id string, content string) error
 	Delete(ctx context.Context, id string) error
 }
@@ -23,8 +23,8 @@ func NewMessageInteractor(messageRepository repository.IMessageRepository) IMess
 	}
 }
 
-func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, replyToID, threadID, content string) error {
-	message := model.NewMessageModel(userID, channelID, replyToID, threadID, content)
+func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, replyToID, content string) error {
+	message := model.NewMessageModel(userID, channelID, replyToID, content)
 
 	if err := i.messageRepository.Create(ctx, message); err != nil {
 		return err

@@ -40,7 +40,7 @@ func (m *Message) ToMessageEntity() *entity.Message {
 	return entity.NewMessageEntity(m.ID, m.ChannelID, entitiedChannel, m.UserID, entitiedUser, m.ReplyToID, entitiedReplyToMessage, m.Content, m.CreatedAt, m.UpdatedAt, m.DeletedAt)	
 }
 
-func NewMessageModel(channelID uint64, userID uint64, replyToID string, threadID string, content string) *Message {
+func NewMessageModel(channelID uint64, userID uint64, replyToID string, content string) *Message {
 	return &Message{
 		ID:        utils.GenerateUUID(),
 		ChannelID: channelID,

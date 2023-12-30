@@ -9,7 +9,7 @@ import (
 type Channel struct {
 	ID        uint64    `bun:"id,pk,autoincrement"`
 	Name      string    `bun:"name,notnull"`
-	ParentChannelID uint64    `bun:"parent_channel_id"`
+	ParentChannelID uint64    `bun:"parent_channel_id,default:null"`
 	Channels  []*Channel `bun:"rel:has-many,join:id=parent_channel_id"`
 	Users     []*User   `bun:"m2m:channel_users,join:Channel=User"`
 	Messages  []*Message `bun:"rel:has-many,join:id=channel_id"`

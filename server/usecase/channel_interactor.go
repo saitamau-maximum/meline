@@ -15,6 +15,7 @@ type IChannelInteractor interface {
 	GetChannelByID(ctx context.Context, id uint64) (*presenter.GetChannelByIdResponse, error)
 	GetChannelsByName(ctx context.Context, name string) (*presenter.GetChannelsByNameResponse, error)
 	CreateChannel(ctx context.Context, name string, userId uint64) error
+	CreateNestChannel(ctx context.Context, name string, parentChannelId, userId uint64) error
 	UpdateChannel(ctx context.Context, id uint64, name string) error
 	DeleteChannel(ctx context.Context, id uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
@@ -84,6 +85,19 @@ func (i *ChannelInteractor) GetChannelsByName(ctx context.Context, name string) 
 
 func (i *ChannelInteractor) CreateChannel(ctx context.Context, name string, userId uint64) error {
 	id, err := i.channelRepository.Create(ctx, &model.Channel{Name: name})
+	if err != nil {
+		return err
+	}
+
+	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: id, UserID: userId}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *ChannelInteractor) CreateNestChannel(ctx context.Context, name string, parentChannelId, userId uint64) error {
+	id, err := i.channelRepository.Create(ctx, &model.Channel{Name: name, ParentChannelID: parentChannelId})
 	if err != nil {
 		return err
 	}
