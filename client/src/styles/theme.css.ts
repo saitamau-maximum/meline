@@ -1,6 +1,6 @@
 import { createGlobalTheme } from "@vanilla-extract/css";
 
-import { colorVars } from "./contract.css";
+import { colorVars, semanticVars } from "./contract.css";
 
 createGlobalTheme(".light", colorVars, {
   gray: {
@@ -70,6 +70,28 @@ createGlobalTheme(".dark", colorVars, {
   },
 });
 
+createGlobalTheme(".light", semanticVars, {
+  background: {
+    primary: colorVars.gray[1],
+    secondary: colorVars.gray[2],
+  },
+  text: {
+    primary: colorVars.gray[12],
+    secondary: colorVars.gray[11],
+  },
+});
+
+createGlobalTheme(".dark", semanticVars, {
+  background: {
+    primary: colorVars.gray[2],
+    secondary: colorVars.gray[1],
+  },
+  text: {
+    primary: colorVars.gray[12],
+    secondary: colorVars.gray[11],
+  },
+});
+
 const fontVars = createGlobalTheme(":root", {
   size: {
     xs: "0.75rem",
@@ -106,18 +128,18 @@ const zIndexVars = createGlobalTheme(":root", {
   overlay: "10000",
 });
 
-const breakpointVars =  {
+const breakpointVars = {
   mobile: "768px",
   tablet: "1024px",
 };
 
-
 /**
- * @deprecated 
+ * @deprecated
  * styles/theme.cssではなく、styles/indexをimportしてください
  */
 export const vars = {
   color: colorVars,
+  semantic: semanticVars,
   font: fontVars,
   spacing: spacingVars,
   zIndex: zIndexVars,
