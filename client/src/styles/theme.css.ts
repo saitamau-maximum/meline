@@ -1,6 +1,6 @@
 import { createGlobalTheme } from "@vanilla-extract/css";
 
-import { colorVars } from "./contract.css";
+import { colorVars, semanticVars } from "./contract.css";
 
 createGlobalTheme(".light", colorVars, {
   gray: {
@@ -30,6 +30,20 @@ createGlobalTheme(".light", colorVars, {
     10: "hsl(134 44% 52.3%)",
     11: "hsl(134 44% 43.5%)",
     12: "hsl(134 44% 34.0%)",
+  },
+  red: {
+    1: "hsl(341 100% 99.0%)",
+    2: "hsl(341 100% 97.3%)",
+    3: "hsl(341 100% 95.1%)",
+    4: "hsl(341 100% 93.0%)",
+    5: "hsl(341 100% 90.9%)",
+    6: "hsl(341 100% 88.7%)",
+    7: "hsl(341 100% 85.8%)",
+    8: "hsl(341 100% 78.0%)",
+    9: "hsl(341 100% 56.1%)",
+    10: "hsl(341 100% 52.3%)",
+    11: "hsl(341 100% 43.5%)",
+    12: "hsl(341 100% 34.0%)",
   },
   gradient: {
     primary: "linear-gradient(291deg, #63C178 0%, #34AA8E 100%))",
@@ -65,8 +79,76 @@ createGlobalTheme(".dark", colorVars, {
     11: "hsl(134 44% 62.8%)",
     12: "hsl(134 44% 93.0%)",
   },
+  red: {
+    1: "hsl(341 100% 8.5%)",
+    2: "hsl(341 100% 11.0%)",
+    3: "hsl(341 100% 13.6%)",
+    4: "hsl(341 100% 15.8%)",
+    5: "hsl(341 100% 17.9%)",
+    6: "hsl(341 100% 20.5%)",
+    7: "hsl(341 100% 24.3%)",
+    8: "hsl(341 100% 31.2%)",
+    9: "hsl(341 100% 43.9%)",
+    10: "hsl(341 100% 49.4%)",
+    11: "hsl(341 100% 62.8%)",
+    12: "hsl(341 100% 93.0%)",
+  },
   gradient: {
     primary: "linear-gradient(291deg, #34AA8E 0%, #63C178 100%))",
+  },
+});
+
+createGlobalTheme(".light", semanticVars, {
+  background: {
+    primary: colorVars.gray[1],
+    primaryHover: colorVars.gray[3],
+    secondary: colorVars.gray[2],
+    disabled: colorVars.gray[3],
+  },
+  text: {
+    primary: colorVars.gray[12],
+    secondary: colorVars.gray[11],
+    weak: colorVars.gray[9],
+    weaker: colorVars.gray[7],
+    error: colorVars.red[9],
+  },
+  border: {
+    primary: colorVars.gray[6],
+    error: colorVars.red[6],
+    focus: colorVars.green[9],
+  },
+  button: {
+    primary: {
+      backgroundColor: colorVars.green[10],
+      color: colorVars.gray[1],
+    },
+  },
+});
+
+createGlobalTheme(".dark", semanticVars, {
+  background: {
+    primary: colorVars.gray[2],
+    primaryHover: colorVars.gray[4],
+    secondary: colorVars.gray[1],
+    disabled: colorVars.gray[3],
+  },
+  text: {
+    primary: colorVars.gray[12],
+    secondary: colorVars.gray[11],
+    weak: colorVars.gray[9],
+    weaker: colorVars.gray[7],
+    error: colorVars.red[9],
+  },
+  border: {
+    primary: colorVars.gray[6],
+    error: colorVars.red[6],
+    focus: colorVars.green[9],
+  },
+  button: {
+    primary: {
+      backgroundColor: colorVars.green[9],
+      color: colorVars.gray[12],
+    },
   },
 });
 
@@ -106,18 +188,18 @@ const zIndexVars = createGlobalTheme(":root", {
   overlay: "10000",
 });
 
-const breakpointVars =  {
+const breakpointVars = {
   mobile: "768px",
   tablet: "1024px",
 };
 
-
 /**
- * @deprecated 
+ * @deprecated
  * styles/theme.cssではなく、styles/indexをimportしてください
  */
 export const vars = {
   color: colorVars,
+  semantic: semanticVars,
   font: fontVars,
   spacing: spacingVars,
   zIndex: zIndexVars,

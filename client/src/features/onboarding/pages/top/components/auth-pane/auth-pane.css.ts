@@ -6,13 +6,13 @@ export const styles = {
     height: vars.spacing.full,
     width: vars.spacing.full,
     position: "relative",
-    backgroundColor: vars.color.gray[2],
+    backgroundColor: vars.semantic.background.primary,
     borderLeft: `1px solid ${vars.color.gray[6]}`,
     flex: 2,
     "@media": {
       [`screen and (max-width: ${vars.breakpoint.mobile})`]: {
         flex: 1,
-        backgroundColor: vars.color.gray[1],
+        backgroundColor: vars.semantic.background.secondary,
         borderLeft: "none",
       },
     },

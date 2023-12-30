@@ -1,4 +1,4 @@
-import { vars } from "@/styles/theme.css";
+import { vars } from "@/styles";
 import { style, createVar } from "@vanilla-extract/css";
 
 const loadingObjectSizeVar = createVar();
@@ -11,7 +11,7 @@ export const styles = {
     width: "100%",
     height: "100%",
     zIndex: vars.zIndex.modal,
-    backgroundColor: vars.color.gray[1],
+    backgroundColor: vars.semantic.background.secondary,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
