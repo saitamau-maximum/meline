@@ -8,15 +8,18 @@ import (
 )
 
 type Message struct {
-	ID        string     `bun:"id,pk"`
-	ChannelID uint64     `bun:"channel_id,notnull"`
-	UserID    uint64     `bun:"user_id,notnull"`
-	Replys    []*Message `bun:"rel:has-many,join:reply_to_id=id"`
-	ReplyToID string     `bun:"reply_to_id,default:null"`
-	Content   string     `bun:"content,notnull,type:varchar(2000)"`
-	CreatedAt time.Time  `bun:"created_at,notnull,default:current_timestamp"`
-	UpdatedAt time.Time  `bun:"updated_at,notnull,default:current_timestamp"`
-	DeletedAt time.Time  `bun:"deleted_at,default:null"`
+	ID             string     `bun:"id,pk"`
+	ChannelID      uint64     `bun:"channel_id,notnull"`
+	Channel        *Channel   `bun:"rel:belongs-to,join:channel_id=id"`
+	UserID         uint64     `bun:"user_id,notnull"`
+	User           *User      `bun:"rel:belongs-to,join:user_id=id"`
+	ReplyToMessage *Message   `bun:"rel:belongs-to,join:reply_to_id=id"`
+	Replys         []*Message `bun:"rel:has-many,join:id=reply_to_id"`
+	ReplyToID      string     `bun:"reply_to_id,default:null"`
+	Content        string     `bun:"content,notnull,type:varchar(2000)"`
+	CreatedAt      time.Time  `bun:"created_at,notnull,default:current_timestamp"`
+	UpdatedAt      time.Time  `bun:"updated_at,notnull,default:current_timestamp"`
+	DeletedAt      time.Time  `bun:"deleted_at,default:null"`
 }
 
 func (m *Message) ToMessageEntity() *entity.Message {
@@ -25,19 +28,15 @@ func (m *Message) ToMessageEntity() *entity.Message {
 		replys[i] = r.ToMessageEntity()
 	}
 
-	return entity.NewMessageEntity(m.ID, m.ChannelID, m.UserID, replys, m.ReplyToID, m.Content, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
+	return entity.NewMessageEntity(m.ID, m.ChannelID, m.Channel.ToChannelEntity(), m.UserID, m.User.ToUserEntity(), m.ReplyToMessage.ToMessageEntity(), m.ReplyToID, m.Content, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
 }
 
-func NewMessageModel(channelID uint64, userID uint64, replys []*Message, replyToID string, content string, createdAt time.Time, updatedAt time.Time, deletedAt time.Time) *Message {
+func NewMessageModel(channelID uint64, userID uint64, replyToID string, content string) *Message {
 	return &Message{
 		ID:        utils.GenerateUUID(),
 		ChannelID: channelID,
 		UserID:    userID,
-		Replys:    replys,
 		ReplyToID: replyToID,
 		Content:   content,
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
-		DeletedAt: deletedAt,
 	}
 }

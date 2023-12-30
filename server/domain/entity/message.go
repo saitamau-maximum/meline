@@ -5,27 +5,32 @@ import (
 )
 
 type Message struct {
-	ID        string
-	ChannelID uint64
-	UserID    uint64
-	Replys    []*Message
-	ReplyToID string
-	Content   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	ID             string
+	ChannelID      uint64
+	Channel        *Channel
+	UserID         uint64
+	User           *User
+	ReplyToMessage *Message
+	ReplyToID      string
+	Replys         []*Message
+	Content        string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	DeletedAt      time.Time
 }
 
-func NewMessageEntity(id string, channelID uint64, userID uint64, replys []*Message, replyToID string, content string, createdAt time.Time, updatedAt time.Time, deletedAt time.Time) *Message {
+func NewMessageEntity(id string, channelID uint64, channel *Channel, userID uint64, user *User, replyToMessage *Message, replyToID string, content string, createdAt time.Time, updatedAt time.Time, deletedAt time.Time) *Message {
 	return &Message{
-		ID:        id,
-		ChannelID: channelID,
-		UserID:    userID,
-		Replys:    replys,
-		ReplyToID: replyToID,
-		Content:   content,
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
-		DeletedAt: deletedAt,
+		ID:             id,
+		ChannelID:      channelID,
+		Channel:        channel,
+		UserID:         userID,
+		User:           user,
+		ReplyToMessage: replyToMessage,
+		ReplyToID:      replyToID,
+		Content:        content,
+		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
+		DeletedAt:      deletedAt,
 	}
 }
