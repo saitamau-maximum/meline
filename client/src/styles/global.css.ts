@@ -4,8 +4,7 @@ import { vars } from ".";
 
 globalStyle("body", {
   backgroundColor: vars.semantic.background.secondary,
-  fontFamily:
-    'X, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+  fontFamily: '"Noto Sans", "Noto Sans JP", sans-serif',
   margin: 0,
   padding: 0,
   color: vars.semantic.text.primary,
