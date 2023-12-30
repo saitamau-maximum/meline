@@ -53,12 +53,12 @@ export const styles = {
   dialogTitle: style({
     fontSize: vars.font.size.lg,
     fontWeight: 600,
-    marginBottom: vars.spacing[4],
+    marginBottom: vars.spacing[2],
     color: vars.color.gray[12],
   }),
   dialogDescription: style({
     fontSize: vars.font.size.sm,
-    marginBottom: vars.spacing[2],
+    marginBottom: vars.spacing[4],
     color: vars.color.gray[11],
   }),
   dialogClose: style({

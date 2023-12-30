@@ -29,7 +29,7 @@ export const styles = {
           opacity: 0.8,
         },
         "&:focus-visible": {
-          outline: `2px solid ${vars.color.green[9]}`,
+          outline: `2px solid ${vars.semantic.border.focus}`,
           outlineOffset: "2px",
         },
       },
@@ -44,7 +44,7 @@ export const styles = {
           backgroundColor: vars.semantic.background.primaryHover,
         },
         "&:focus-visible": {
-          outline: `2px solid ${vars.color.green[9]}`,
+          outline: `2px solid ${vars.semantic.border.focus}`,
           outlineOffset: "2px",
         },
       },
@@ -58,7 +58,7 @@ export const styles = {
           backgroundColor: vars.semantic.background.primaryHover,
         },
         "&:focus-visible": {
-          outline: `2px solid ${vars.color.green[9]}`,
+          outline: `2px solid ${vars.semantic.border.focus}`,
           outlineOffset: "2px",
         },
       },
