@@ -73,22 +73,42 @@ createGlobalTheme(".dark", colorVars, {
 createGlobalTheme(".light", semanticVars, {
   background: {
     primary: colorVars.gray[1],
+    primaryHover: colorVars.gray[3],
     secondary: colorVars.gray[2],
   },
   text: {
     primary: colorVars.gray[12],
     secondary: colorVars.gray[11],
   },
+  border: {
+    primary: colorVars.gray[6],
+  },
+  button: {
+    primary: {
+      backgroundColor: colorVars.green[10],
+      color: colorVars.gray[1],
+    },
+  },
 });
 
 createGlobalTheme(".dark", semanticVars, {
   background: {
     primary: colorVars.gray[2],
+    primaryHover: colorVars.gray[4],
     secondary: colorVars.gray[1],
   },
   text: {
     primary: colorVars.gray[12],
     secondary: colorVars.gray[11],
+  },
+  border: {
+    primary: colorVars.gray[6],
+  },
+  button: {
+    primary: {
+      backgroundColor: colorVars.green[9],
+      color: colorVars.gray[12],
+    },
   },
 });
 

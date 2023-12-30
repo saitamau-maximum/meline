@@ -37,10 +37,20 @@ export const colorVars = createThemeContract({
 export const semanticVars = createThemeContract({
   background: {
     primary: null,
+    primaryHover: null,
     secondary: null,
   },
   text: {
     primary: null,
     secondary: null,
+  },
+  border: {
+    primary: null,
+  },
+  button: {
+    primary: {
+      backgroundColor: null,
+      color: null,
+    },
   },
 });
