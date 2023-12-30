@@ -13,7 +13,6 @@ export const styles = {
     transition: vars.transition.fastInteraction("background-color"),
     userSelect: "none",
     whiteSpace: "nowrap",
-    overflow: "hidden",
     textOverflow: "ellipsis",
     textDecoration: "none",
     border: "none",
