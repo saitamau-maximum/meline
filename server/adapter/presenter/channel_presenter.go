@@ -26,7 +26,15 @@ func (p *ChannelPresenter) GenerateGetAllChannelsResponse(channels []*entity.Cha
 }
 
 func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channel) *presenter.GetChannelByIdResponse {
-	users := make([]*presenter.User, len(channel.Users))
+	childChannels := make([]*presenter.Channel, 0)
+	for _, childChannel := range channel.ChildChannels {
+		childChannels = append(childChannels, &presenter.Channel{
+			ID:   childChannel.ID,
+			Name: childChannel.Name,
+		})
+	}
+
+	users := make([]*presenter.User, 0)
 	for _, user := range channel.Users {
 		users = append(users, &presenter.User{
 			ID:       user.ID,
@@ -35,39 +43,42 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 		})
 	}
 
-	messages := make([]*presenter.Message, len(channel.Messages))
+	messages := make([]*presenter.Message, 0)
 	for _, message := range channel.Messages {
 		replyToMessage := &presenter.ReplyToMessage{}
 		if message.ReplyToMessage != nil {
 			replyToMessage = &presenter.ReplyToMessage{
-				ID:        message.ReplyToMessage.ID,
-				User:      &presenter.User{
+				ID: message.ReplyToMessage.ID,
+				User: &presenter.User{
 					ID:       message.ReplyToMessage.User.ID,
 					Name:     message.ReplyToMessage.User.Name,
 					ImageURL: message.ReplyToMessage.User.ImageURL,
 				},
-				Content:   message.ReplyToMessage.Content,
+				Content: message.ReplyToMessage.Content,
 			}
+		} else {
+			replyToMessage = nil
 		}
 
 		messages = append(messages, &presenter.Message{
-			ID:        message.ID,
-			User:      &presenter.User{
+			ID: message.ID,
+			User: &presenter.User{
 				ID:       message.User.ID,
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
 			},
 			ReplyToMessage: replyToMessage,
-			Content:   message.Content,
-			CreatedAt: message.CreatedAt.String(),
-			UpdatedAt: message.UpdatedAt.String(),
+			Content:        message.Content,
+			CreatedAt:      message.CreatedAt.String(),
+			UpdatedAt:      message.UpdatedAt.String(),
 		})
 	}
 
 	return &presenter.GetChannelByIdResponse{
 		Channel: &presenter.ChannelDetail{
-			Name:  channel.Name,
-			Users: users,
+			Name:     channel.Name,
+			Channels: childChannels,
+			Users:    users,
 			Messages: messages,
 		},
 	}

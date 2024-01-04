@@ -22,7 +22,7 @@ func NewChannelHandler(channelGroup *echo.Group, channelInteractor usecase.IChan
 	channelGroup.GET("", channelHandler.GetAllChannels)
 	channelGroup.GET("/", channelHandler.GetAllChannels)
 	channelGroup.GET("/:id", channelHandler.GetChannelByID)
-	channelGroup.POST("/:id", channelHandler.CreateNestChannel)
+	channelGroup.POST("/:id", channelHandler.CreateChildChannel)
 	channelGroup.POST("/:id/join", channelHandler.JoinChannel)
 	channelGroup.POST("", channelHandler.CreateChannel)
 	channelGroup.PUT("/:id", channelHandler.UpdateChannel)
@@ -51,6 +51,7 @@ func (h *ChannelHandler) GetChannelByID(c echo.Context) error {
 
 	channelResponse, err := h.channelInteractor.GetChannelByID(c.Request().Context(), channelId)
 	if err != nil {
+		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
@@ -84,7 +85,7 @@ func (h *ChannelHandler) CreateChannel(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *ChannelHandler) CreateNestChannel(c echo.Context) error {
+func (h *ChannelHandler) CreateChildChannel(c echo.Context) error {
 	id := c.Param("id")
 
 	channelId, err := strconv.ParseUint(id, 10, 64)
@@ -100,7 +101,7 @@ func (h *ChannelHandler) CreateNestChannel(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	if err := h.channelInteractor.CreateNestChannel(c.Request().Context(), req.Name, channelId, userId); err != nil {
+	if err := h.channelInteractor.CreateChildChannel(c.Request().Context(), req.Name, channelId, userId); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 

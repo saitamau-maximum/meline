@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
-	"github.com/saitamau-maximum/meline/models"
+	model "github.com/saitamau-maximum/meline/models"
 	"github.com/uptrace/bun"
 )
 
@@ -23,7 +23,7 @@ func NewChannelRepository(db *bun.DB) repository.IChannelRepository {
 func (r *ChannelRepository) FindByID(ctx context.Context, id uint64) (*model.Channel, error) {
 	var channel model.Channel
 
-	if err := r.db.NewSelect().Model(&channel).Where("id = ?", id).Relation("Users").Relation("Messages").Relation("Channels").Scan(ctx); err != nil {
+	if err := r.db.NewSelect().Model(&channel).Where("id = ?", id).Relation("ChildChannels").Relation("Users").Relation("Messages").Scan(ctx); err != nil {
 		return nil, err
 	}
 

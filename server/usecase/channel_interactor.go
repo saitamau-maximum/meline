@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
@@ -15,9 +16,10 @@ type IChannelInteractor interface {
 	GetChannelByID(ctx context.Context, id uint64) (*presenter.GetChannelByIdResponse, error)
 	GetChannelsByName(ctx context.Context, name string) (*presenter.GetChannelsByNameResponse, error)
 	CreateChannel(ctx context.Context, name string, userId uint64) error
-	CreateNestChannel(ctx context.Context, name string, parentChannelId, userId uint64) error
+	CreateChildChannel(ctx context.Context, name string, parentChannelId, userId uint64) error
 	UpdateChannel(ctx context.Context, id uint64, name string) error
 	DeleteChannel(ctx context.Context, id uint64) error
+	DeleteChildChannel(ctx context.Context, childChannelId uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
 	LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error
 }
@@ -25,14 +27,16 @@ type IChannelInteractor interface {
 type ChannelInteractor struct {
 	channelRepository      repository.IChannelRepository
 	channelUsersRepository repository.IChannelUsersRepository
+	channelToChannelsRepository repository.IChannelToChannelsRepository
 	userRepository         repository.IUserRepository
 	channelPresenter       presenter.IChannelPresenter
 }
 
-func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) IChannelInteractor {
+func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, userRepository repository.IUserRepository, channelToChannelsRepository repository.IChannelToChannelsRepository, channelPresenter presenter.IChannelPresenter) IChannelInteractor {
 	return &ChannelInteractor{
 		channelRepository:      channelRepository,
 		channelUsersRepository: channelUsersRepository,
+		channelToChannelsRepository: channelToChannelsRepository,
 		userRepository:         userRepository,
 		channelPresenter:       channelPresenter,
 	}
@@ -61,6 +65,8 @@ func (i *ChannelInteractor) GetChannelByID(ctx context.Context, id uint64) (*pre
 	if err != nil {
 		return &presenter.GetChannelByIdResponse{}, err
 	}
+
+	log.Println(channel)
 
 	return i.channelPresenter.GenerateGetChannelByIdResponse(channel.ToChannelEntity()), nil
 }
@@ -96,13 +102,17 @@ func (i *ChannelInteractor) CreateChannel(ctx context.Context, name string, user
 	return nil
 }
 
-func (i *ChannelInteractor) CreateNestChannel(ctx context.Context, name string, parentChannelId, userId uint64) error {
-	id, err := i.channelRepository.Create(ctx, &model.Channel{Name: name, ParentChannelID: parentChannelId})
+func (i *ChannelInteractor) CreateChildChannel(ctx context.Context, name string, parentChannelId, userId uint64) error {
+	id, err := i.channelRepository.Create(ctx, &model.Channel{Name: name})
 	if err != nil {
 		return err
 	}
 
 	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: id, UserID: userId}); err != nil {
+		return err
+	}
+
+	if err := i.channelToChannelsRepository.Create(ctx, model.NewChannelChannelsModel(parentChannelId, id)); err != nil {
 		return err
 	}
 
@@ -129,6 +139,26 @@ func (i *ChannelInteractor) DeleteChannel(ctx context.Context, id uint64) error 
 	}
 
 	if err := i.channelUsersRepository.DeleteByChannelID(ctx, id); err != nil {
+		return err
+	}
+
+	if err := i.channelToChannelsRepository.DeleteFromParentChannelID(ctx, id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *ChannelInteractor) DeleteChildChannel(ctx context.Context, childChannelId uint64) error {
+	if err := i.channelToChannelsRepository.DeleteFromChildChannelID(ctx, childChannelId); err != nil {
+		return err
+	}
+
+	if err := i.channelRepository.Delete(ctx, childChannelId); err != nil {
+		return err
+	}
+
+	if err := i.channelUsersRepository.DeleteByChannelID(ctx, childChannelId); err != nil {
 		return err
 	}
 
