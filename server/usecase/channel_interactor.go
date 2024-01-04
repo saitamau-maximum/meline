@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
@@ -25,20 +24,20 @@ type IChannelInteractor interface {
 }
 
 type ChannelInteractor struct {
-	channelRepository      repository.IChannelRepository
-	channelUsersRepository repository.IChannelUsersRepository
+	channelRepository           repository.IChannelRepository
+	channelUsersRepository      repository.IChannelUsersRepository
 	channelToChannelsRepository repository.IChannelToChannelsRepository
-	userRepository         repository.IUserRepository
-	channelPresenter       presenter.IChannelPresenter
+	userRepository              repository.IUserRepository
+	channelPresenter            presenter.IChannelPresenter
 }
 
 func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, userRepository repository.IUserRepository, channelToChannelsRepository repository.IChannelToChannelsRepository, channelPresenter presenter.IChannelPresenter) IChannelInteractor {
 	return &ChannelInteractor{
-		channelRepository:      channelRepository,
-		channelUsersRepository: channelUsersRepository,
+		channelRepository:           channelRepository,
+		channelUsersRepository:      channelUsersRepository,
 		channelToChannelsRepository: channelToChannelsRepository,
-		userRepository:         userRepository,
-		channelPresenter:       channelPresenter,
+		userRepository:              userRepository,
+		channelPresenter:            channelPresenter,
 	}
 }
 
@@ -65,8 +64,6 @@ func (i *ChannelInteractor) GetChannelByID(ctx context.Context, id uint64) (*pre
 	if err != nil {
 		return &presenter.GetChannelByIdResponse{}, err
 	}
-
-	log.Println(channel)
 
 	return i.channelPresenter.GenerateGetChannelByIdResponse(channel.ToChannelEntity()), nil
 }

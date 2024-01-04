@@ -46,7 +46,7 @@ func (h *MessageHandler) Create(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	if err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.ReplyToID, createMessageRequest.Content); err != nil {
+	if err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.Content); err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -76,14 +76,13 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	if err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, replyToId, createMessageRequest.Content); err != nil {
+	if err := h.messageInteractor.CreateReply(c.Request().Context(), userId, channelIdUint64, replyToId, createMessageRequest.Content); err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	return c.NoContent(http.StatusOK)
 }
-
 
 func (h *MessageHandler) Update(c echo.Context) error {
 	id := c.Param("id")
@@ -117,4 +116,3 @@ func (h *MessageHandler) Delete(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
-

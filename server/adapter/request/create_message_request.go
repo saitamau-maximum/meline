@@ -8,10 +8,7 @@ import (
 )
 
 type CreateMessageRequest struct {
-	ChannelID uint64 `json:"channel_id"`
-	UserID    uint64 `json:"user_id"`
-	ReplyToID string `json:"reply_to_id"`
-	Content   string `json:"content"`
+	Content string `json:"content"`
 }
 
 func (r *CreateMessageRequest) Validate() error {

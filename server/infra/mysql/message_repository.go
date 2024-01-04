@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
 	"github.com/saitamau-maximum/meline/models"
@@ -10,8 +11,8 @@ import (
 )
 
 type messageRepository struct {
-	db *bun.DB;
-	mu sync.RWMutex;
+	db *bun.DB
+	mu sync.RWMutex
 }
 
 func NewMessageRepository(db *bun.DB) repository.IMessageRepository {
@@ -23,7 +24,7 @@ func (r *messageRepository) FindByID(ctx context.Context, id string) (*model.Mes
 	defer r.mu.Unlock()
 
 	message := &model.Message{}
-	err := r.db.NewSelect().Model(message).Where("id = ?", id).Relation("Comments").Scan(ctx)
+	err := r.db.NewSelect().Model(message).Where("id = ?", id).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Scan(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +60,10 @@ func (r *messageRepository) Delete(ctx context.Context, id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	_, err := r.db.NewDelete().Model(&model.Message{}).Where("id = ?", id).Exec(ctx)
+	_, err := r.db.NewUpdate().Model(
+		&model.Message{
+			DeletedAt: time.Now(),
+		}).Where("id = ?", id).Exec(ctx)
 	if err != nil {
 		return err
 	}

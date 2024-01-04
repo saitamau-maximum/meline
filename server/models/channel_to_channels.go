@@ -1,9 +1,9 @@
 package model
 
 type ChannelToChannels struct {
-	ParentChannelID uint64 `bun:"parent_channel_id,pk"`
+	ParentChannelID uint64   `bun:"parent_channel_id,pk"`
 	ParentChannel   *Channel `bun:"rel:belongs-to,join:parent_channel_id=id"`
-	ChildChannelID  uint64 `bun:"child_channel_id,pk"`
+	ChildChannelID  uint64   `bun:"child_channel_id,pk"`
 	ChildChannel    *Channel `bun:"rel:belongs-to,join:child_channel_id=id"`
 }
 

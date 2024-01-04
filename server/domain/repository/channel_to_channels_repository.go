@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	
+
 	"github.com/saitamau-maximum/meline/models"
 )
 
