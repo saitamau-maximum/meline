@@ -19,10 +19,28 @@ func NewMessageHandler(messageGroup *echo.Group, messageInteractor usecase.IMess
 		messageInteractor: messageInteractor,
 	}
 
-	messageGroup.POST("/:channel_id", messageHandler.Create)
+	messageGroup.GET("", messageHandler.GetByChannelID)
+	messageGroup.POST("", messageHandler.Create)
 	messageGroup.PUT("/:id", messageHandler.Update)
-	messageGroup.POST("/:channel_id/:id/reply", messageHandler.CreateReply)
+	messageGroup.POST("/:id/reply", messageHandler.CreateReply)
 	messageGroup.DELETE("/:id", messageHandler.Delete)
+}
+
+func (h *MessageHandler) GetByChannelID(c echo.Context) error {
+	channelId := c.Param("channel_id")
+
+	channelIdUint64, err := strconv.ParseUint(channelId, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	messages, err := h.messageInteractor.GetMessagesByChannelID(c.Request().Context(), channelIdUint64)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, messages)
 }
 
 func (h *MessageHandler) Create(c echo.Context) error {

@@ -1,5 +1,7 @@
 package presenter
 
+import "github.com/saitamau-maximum/meline/domain/entity"
+
 type Message struct {
 	ID             string          `json:"id"`
 	User           *User           `json:"user"`
@@ -13,4 +15,12 @@ type ReplyToMessage struct {
 	ID      string `json:"id"`
 	User    *User  `json:"user"`
 	Content string `json:"content"`
+}
+
+type GetMessagesByChannelIDResponse struct {
+	Messages []*Message `json:"messages"`
+}
+
+type IMessagePresenter interface {
+	GenerateGetMessagesByChannelIDResponse(messages []*entity.Message) *GetMessagesByChannelIDResponse
 }

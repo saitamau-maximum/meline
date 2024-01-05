@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"sync"
-	"time"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
 	"github.com/saitamau-maximum/meline/models"
@@ -17,6 +16,19 @@ type messageRepository struct {
 
 func NewMessageRepository(db *bun.DB) repository.IMessageRepository {
 	return &messageRepository{db: db}
+}
+
+func (r *messageRepository) FindByChannelID(ctx context.Context, channelID uint64) ([]*model.Message, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	var messages []*model.Message
+	err := r.db.NewSelect().Model(&messages).Where("channel_id = ?", channelID).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Relation("User").Order("created_at ASC").Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
 
 func (r *messageRepository) FindByID(ctx context.Context, id string) (*model.Message, error) {
@@ -60,10 +72,7 @@ func (r *messageRepository) Delete(ctx context.Context, id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	_, err := r.db.NewUpdate().Model(
-		&model.Message{
-			DeletedAt: time.Now(),
-		}).Where("id = ?", id).Exec(ctx)
+	_, err := r.db.NewDelete().Model(&model.Message{}).Where("id = ?", id).Exec(ctx)
 	if err != nil {
 		return err
 	}

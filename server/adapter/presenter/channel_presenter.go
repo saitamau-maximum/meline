@@ -43,42 +43,12 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 		})
 	}
 
-	messages := make([]*presenter.Message, 0)
-	for _, message := range channel.Messages {
-		replyToMessage := []*presenter.ReplyToMessage{}
-
-		for _, replyToMessageEntity := range message.ReplyToMessage {
-			replyToMessage = append(replyToMessage, &presenter.ReplyToMessage{
-				ID: replyToMessageEntity.ID,
-				User: &presenter.User{
-					ID:       replyToMessageEntity.User.ID,
-					Name:     replyToMessageEntity.User.Name,
-					ImageURL: replyToMessageEntity.User.ImageURL,
-				},
-				Content: replyToMessageEntity.Content,
-			})
-		}
-
-		messages = append(messages, &presenter.Message{
-			ID: message.ID,
-			User: &presenter.User{
-				ID:       message.User.ID,
-				Name:     message.User.Name,
-				ImageURL: message.User.ImageURL,
-			},
-			ReplyToMessage: replyToMessage,
-			Content:        message.Content,
-			CreatedAt:      message.CreatedAt.String(),
-			UpdatedAt:      message.UpdatedAt.String(),
-		})
-	}
-
 	return &presenter.GetChannelByIdResponse{
 		Channel: &presenter.ChannelDetail{
+			ID:       channel.ID,
 			Name:     channel.Name,
 			Channels: childChannels,
 			Users:    users,
-			Messages: messages,
 		},
 	}
 }

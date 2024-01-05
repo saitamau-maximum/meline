@@ -3,11 +3,14 @@ package usecase
 import (
 	"context"
 
+	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
 	"github.com/saitamau-maximum/meline/models"
+	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
 
 type IMessageInteractor interface {
+	GetMessagesByChannelID(ctx context.Context, channelID uint64) (*presenter.GetMessagesByChannelIDResponse, error)
 	Create(ctx context.Context, userID, channelID uint64, content string) error
 	CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) error
 	Update(ctx context.Context, id string, content string) error
@@ -17,13 +20,29 @@ type IMessageInteractor interface {
 type messageInteractor struct {
 	messageRepository           repository.IMessageRepository
 	messageToMessagesRepository repository.IMessageToMessagesRepository
+	messagePresenter            presenter.IMessagePresenter
 }
 
-func NewMessageInteractor(messageRepository repository.IMessageRepository, messageToMessagesRepository repository.IMessageToMessagesRepository) IMessageInteractor {
+func NewMessageInteractor(messageRepository repository.IMessageRepository, messageToMessagesRepository repository.IMessageToMessagesRepository, messagePresenter presenter.IMessagePresenter) IMessageInteractor {
 	return &messageInteractor{
 		messageRepository:           messageRepository,
 		messageToMessagesRepository: messageToMessagesRepository,
+		messagePresenter:            messagePresenter,
 	}
+}
+
+func (i *messageInteractor) GetMessagesByChannelID(ctx context.Context, channelID uint64) (*presenter.GetMessagesByChannelIDResponse, error) {
+	messages, err := i.messageRepository.FindByChannelID(ctx, channelID)
+	if err != nil {
+		return nil, err
+	}
+
+	entitiedMessages := make([]*entity.Message, 0)
+	for _, message := range messages {
+		entitiedMessages = append(entitiedMessages, message.ToMessageEntity())
+	}
+
+	return i.messagePresenter.GenerateGetMessagesByChannelIDResponse(entitiedMessages), nil
 }
 
 func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, content string) error {

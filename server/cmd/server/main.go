@@ -52,15 +52,16 @@ func main() {
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
 	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, userRepository, channelToChannelsRepository, presenter.NewChannelPresenter())
-	messageInteractor := usecase.NewMessageInteractor(messageRepository, messageToMessagesRepository)
+	messageInteractor := usecase.NewMessageInteractor(messageRepository, messageToMessagesRepository, presenter.NewMessagePresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
 	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
 	handler.NewUserHandler(apiGroup.Group("/user", authGateway.Auth), userInteractor)
-	handler.NewChannelHandler(apiGroup.Group("/channels", authGateway.Auth), channelInteractor)
-	handler.NewMessageHandler(apiGroup.Group("/messages", authGateway.Auth), messageInteractor)
+	channelGroup := apiGroup.Group("/channels", authGateway.Auth)
+	handler.NewChannelHandler(channelGroup, channelInteractor)
+	handler.NewMessageHandler(channelGroup.Group("/:channel_id/messages", authGateway.Auth), messageInteractor)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

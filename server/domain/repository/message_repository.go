@@ -7,6 +7,7 @@ import (
 )
 
 type IMessageRepository interface {
+	FindByChannelID(ctx context.Context, channelID uint64) ([]*model.Message, error)
 	FindByID(ctx context.Context, id string) (*model.Message, error)
 	Create(ctx context.Context, message *model.Message) error
 	Update(ctx context.Context, message *model.Message) error
