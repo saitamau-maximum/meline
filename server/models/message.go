@@ -17,7 +17,7 @@ type Message struct {
 	Content        string     `bun:"content,notnull,type:varchar(2000)"`
 	CreatedAt      time.Time  `bun:"created_at,notnull,default:current_timestamp"`
 	UpdatedAt      time.Time  `bun:"updated_at,notnull,default:current_timestamp"`
-	DeletedAt      time.Time  `bun:"deleted_at,soft_delete"`
+	DeletedAt      time.Time  `bun:"deleted_at,soft_delete,nullzero"`
 }
 
 func (m *Message) ToMessageEntity() *entity.Message {
@@ -49,3 +49,5 @@ func NewMessageModel(channelID uint64, userID uint64, content string) *Message {
 		Content:   content,
 	}
 }
+
+

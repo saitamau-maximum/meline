@@ -13,7 +13,7 @@ type Channel struct {
 	Users         []*User    `bun:"m2m:channel_users,join:Channel=User"`
 	Messages      []*Message `bun:"rel:has-many,join:id=channel_id"`
 	CreatedAt     time.Time  `bun:"created_at,notnull,default:current_timestamp"`
-	DeletedAt     time.Time  `bun:"deleted_at,soft_delete"`
+	DeletedAt     time.Time  `bun:"deleted_at,soft_delete,nullzero"`
 }
 
 func (c *Channel) ToChannelEntity() *entity.Channel {
