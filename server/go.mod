@@ -13,6 +13,7 @@ require (
 	github.com/uptrace/bun/extra/bundebug v1.1.16
 	github.com/urfave/cli/v2 v2.25.7
 	golang.org/x/oauth2 v0.13.0
+	golang.org/x/sync v0.6.0
 )
 
 require (
