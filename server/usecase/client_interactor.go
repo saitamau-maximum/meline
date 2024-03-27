@@ -61,8 +61,14 @@ func (c *ClientInteractor) WriteLoop(ctx context.Context, client *entity.Client)
 				return fmt.Errorf("send channel closed")
 			}
 
-			err := client.Ws.WriteMessage(websocket.TextMessage, message)
+			w, err := client.Ws.NextWriter(websocket.TextMessage)
 			if err != nil {
+				return fmt.Errorf("websocket: %w", err)
+			}
+
+			w.Write(message)
+
+			if err := w.Close(); err != nil {
 				return fmt.Errorf("websocket: %w", err)
 			}
 		case <-ctx.Done():

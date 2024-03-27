@@ -11,8 +11,8 @@ import (
 
 type IMessageInteractor interface {
 	GetMessagesByChannelID(ctx context.Context, channelID uint64) (*presenter.GetMessagesByChannelIDResponse, error)
-	Create(ctx context.Context, userID, channelID uint64, content string) error
-	CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) error
+	Create(ctx context.Context, userID, channelID uint64, content string) (*entity.Message, error)
+	CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) (*entity.Message, error)
 	Update(ctx context.Context, id string, content string) error
 	Delete(ctx context.Context, id string) error
 }
@@ -45,30 +45,40 @@ func (i *messageInteractor) GetMessagesByChannelID(ctx context.Context, channelI
 	return i.messagePresenter.GenerateGetMessagesByChannelIDResponse(entitiedMessages), nil
 }
 
-func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, content string) error {
+func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64, content string) (*entity.Message, error) {
 	message := model.NewMessageModel(channelID, userID, content)
 
 	if err := i.messageRepository.Create(ctx, message); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	createdMsg, err := i.messageRepository.FindByID(ctx, message.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdMsg.ToMessageEntity(), nil
 }
 
-func (i *messageInteractor) CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) error {
+func (i *messageInteractor) CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) (*entity.Message, error) {
 	message := model.NewMessageModel(channelID, userID, content)
 
 	if err := i.messageRepository.Create(ctx, message); err != nil {
-		return err
+		return nil, err
 	}
 
 	messageToMessages := model.NewMessageToMessagesModel(message.ID, parentMessageID)
 
 	if err := i.messageToMessagesRepository.Create(ctx, messageToMessages); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	createdMsg, err := i.messageRepository.FindByID(ctx, message.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdMsg.ToMessageEntity(), nil
 }
 
 func (i *messageInteractor) Update(ctx context.Context, id string, content string) error {

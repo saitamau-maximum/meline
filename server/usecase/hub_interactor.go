@@ -4,8 +4,8 @@ import "github.com/saitamau-maximum/meline/domain/entity"
 
 type IHubInteractor interface {
 	RunLoop()
-	RegisterClient(client *entity.Client ,channelID uint64)
-	UnregisterClient(client *entity.Client ,channelID uint64)
+	RegisterClient(client *entity.Client, channelID uint64)
+	UnregisterClient(client *entity.Client, channelID uint64)
 	BroadcastMessage(message []byte)
 }
 
@@ -33,6 +33,10 @@ func (h *HubInteractor) RunLoop() {
 }
 
 func (h *HubInteractor) RegisterClient(client *entity.Client, channelID uint64) {
+	if _, ok := h.Hub.Clients[channelID]; !ok {
+		h.Hub.Clients[channelID] = make(map[*entity.Client]bool)
+	}
+
 	h.Hub.Clients[channelID][client] = true
 }
 
