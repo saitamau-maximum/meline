@@ -21,5 +21,10 @@ func (c *Channel) ToChannelEntity() *entity.Channel {
 		entitiedUsers[i] = u.ToUserEntity()
 	}
 
-	return entity.NewChannelEntity(c.ID, c.Name, entitiedUsers, c.CreatedAt, c.DeletedAt)
+	entitiedMessages := make([]*entity.Message, len(c.Messages))
+	for i, m := range c.Messages {
+		entitiedMessages[i] = m.ToMessageEntity()
+	}
+
+	return entity.NewChannelEntity(c.ID, c.Name, entitiedUsers, entitiedMessages, c.CreatedAt, c.DeletedAt)
 }
