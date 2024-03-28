@@ -65,7 +65,7 @@ func main() {
 	handler.NewUserHandler(apiGroup.Group("/user", authGateway.Auth), userInteractor)
 	channelGroup := apiGroup.Group("/channel", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
-	handler.NewMessageHandler(channelGroup.Group("/:channel_id/messages"), messageInteractor, hub)
+	handler.NewMessageHandler(channelGroup.Group("/:channel_id/message"), messageInteractor, hub)
 	handler.NewWebSocketHandler(apiGroup.Group("/ws"), clientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
