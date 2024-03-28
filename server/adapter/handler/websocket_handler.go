@@ -51,9 +51,6 @@ func (h *WebSocketHandler) WebSocket(c echo.Context) error {
 
 	var eg errgroup.Group
 
-	// eg.Go(func() error {
-	// 	return h.clientInteractor.ReadLoop(c.Request().Context(), h.hub.BroadcastCh, h.hub.ChannelIDCh, client)
-	// })
 	eg.Go(func() error {
 		return h.clientInteractor.WriteLoop(c.Request().Context(), client)
 	})
