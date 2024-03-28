@@ -11,6 +11,7 @@ type Channel struct {
 	Name      string     `bun:"name,notnull"`
 	Users     []*User    `bun:"m2m:channel_users,join:Channel=User"`
 	Messages  []*Message `bun:"rel:has-many,join:id=channel_id"`
+	ChildChannels []*Channel `bun:"rel:has-many,join:parent_channel_id=id"`
 	CreatedAt time.Time  `bun:"created_at,notnull,default:current_timestamp"`
 	DeletedAt time.Time  `bun:"deleted_at,default:null"`
 }
@@ -26,5 +27,10 @@ func (c *Channel) ToChannelEntity() *entity.Channel {
 		entitiedMessages[i] = m.ToMessageEntity()
 	}
 
-	return entity.NewChannelEntity(c.ID, c.Name, entitiedUsers, entitiedMessages, c.CreatedAt, c.DeletedAt)
+	entitiedChannels := make([]*entity.Channel, len(c.ChildChannels))
+	for i, ch := range c.ChildChannels {
+		entitiedChannels[i] = ch.ToChannelEntity()
+	}
+
+	return entity.NewChannelEntity(c.ID, c.Name, entitiedUsers, entitiedMessages, entitiedChannels, c.CreatedAt, c.DeletedAt)
 }
