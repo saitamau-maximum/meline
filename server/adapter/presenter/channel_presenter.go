@@ -26,7 +26,15 @@ func (p *ChannelPresenter) GenerateGetAllChannelsResponse(channels []*entity.Cha
 }
 
 func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channel) *presenter.GetChannelByIdResponse {
-	users := make([]*presenter.User, len(channel.Users))
+	childChannels := make([]*presenter.Channel, 0)
+	for _, childChannel := range channel.ChildChannels {
+		childChannels = append(childChannels, &presenter.Channel{
+			ID:   childChannel.ID,
+			Name: childChannel.Name,
+		})
+	}
+
+	users := make([]*presenter.User, 0)
 	for _, user := range channel.Users {
 		users = append(users, &presenter.User{
 			ID:       user.ID,
@@ -37,8 +45,10 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 
 	return &presenter.GetChannelByIdResponse{
 		Channel: &presenter.ChannelDetail{
-			Name:  channel.Name,
-			Users: users,
+			ID:       channel.ID,
+			Name:     channel.Name,
+			Users:    users,
+			Channels: childChannels,
 		},
 	}
 }
