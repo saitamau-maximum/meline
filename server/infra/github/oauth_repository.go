@@ -65,9 +65,8 @@ func (r *OAuthRepository) GetUser(ctx context.Context, token string) (*entity.OA
 	}
 
 	return &entity.OAuthUserResponse{
-		OAuthUserID:   gitRes["login"].(string),
-		Name:     	   gitRes["name"].(string),
-		ImageURL:	   gitRes["avatar_url"].(string),
+		OAuthUserID: gitRes["login"].(string),
+		Name:        gitRes["name"].(string),
+		ImageURL:    gitRes["avatar_url"].(string),
 	}, nil
 }
-

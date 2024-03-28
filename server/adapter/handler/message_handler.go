@@ -14,7 +14,7 @@ import (
 
 type MessageHandler struct {
 	messageInteractor usecase.IMessageInteractor
-	hub			      *entity.Hub
+	hub               *entity.Hub
 }
 
 func NewMessageHandler(messageGroup *echo.Group, messageInteractor usecase.IMessageInteractor, hub *entity.Hub) {
