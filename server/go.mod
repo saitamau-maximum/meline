@@ -6,12 +6,14 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.1
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/uptrace/bun v1.1.16
 	github.com/uptrace/bun/dialect/mysqldialect v1.1.16
 	github.com/uptrace/bun/extra/bundebug v1.1.16
 	github.com/urfave/cli/v2 v2.25.7
 	golang.org/x/oauth2 v0.13.0
+	golang.org/x/sync v0.6.0
 )
 
 require (
