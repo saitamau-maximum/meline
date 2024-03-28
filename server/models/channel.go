@@ -32,5 +32,5 @@ func (c *Channel) ToChannelEntity() *entity.Channel {
 		entitiedChannels[i] = ch.ToChannelEntity()
 	}
 
-	return entity.NewChannelEntity(c.ID, c.Name, entitiedUsers, entitiedMessages, entitiedChannels, c.CreatedAt, c.DeletedAt)
+	return entity.NewChannelEntity(c.ID, c.Name, entitiedUsers, entitiedChannels, entitiedMessages, c.CreatedAt, c.DeletedAt)
 }
