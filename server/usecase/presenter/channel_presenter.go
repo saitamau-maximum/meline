@@ -10,10 +10,10 @@ type Channel struct {
 }
 
 type ChannelDetail struct {
-	ID        uint64 `json:"id"`
-	Name 	  string  `json:"name"`
-	Users 	  []*User `json:"users"`
-	Channels  []*Channel `json:"channels"`
+	ID       uint64     `json:"id"`
+	Name     string     `json:"name"`
+	Users    []*User    `json:"users"`
+	Channels []*Channel `json:"channels"`
 }
 
 type GetAllChannelsResponse struct {

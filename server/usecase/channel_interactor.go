@@ -24,20 +24,20 @@ type IChannelInteractor interface {
 }
 
 type ChannelInteractor struct {
-	channelRepository      repository.IChannelRepository
-	channelUsersRepository repository.IChannelUsersRepository
+	channelRepository           repository.IChannelRepository
+	channelUsersRepository      repository.IChannelUsersRepository
 	channelToChannelsRepository repository.IChannelToChannelsRepository
-	userRepository         repository.IUserRepository
-	channelPresenter       presenter.IChannelPresenter
+	userRepository              repository.IUserRepository
+	channelPresenter            presenter.IChannelPresenter
 }
 
 func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, channelToChannelsRepository repository.IChannelToChannelsRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
 	return &ChannelInteractor{
-		channelRepository:      channelRepository,
-		channelUsersRepository: channelUsersRepository,
+		channelRepository:           channelRepository,
+		channelUsersRepository:      channelUsersRepository,
 		channelToChannelsRepository: channelToChannelsRepository,
-		userRepository:         userRepository,
-		channelPresenter:       channelPresenter,
+		userRepository:              userRepository,
+		channelPresenter:            channelPresenter,
 	}
 }
 
