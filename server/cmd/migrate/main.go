@@ -37,7 +37,7 @@ func main() {
 		panic(err)
 	}
 	bunDB := bun.NewDB(db, mysqldialect.New())
-	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.Channel)(nil), (*model.User)(nil))
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.MessageToMessages)(nil), (*model.Message)(nil))
 	bunDB.AddQueryHook(bundebug.NewQueryHook(
 		bundebug.WithEnabled(false),
 		bundebug.FromEnv(""),
