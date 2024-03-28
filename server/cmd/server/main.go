@@ -12,6 +12,7 @@ import (
 	"github.com/saitamau-maximum/meline/adapter/handler"
 	"github.com/saitamau-maximum/meline/adapter/presenter"
 	"github.com/saitamau-maximum/meline/config"
+	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/infra/github"
 	"github.com/saitamau-maximum/meline/infra/mysql"
 	model "github.com/saitamau-maximum/meline/models"
@@ -27,6 +28,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	hub := entity.NewHubEntity()
+	go hub.RunLoop()
 
 	e := echo.New()
 
@@ -54,13 +58,15 @@ func main() {
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	messageInteractor := usecase.NewMessageInteractor(messageRepository, messageToMessagesRepository, presenter.NewMessagePresenter())
+	clientInteractor := usecase.NewClientInteractor()
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
 	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
 	handler.NewUserHandler(apiGroup.Group("/user", authGateway.Auth), userInteractor)
 	channelGroup := apiGroup.Group("/channel", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
-	handler.NewMessageHandler(channelGroup.Group("/:channel_id/messages"), messageInteractor)
+	handler.NewMessageHandler(channelGroup.Group("/:channel_id/messages"), messageInteractor, hub)
+	handler.NewWebSocketHandler(apiGroup.Group("/ws"), clientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

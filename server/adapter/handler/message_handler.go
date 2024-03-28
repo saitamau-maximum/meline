@@ -1,22 +1,26 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
-	
+
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/adapter/request"
+	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase"
 )
 
 type MessageHandler struct {
 	messageInteractor usecase.IMessageInteractor
+	hub			      *entity.Hub
 }
 
-func NewMessageHandler(messageGroup *echo.Group, messageInteractor usecase.IMessageInteractor) {
+func NewMessageHandler(messageGroup *echo.Group, messageInteractor usecase.IMessageInteractor, hub *entity.Hub) {
 	messageHandler := &MessageHandler{
 		messageInteractor: messageInteractor,
+		hub:               hub,
 	}
 
 	messageGroup.GET("", messageHandler.GetByChannelID)
@@ -64,10 +68,20 @@ func (h *MessageHandler) Create(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	if _, err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.Content); err != nil {
+	res, err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.Content)
+	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+
+	jsonRes, err := json.Marshal(res)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	h.hub.BroadcastCh <- jsonRes
+	h.hub.ChannelIDCh <- channelIdUint64
 
 	return c.NoContent(http.StatusOK)
 }
@@ -94,10 +108,20 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	if _, err := h.messageInteractor.CreateReply(c.Request().Context(), userId, channelIdUint64, replyToId, createMessageRequest.Content); err != nil {
+	res, err := h.messageInteractor.CreateReply(c.Request().Context(), userId, channelIdUint64, replyToId, createMessageRequest.Content)
+	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+
+	jsonRes, err := json.Marshal(res)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	h.hub.BroadcastCh <- jsonRes
+	h.hub.ChannelIDCh <- channelIdUint64
 
 	return c.NoContent(http.StatusOK)
 }
