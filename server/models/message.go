@@ -49,5 +49,3 @@ func NewMessageModel(channelID uint64, userID uint64, content string) *Message {
 		Content:   content,
 	}
 }
-
-

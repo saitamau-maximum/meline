@@ -30,6 +30,7 @@ func main() {
 	}
 
 	hub := entity.NewHubEntity()
+	go hub.RunLoop()
 
 	e := echo.New()
 
@@ -56,20 +57,17 @@ func main() {
 	authInteractor := usecase.NewAuthInteractor()
 	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, userRepository, channelToChannelsRepository, presenter.NewChannelPresenter())
 	clientInteractor := usecase.NewClientInteractor()
-	hubInteractor := usecase.NewHubInteractor(hub)
 	messageInteractor := usecase.NewMessageInteractor(messageRepository, messageToMessagesRepository, presenter.NewMessagePresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	authGateway := gateway.NewAuthGateway(userInteractor)
-
-	go hubInteractor.RunLoop()
 
 	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
 	handler.NewUserHandler(apiGroup.Group("/user", authGateway.Auth), userInteractor)
 	channelGroup := apiGroup.Group("/channels", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
 	handler.NewMessageHandler(channelGroup.Group("/:channel_id/messages", authGateway.Auth), messageInteractor, hub)
-	handler.NewWebSocketHandler(apiGroup.Group("/ws"), hubInteractor, clientInteractor, hub)
+	handler.NewWebSocketHandler(apiGroup.Group("/ws"), clientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

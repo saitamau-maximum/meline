@@ -17,14 +17,12 @@ var (
 )
 
 type WebSocketHandler struct {
-	hubInteractor    usecase.IHubInteractor
 	clientInteractor usecase.IClientInteractor
 	hub              *entity.Hub
 }
 
-func NewWebSocketHandler(websocketGroup *echo.Group, hubInteractor usecase.IHubInteractor, clientInteractor usecase.IClientInteractor, hub *entity.Hub) {
+func NewWebSocketHandler(websocketGroup *echo.Group, clientInteractor usecase.IClientInteractor, hub *entity.Hub) {
 	webSocketHandler := &WebSocketHandler{
-		hubInteractor:    hubInteractor,
 		clientInteractor: clientInteractor,
 		hub:              hub,
 	}
@@ -47,7 +45,7 @@ func (h *WebSocketHandler) WebSocket(c echo.Context) error {
 
 	client := entity.NewClientEntity(conn, channelIdUint64)
 
-	h.hubInteractor.RegisterClient(client, channelIdUint64)
+	h.hub.RegisterClient(client, channelIdUint64)
 
 	var eg errgroup.Group
 

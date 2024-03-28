@@ -19,8 +19,8 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 		replyToMessages := make([]*presenter.ReplyToMessage, 0)
 		for _, replyToMessage := range message.ReplyToMessage {
 			replyToMessages = append(replyToMessages, &presenter.ReplyToMessage{
-				ID:      replyToMessage.ID,
-				User:    &presenter.User{
+				ID: replyToMessage.ID,
+				User: &presenter.User{
 					ID:       replyToMessage.User.ID,
 					Name:     replyToMessage.User.Name,
 					ImageURL: replyToMessage.User.ImageURL,
@@ -29,8 +29,8 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 			})
 		}
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
-			ID:      message.ID,
-			User:    &presenter.User{
+			ID: message.ID,
+			User: &presenter.User{
 				ID:       message.User.ID,
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
@@ -44,5 +44,3 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 
 	return messagesResponse
 }
-
-
