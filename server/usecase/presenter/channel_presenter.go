@@ -5,13 +5,13 @@ import (
 )
 
 type Channel struct {
-	ID 		  uint64  `json:"id"`
-	Name 	  string  `json:"name"`
+	ID   uint64 `json:"id"`
+	Name string `json:"name"`
 }
 
 type ChannelDetail struct {
-	Name 	  string  `json:"name"`
-	Users 	  []*User `json:"users"`
+	Name  string  `json:"name"`
+	Users []*User `json:"users"`
 }
 
 type GetAllChannelsResponse struct {
