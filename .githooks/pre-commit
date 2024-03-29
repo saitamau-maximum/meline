@@ -1,0 +1,26 @@
+#!/bin/sh
+
+THIS_FILE_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "${THIS_FILE_DIR}/.." && pwd)"
+cd ${PROJECT_DIR}
+
+before_diff_bytes=`git diff | wc -c`
+diff_files=`git diff --name-only HEAD ${PROJECT_DIR}`
+
+for diff_file in "$diff_files"
+do
+    if echo "$diff_file" | grep -q '\.go$'; then
+        go fmt "$diff_file"
+
+        echo "\\033[0;32m[DONE]\\033[0m Formatting golang code $diff_file"
+    fi
+done
+
+after_diff_bytes=`git diff | wc -c`
+
+diff_bytes=`expr $after_diff_bytes \- $before_diff_bytes`
+if [ $diff_bytes -gt 0 ]; then
+    echo "\\033[0;32m[DONE]\\033[0m Complete Formatting golang code !"
+
+    exit 1
+fi
