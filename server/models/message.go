@@ -3,8 +3,8 @@ package model
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/saitamau-maximum/meline/domain/entity"
-	"github.com/saitamau-maximum/meline/utils"
 )
 
 type Message struct {
@@ -43,7 +43,7 @@ func (m *Message) ToMessageEntity() *entity.Message {
 
 func NewMessageModel(channelID uint64, userID uint64, content string) *Message {
 	return &Message{
-		ID:        utils.GenerateUUID(),
+		ID:        uuid.New().String(),
 		ChannelID: channelID,
 		UserID:    userID,
 		Content:   content,
