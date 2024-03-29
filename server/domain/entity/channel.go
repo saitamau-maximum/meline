@@ -8,7 +8,7 @@ type Channel struct {
 	ID        uint64
 	Name      string
 	Users     []*User
-	Messages []*Message
+	Messages  []*Message
 	CreatedAt time.Time
 	DeletedAt time.Time
 }
