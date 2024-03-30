@@ -5,21 +5,23 @@ import (
 )
 
 type Channel struct {
-	ID        uint64
-	Name      string
-	Users     []*User
-	Messages  []*Message
-	CreatedAt time.Time
-	DeletedAt time.Time
+	ID            uint64
+	Name          string
+	Messages      []*Message
+	ChildChannels []*Channel
+	Users         []*User
+	CreatedAt     time.Time
+	DeletedAt     time.Time
 }
 
-func NewChannelEntity(id uint64, name string, users []*User, messages []*Message, createdAt, deletedAt time.Time) *Channel {
+func NewChannelEntity(id uint64, name string, users []*User, childChannels []*Channel, messages []*Message, createdAt time.Time, deletedAt time.Time) *Channel {
 	return &Channel{
-		ID:        id,
-		Name:      name,
-		Users:     users,
-		Messages:  messages,
-		CreatedAt: createdAt,
-		DeletedAt: deletedAt,
+		ID:            id,
+		Name:          name,
+		Messages:      messages,
+		ChildChannels: childChannels,
+		Users:         users,
+		CreatedAt:     createdAt,
+		DeletedAt:     deletedAt,
 	}
 }

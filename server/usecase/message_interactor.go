@@ -5,7 +5,7 @@ import (
 
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/domain/repository"
-	"github.com/saitamau-maximum/meline/models"
+	model "github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
 
@@ -18,16 +18,14 @@ type IMessageInteractor interface {
 }
 
 type messageInteractor struct {
-	messageRepository           repository.IMessageRepository
-	messageToMessagesRepository repository.IMessageToMessagesRepository
-	messagePresenter            presenter.IMessagePresenter
+	messageRepository repository.IMessageRepository
+	messagePresenter  presenter.IMessagePresenter
 }
 
-func NewMessageInteractor(messageRepository repository.IMessageRepository, messageToMessagesRepository repository.IMessageToMessagesRepository, messagePresenter presenter.IMessagePresenter) IMessageInteractor {
+func NewMessageInteractor(messageRepository repository.IMessageRepository, messagePresenter presenter.IMessagePresenter) IMessageInteractor {
 	return &messageInteractor{
-		messageRepository:           messageRepository,
-		messageToMessagesRepository: messageToMessagesRepository,
-		messagePresenter:            messagePresenter,
+		messageRepository: messageRepository,
+		messagePresenter:  messagePresenter,
 	}
 }
 
@@ -63,13 +61,7 @@ func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64
 func (i *messageInteractor) CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) (*entity.Message, error) {
 	message := model.NewMessageModel(channelID, userID, content)
 
-	if err := i.messageRepository.Create(ctx, message); err != nil {
-		return nil, err
-	}
-
-	messageToMessages := model.NewMessageToMessagesModel(message.ID, parentMessageID)
-
-	if err := i.messageToMessagesRepository.Create(ctx, messageToMessages); err != nil {
+	if err := i.messageRepository.CreateReply(ctx, message, parentMessageID); err != nil {
 		return nil, err
 	}
 
@@ -98,10 +90,6 @@ func (i *messageInteractor) Update(ctx context.Context, id string, content strin
 
 func (i *messageInteractor) Delete(ctx context.Context, id string) error {
 	if err := i.messageRepository.Delete(ctx, id); err != nil {
-		return err
-	}
-
-	if err := i.messageToMessagesRepository.DeleteByMessageID(ctx, id); err != nil {
 		return err
 	}
 

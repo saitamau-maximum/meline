@@ -40,7 +40,7 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
-	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.MessageToMessages)(nil), (*model.Message)(nil))
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.ChannelToChannels)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.MessageToMessages)(nil), (*model.Message)(nil))
 	defer bunDB.Close()
 
 	apiGroup := e.Group("/api")
@@ -50,14 +50,14 @@ func main() {
 	userRepository := mysql.NewUserRepository(bunDB)
 	channelRepository := mysql.NewChannelRepository(bunDB)
 	messageRepository := mysql.NewMessageRepository(bunDB)
-	messageToMessagesRepository := mysql.NewMessageToMessagesRepository(bunDB)
 	channelUsersRepository := mysql.NewChannelUsersRepository(bunDB)
+	channelToChannelsRepository := mysql.NewChannelToChannelsRepository(bunDB)
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
-	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, userRepository, presenter.NewChannelPresenter())
+	channelInteractor := usecase.NewChannelInteractor(channelRepository, channelUsersRepository, channelToChannelsRepository, userRepository, presenter.NewChannelPresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
-	messageInteractor := usecase.NewMessageInteractor(messageRepository, messageToMessagesRepository, presenter.NewMessagePresenter())
+	messageInteractor := usecase.NewMessageInteractor(messageRepository, presenter.NewMessagePresenter())
 	clientInteractor := usecase.NewClientInteractor()
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
