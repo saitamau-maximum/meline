@@ -30,16 +30,6 @@ func (r *ChannelRepository) FindByID(ctx context.Context, id uint64) (*model.Cha
 	return &channel, nil
 }
 
-func (r *ChannelRepository) FindByName(ctx context.Context, name string) ([]*model.Channel, error) {
-	var channels []*model.Channel
-
-	if err := r.db.NewSelect().Model(&channels).Where("name LIKE ?", "%"+name+"%").Relation("Users").Scan(ctx); err != nil {
-		return nil, err
-	}
-
-	return channels, nil
-}
-
 func (r *ChannelRepository) Create(ctx context.Context, channel *model.Channel) (uint64, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

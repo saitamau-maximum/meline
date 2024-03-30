@@ -57,17 +57,6 @@ func (h *ChannelHandler) GetChannelByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, channelResponse)
 }
 
-func (h *ChannelHandler) GetChannelsByName(c echo.Context) error {
-	name := c.Param("name")
-
-	channelsResponse, err := h.channelInteractor.GetChannelsByName(c.Request().Context(), name)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	return c.JSON(http.StatusOK, channelsResponse)
-}
-
 func (h *ChannelHandler) CreateChannel(c echo.Context) error {
 	userId := c.Get("user_id").(uint64)
 

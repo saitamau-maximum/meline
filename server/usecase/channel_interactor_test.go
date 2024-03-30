@@ -116,49 +116,6 @@ func TestChannelInteractor_Failed_GetChannelByID(t *testing.T) {
 	assert.Equal(t, expectedChannel, result)
 }
 
-func TestChannelInteractor_Success_GetChannelsByName(t *testing.T) {
-	ctx := context.Background()
-	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
-	repoUser := &mockUserRepository{}
-	pre := &mockChannelPresenter{}
-
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
-
-	expectedChannels := []*presenter.Channel{
-		{
-			ID:   1,
-			Name: "test-channel",
-		},
-	}
-
-	result, err := interactor.GetChannelsByName(ctx, "test-channel")
-	assert.NoError(t, err)
-	assert.Equal(t, expectedChannels, result.Channels)
-}
-
-func TestChannelInteractor_Failed_GetChannelsByName(t *testing.T) {
-	ctx := context.Background()
-	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
-	repoUser := &mockUserRepository{}
-	pre := &mockChannelPresenter{}
-
-	ctx = context.WithValue(ctx, FindByNameFailedValue, true)
-
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
-
-	expectedChannels := &presenter.GetChannelsByNameResponse{
-		Channels: []*presenter.Channel{},
-	}
-
-	result, err := interactor.GetChannelsByName(ctx, "test-channel")
-	assert.Error(t, err)
-	assert.Equal(t, expectedChannels, result)
-}
-
 func TestChannelInteractor_Success_CreateChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
