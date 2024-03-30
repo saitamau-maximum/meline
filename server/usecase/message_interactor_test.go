@@ -149,7 +149,7 @@ func TestMessageInteractor_Failed_GetMessagesByChannelID(t *testing.T) {
 	assert.Nil(t, res)
 }
 
-func TestMessageInteractor_Failed_Create(t *testing.T) {
+func TestMessageInteractor_Failed_Create__Create_Message_Failed(t *testing.T) {
 	ctx := context.WithValue(context.Background(), CreateMessageFailedValue, true)
 
 	repo := &mockMessageRepository{}
@@ -160,9 +160,24 @@ func TestMessageInteractor_Failed_Create(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
+	assert.Equal(t, "failed to create message", err.Error())
 }
 
-func TestMessageInteractor_Failed_CreateReply(t *testing.T) {
+func TestMessageInteractor_Failed_CreateReply__Target_Message_Not_Found(t *testing.T) {
+	ctx := context.WithValue(context.Background(), FindByIDFailedValue, true)
+
+	repo := &mockMessageRepository{}
+	pre := &mockMessagePresenter{}
+	interactor := usecase.NewMessageInteractor(repo, pre)
+
+	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
+
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Equal(t, "failed to get message by id", err.Error())
+}
+
+func TestMessageInteractor_Failed_CreateReply__Create_Reply_Failed(t *testing.T) {
 	ctx := context.WithValue(context.Background(), CreateReplyFailedValue, true)
 
 	repo := &mockMessageRepository{}
@@ -173,9 +188,37 @@ func TestMessageInteractor_Failed_CreateReply(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
+	assert.Equal(t, "failed to create reply", err.Error())
 }
 
-func TestMessageInteractor_Failed_Update(t *testing.T) {
+func TestMessageInteractor_Failed_CreateReply__Get_Message_Failed(t *testing.T) {
+	ctx := context.WithValue(context.Background(), FindByIDFailedValue, true)
+
+	repo := &mockMessageRepository{}
+	pre := &mockMessagePresenter{}
+	interactor := usecase.NewMessageInteractor(repo, pre)
+
+	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
+
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Equal(t, "failed to get message by id", err.Error())
+}
+
+func TestMessageInteractor_Failed_Update__Target_Message_Not_Found(t *testing.T) {
+	ctx := context.WithValue(context.Background(), FindByIDFailedValue, true)
+
+	repo := &mockMessageRepository{}
+	pre := &mockMessagePresenter{}
+	interactor := usecase.NewMessageInteractor(repo, pre)
+
+	err := interactor.Update(ctx, "1", "Hello, World!")
+
+	assert.Error(t, err)
+	assert.Equal(t, "failed to get message by id", err.Error())
+}
+
+func TestMessageInteractor_Failed_Update__Update_Message_Failed(t *testing.T) {
 	ctx := context.WithValue(context.Background(), UpdateMessageFailedValue, true)
 
 	repo := &mockMessageRepository{}
@@ -185,6 +228,7 @@ func TestMessageInteractor_Failed_Update(t *testing.T) {
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
 	assert.Error(t, err)
+	assert.Equal(t, "failed to update message", err.Error())
 }
 
 func TestMessageInteractor_Failed_Delete(t *testing.T) {
@@ -223,7 +267,7 @@ func (m *mockMessageRepository) FindByChannelID(ctx context.Context, channelID u
 }
 
 func (m *mockMessageRepository) FindByID(ctx context.Context, id string) (*model.Message, error) {
-	if ctx.Value(CreateFailedValue) != nil {
+	if ctx.Value(FindByIDFailedValue) != nil {
 		return nil, fmt.Errorf("failed to get message by id")
 	}
 
