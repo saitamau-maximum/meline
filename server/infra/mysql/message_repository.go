@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/saitamau-maximum/meline/domain/repository"
-	"github.com/saitamau-maximum/meline/models"
+	model "github.com/saitamau-maximum/meline/models"
 	"github.com/uptrace/bun"
 )
 
@@ -56,6 +56,23 @@ func (r *messageRepository) Create(ctx context.Context, message *model.Message) 
 	return nil
 }
 
+func (r *messageRepository) CreateReply(ctx context.Context, message *model.Message, parentMessageID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	_, err := r.db.NewInsert().Model(message).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.NewInsert().Model(&model.MessageToMessages{ParentMessageID: parentMessageID, ChildMessageID: message.ID}).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *messageRepository) Update(ctx context.Context, message *model.Message) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -73,6 +90,11 @@ func (r *messageRepository) Delete(ctx context.Context, id string) error {
 	defer r.mu.Unlock()
 
 	_, err := r.db.NewDelete().Model(&model.Message{}).Where("id = ?", id).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.NewDelete().Model(&model.MessageToMessages{}).WhereOr("parent_message_id = ?", id).WhereOr("child_message_id = ?", id).Exec(ctx)
 	if err != nil {
 		return err
 	}
