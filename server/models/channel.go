@@ -11,7 +11,7 @@ type Channel struct {
 	Name          string     `bun:"name,notnull"`
 	Users         []*User    `bun:"m2m:channel_users,join:Channel=User"`
 	Messages      []*Message `bun:"rel:has-many,join:id=channel_id"`
-	ChildChannels []*Channel `bun:"rel:has-many,join:parent_channel_id=id"`
+	ChildChannels []*Channel `bun:"m2m:channel_to_channels,join:ParentChannel=ChildChannel"`
 	CreatedAt     time.Time  `bun:"created_at,notnull,default:current_timestamp"`
 	DeletedAt     time.Time  `bun:"deleted_at,default:null"`
 }
