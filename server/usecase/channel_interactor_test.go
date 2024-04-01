@@ -32,12 +32,10 @@ const (
 func TestChannelInteractor_Success_GetAllChannels(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	expectedChannels := []*presenter.Channel{
 		{
@@ -54,12 +52,10 @@ func TestChannelInteractor_Success_GetAllChannels(t *testing.T) {
 func TestChannelInteractor_Failed_GetAllChannels(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, FindChannelsFailedValue, true)
 
 	expectedChannels := &presenter.GetAllChannelsResponse{
@@ -74,12 +70,10 @@ func TestChannelInteractor_Failed_GetAllChannels(t *testing.T) {
 func TestChannelInteractor_Success_GetChannelByID(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	expectedChannel := &presenter.ChannelDetail{
 		Name: "test-channel",
@@ -100,12 +94,10 @@ func TestChannelInteractor_Success_GetChannelByID(t *testing.T) {
 func TestChannelInteractor_Failed_GetChannelByID(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, FindChannelsFailedValue, true)
 
 	result, err := interactor.GetChannelByID(ctx, 2)
@@ -119,12 +111,10 @@ func TestChannelInteractor_Failed_GetChannelByID(t *testing.T) {
 func TestChannelInteractor_Success_CreateChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	err := interactor.CreateChannel(ctx, "test-channel", 1)
 
@@ -134,12 +124,10 @@ func TestChannelInteractor_Success_CreateChannel(t *testing.T) {
 func TestChannelInteractor_Failed_CreateChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, CreateFailedValue, true)
 
 	err := interactor.CreateChannel(ctx, "test-channel", 1)
@@ -150,12 +138,10 @@ func TestChannelInteractor_Failed_CreateChannel(t *testing.T) {
 func TestChannelInteractor_Success_UpdateChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	err := interactor.UpdateChannel(ctx, 1, "test-channel")
 
@@ -165,12 +151,10 @@ func TestChannelInteractor_Success_UpdateChannel(t *testing.T) {
 func TestChannelInteractor_Failed_UpdateChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, UpdateFailedValue, true)
 
 	err := interactor.UpdateChannel(ctx, 1, "test-channel")
@@ -181,12 +165,10 @@ func TestChannelInteractor_Failed_UpdateChannel(t *testing.T) {
 func TestChannelInteractor_Success_DeleteChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	err := interactor.DeleteChannel(ctx, 1)
 
@@ -196,12 +178,10 @@ func TestChannelInteractor_Success_DeleteChannel(t *testing.T) {
 func TestChannelInteractor_Failed_DeleteChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, DeleteFailedValue, true)
 
 	err := interactor.DeleteChannel(ctx, 1)
@@ -212,12 +192,10 @@ func TestChannelInteractor_Failed_DeleteChannel(t *testing.T) {
 func TestChannelInteractor_Success_JoinChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	err := interactor.JoinChannel(ctx, 1, 1)
 
@@ -227,12 +205,10 @@ func TestChannelInteractor_Success_JoinChannel(t *testing.T) {
 func TestChannelInteractor_Failed_JoinChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, JoinFailedValue, true)
 
 	err := interactor.JoinChannel(ctx, 1, 1)
@@ -243,12 +219,10 @@ func TestChannelInteractor_Failed_JoinChannel(t *testing.T) {
 func TestChannelInteractor_Success_LeaveChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	err := interactor.LeaveChannel(ctx, 1, 1)
 
@@ -258,12 +232,10 @@ func TestChannelInteractor_Success_LeaveChannel(t *testing.T) {
 func TestChannelInteractor_Failed_LeaveChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	repoUser := &mockUserRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, LeaveFailedValue, true)
 
 	err := interactor.LeaveChannel(ctx, 1, 1)
@@ -274,12 +246,10 @@ func TestChannelInteractor_Failed_LeaveChannel(t *testing.T) {
 func TestChannelInteractor_Success_CreateChildChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
 	repoUser := &mockUserRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 
 	err := interactor.CreateChildChannel(ctx, "test-channel", 1, 1)
 
@@ -289,12 +259,10 @@ func TestChannelInteractor_Success_CreateChildChannel(t *testing.T) {
 func TestChannelInteractor_Failed_CreateChildChannel(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockChannelRepository{}
-	repoChannelUser := &mockChannelUsersRepository{}
 	repoUser := &mockUserRepository{}
-	repoChannelToChannels := &mockChannelToChannelsRepository{}
 	pre := &mockChannelPresenter{}
 
-	interactor := usecase.NewChannelInteractor(repo, repoChannelUser, repoChannelToChannels, repoUser, pre)
+	interactor := usecase.NewChannelInteractor(repo, repoUser, pre)
 	ctx = context.WithValue(ctx, CreateFailedValue, true)
 
 	err := interactor.CreateChildChannel(ctx, "test-channel", 1, 1)
@@ -342,12 +310,20 @@ func (m *mockChannelRepository) FindByName(ctx context.Context, name string) ([]
 	}, nil
 }
 
-func (m *mockChannelRepository) Create(ctx context.Context, channel *model.Channel) (uint64, error) {
+func (m *mockChannelRepository) Create(ctx context.Context, channel *model.Channel, userID uint64) error {
 	if ctx.Value(CreateFailedValue) != nil {
-		return 0, fmt.Errorf("create failed")
+		return fmt.Errorf("create failed")
 	}
 
-	return 1, nil
+	return nil
+}
+
+func (m *mockChannelRepository) CreateChildChannel(ctx context.Context, channel *model.Channel, parentChannelID uint64, userID uint64) error {
+	if ctx.Value(CreateFailedValue) != nil {
+		return fmt.Errorf("create failed")
+	}
+
+	return nil
 }
 
 func (m *mockChannelRepository) Update(ctx context.Context, channel *model.Channel) error {
@@ -361,6 +337,22 @@ func (m *mockChannelRepository) Update(ctx context.Context, channel *model.Chann
 func (m *mockChannelRepository) Delete(ctx context.Context, id uint64) error {
 	if ctx.Value(DeleteFailedValue) != nil {
 		return fmt.Errorf("delete failed")
+	}
+
+	return nil
+}
+
+func (m *mockChannelRepository) JoinChannel(ctx context.Context, channelID uint64, userID uint64) error {
+	if ctx.Value(JoinFailedValue) != nil {
+		return fmt.Errorf("join failed")
+	}
+
+	return nil
+}
+
+func (m *mockChannelRepository) LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error {
+	if ctx.Value(LeaveFailedValue) != nil {
+		return fmt.Errorf("leave failed")
 	}
 
 	return nil
@@ -412,56 +404,4 @@ func (m *mockChannelPresenter) GenerateGetChannelsByNameResponse(channels []*ent
 	return &presenter.GetChannelsByNameResponse{
 		Channels: res,
 	}
-}
-
-type mockChannelUsersRepository struct{}
-
-func (m *mockChannelUsersRepository) Create(ctx context.Context, channelUsers *model.ChannelUsers) error {
-	if ctx.Value(JoinFailedValue) != nil {
-		return fmt.Errorf("create failed")
-	}
-
-	return nil
-}
-
-func (m *mockChannelUsersRepository) Delete(ctx context.Context, channelID, userID uint64) error {
-	if ctx.Value(LeaveFailedValue) != nil {
-		return fmt.Errorf("delete failed")
-	}
-
-	return nil
-}
-
-func (m *mockChannelUsersRepository) DeleteByChannelID(ctx context.Context, channelID uint64) error {
-	if ctx.Value(DeleteFailedValue) != nil {
-		return fmt.Errorf("delete failed")
-	}
-
-	return nil
-}
-
-type mockChannelToChannelsRepository struct{}
-
-func (m *mockChannelToChannelsRepository) Create(ctx context.Context, channelToChannels *model.ChannelToChannels) error {
-	if ctx.Value(CreateFailedValue) != nil {
-		return fmt.Errorf("create failed")
-	}
-
-	return nil
-}
-
-func (m *mockChannelToChannelsRepository) DeleteFromParentChannelID(ctx context.Context, parentChannelID uint64) error {
-	if ctx.Value(DeleteFailedValue) != nil {
-		return fmt.Errorf("delete failed")
-	}
-
-	return nil
-}
-
-func (m *mockChannelToChannelsRepository) DeleteFromChildChannelID(ctx context.Context, childChannelID uint64) error {
-	if ctx.Value(DeleteFailedValue) != nil {
-		return fmt.Errorf("delete failed")
-	}
-
-	return nil
 }
