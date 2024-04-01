@@ -34,7 +34,7 @@ export const ChannelProvider = ({ children }: ChannelProviderProps) => {
   const [joinedChannels, setJoinedChannels] = useState<Channel[]>([]);
 
   const fetchJoinedChannels = useCallback(async () => {
-    const res = await fetch("/api/channels");
+    const res = await fetch("/api/channel");
     if (!res.ok) return setJoinedChannels([]);
     const validated = safeParse(ChannelListResponse, await res.json());
     if (!validated.success) return setJoinedChannels([]);
