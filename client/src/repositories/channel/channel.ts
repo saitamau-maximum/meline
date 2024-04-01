@@ -4,7 +4,7 @@ export interface IChannelRepository {
 
 export class ChannelRepository implements IChannelRepository {
   public createChannel = async (name: string) => {
-    const res = await fetch("/api/channels", {
+    const res = await fetch("/api/channel", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
