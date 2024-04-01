@@ -24,7 +24,7 @@ export const styles = {
   }),
   channelLayoutMain: style({
     flexGrow: 1,
-    background: vars.color.gray[2],
+    backgroundColor: vars.semantic.background.primary,
     borderLeft: `1px solid ${vars.color.gray[6]}`,
   }),
 };
