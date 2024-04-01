@@ -1,7 +1,4 @@
----
-title: migration 手順
-date: 2024/04/01
----
+# migration 手順
 
 ## 事前に用意するもの
 
