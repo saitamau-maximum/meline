@@ -17,24 +17,19 @@ type IChannelInteractor interface {
 	CreateChildChannel(ctx context.Context, name string, parentChannelId, userId uint64) error
 	UpdateChannel(ctx context.Context, id uint64, name string) error
 	DeleteChannel(ctx context.Context, id uint64) error
-	DeleteChildChannel(ctx context.Context, childChannelId uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
 	LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error
 }
 
 type ChannelInteractor struct {
 	channelRepository           repository.IChannelRepository
-	channelUsersRepository      repository.IChannelUsersRepository
-	channelToChannelsRepository repository.IChannelToChannelsRepository
 	userRepository              repository.IUserRepository
 	channelPresenter            presenter.IChannelPresenter
 }
 
-func NewChannelInteractor(channelRepository repository.IChannelRepository, channelUsersRepository repository.IChannelUsersRepository, channelToChannelsRepository repository.IChannelToChannelsRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
+func NewChannelInteractor(channelRepository repository.IChannelRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
 	return &ChannelInteractor{
 		channelRepository:           channelRepository,
-		channelUsersRepository:      channelUsersRepository,
-		channelToChannelsRepository: channelToChannelsRepository,
 		userRepository:              userRepository,
 		channelPresenter:            channelPresenter,
 	}
@@ -68,12 +63,7 @@ func (i *ChannelInteractor) GetChannelByID(ctx context.Context, id uint64) (*pre
 }
 
 func (i *ChannelInteractor) CreateChannel(ctx context.Context, name string, userId uint64) error {
-	id, err := i.channelRepository.Create(ctx, &model.Channel{Name: name})
-	if err != nil {
-		return err
-	}
-
-	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: id, UserID: userId}); err != nil {
+	if err := i.channelRepository.Create(ctx, &model.Channel{Name: name}, userId); err != nil {
 		return err
 	}
 
@@ -81,16 +71,7 @@ func (i *ChannelInteractor) CreateChannel(ctx context.Context, name string, user
 }
 
 func (i *ChannelInteractor) CreateChildChannel(ctx context.Context, name string, parentChannelId, userId uint64) error {
-	id, err := i.channelRepository.Create(ctx, &model.Channel{Name: name})
-	if err != nil {
-		return err
-	}
-
-	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: id, UserID: userId}); err != nil {
-		return err
-	}
-
-	if err := i.channelToChannelsRepository.Create(ctx, model.NewChannelChannelsModel(parentChannelId, id)); err != nil {
+	if err := i.channelRepository.CreateChildChannel(ctx, &model.Channel{Name: name}, parentChannelId, userId); err != nil {
 		return err
 	}
 
@@ -116,35 +97,11 @@ func (i *ChannelInteractor) DeleteChannel(ctx context.Context, id uint64) error 
 		return err
 	}
 
-	if err := i.channelUsersRepository.DeleteByChannelID(ctx, id); err != nil {
-		return err
-	}
-
-	if err := i.channelToChannelsRepository.DeleteFromParentChannelID(ctx, id); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (i *ChannelInteractor) DeleteChildChannel(ctx context.Context, childChannelId uint64) error {
-	if err := i.channelToChannelsRepository.DeleteFromChildChannelID(ctx, childChannelId); err != nil {
-		return err
-	}
-
-	if err := i.channelRepository.Delete(ctx, childChannelId); err != nil {
-		return err
-	}
-
-	if err := i.channelUsersRepository.DeleteByChannelID(ctx, childChannelId); err != nil {
-		return err
-	}
-
 	return nil
 }
 
 func (i *ChannelInteractor) JoinChannel(ctx context.Context, channelID uint64, userID uint64) error {
-	if err := i.channelUsersRepository.Create(ctx, &model.ChannelUsers{ChannelID: channelID, UserID: userID}); err != nil {
+	if err := i.channelRepository.JoinChannel(ctx, channelID, userID); err != nil {
 		return err
 	}
 
@@ -152,7 +109,7 @@ func (i *ChannelInteractor) JoinChannel(ctx context.Context, channelID uint64, u
 }
 
 func (i *ChannelInteractor) LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error {
-	if err := i.channelUsersRepository.Delete(ctx, channelID, userID); err != nil {
+	if err := i.channelRepository.LeaveChannel(ctx, channelID, userID); err != nil {
 		return err
 	}
 
