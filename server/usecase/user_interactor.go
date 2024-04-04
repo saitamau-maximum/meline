@@ -13,6 +13,7 @@ type IUserInteractor interface {
 	GetUserByID(ctx context.Context, id uint64) (*presenter.GetUserByIdResponse, error)
 	GetUserByGithubIDOrCreate(ctx context.Context, githubID, userName, imageUrl string) (*presenter.GetUserByGithubIdResponse, error)
 	CreateUser(ctx context.Context, githubID, name, imageURL string) (*presenter.CreateUserResponse, error)
+	CheckExistUser(ctx context.Context, userID uint64) (bool, error)
 }
 
 type UserInteractor struct {
@@ -81,4 +82,8 @@ func (i *UserInteractor) CreateUser(ctx context.Context, providerID, name, image
 	}
 
 	return i.userPresenter.GenerateCreateUserResponse(createdUser.ToUserEntity()), nil
+}
+
+func (i *UserInteractor) CheckExistUser(ctx context.Context, userID uint64) (bool, error) {
+	return i.userRepository.IsExistUser(ctx, userID)
 }

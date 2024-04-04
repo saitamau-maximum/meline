@@ -62,3 +62,12 @@ func (r *UserRepository) FindChannelsByUserID(ctx context.Context, userID uint64
 
 	return user.Channels, nil
 }
+
+func (r *UserRepository) IsExistUser(ctx context.Context, userID uint64) (bool, error) {
+	isExist, err := r.db.NewSelect().Model(&model.User{}).Where("id = ?", userID).Exists(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return isExist, nil
+}
