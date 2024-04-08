@@ -47,11 +47,18 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		userId := claims["user_id"].(float64)
 
+		isExistUser, err := h.userInteractor.IsUserExists(c.Request().Context(), uint64(userId))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		} else if !isExistUser {
+			return c.JSON(http.StatusUnauthorized, "user not found")
+		}
+
 		c.Set("user_id", uint64(userId))
 
 		exp := claims["exp"].(float64)
 		if int64(exp) < time.Now().Unix() {
-			return c.JSON(http.StatusForbidden, err)
+			return c.JSON(http.StatusUnauthorized, "token expired")
 		}
 
 		return next(c)

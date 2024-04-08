@@ -13,6 +13,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type CheckExistUserFailed string
+
+const (
+	CheckExistUserFailedValue CheckExistUserFailed = "check_exist_user_failed"
+)
+
 func TestUserInteractor_Success_GetUserByID(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
@@ -121,6 +127,31 @@ func TestUserInteractor_Failed_CreateUser_FindFailed(t *testing.T) {
 	assert.Nil(t, user)
 }
 
+func TestUserInteractor_Success_IsUserExists(t *testing.T) {
+	ctx := context.Background()
+	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
+
+	interactor := usecase.NewUserInteractor(repo, pre)
+
+	result, err := interactor.IsUserExists(ctx, 1)
+	assert.NoError(t, err)
+	assert.True(t, result)
+}
+
+func TestUserInteractor_Failed_IsUserExists_NotFound(t *testing.T) {
+	ctx := context.Background()
+	repo := &mockUserRepository{}
+	pre := &mockUserPresenter{}
+
+	interactor := usecase.NewUserInteractor(repo, pre)
+	ctx = context.WithValue(ctx, CheckExistUserFailedValue, true)
+
+	result, err := interactor.IsUserExists(ctx, 2)
+	assert.Error(t, err)
+	assert.False(t, result)
+}
+
 type mockUserRepository struct{}
 
 type FindFailed string
@@ -180,6 +211,14 @@ func (r *mockUserRepository) FindChannelsByUserID(ctx context.Context, userID ui
 			Name: "test-channel",
 		},
 	}, nil
+}
+
+func (r *mockUserRepository) IsUserExists(ctx context.Context, userID uint64) (bool, error) {
+	if ctx.Value(CheckExistUserFailedValue) != nil {
+		return false, fmt.Errorf("not found")
+	}
+
+	return true, nil
 }
 
 type mockUserPresenter struct{}
