@@ -7,6 +7,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
+	"github.com/saitamau-maximum/meline/adapter/response"
 	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/usecase"
 )
@@ -26,7 +27,7 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		// Get Access Token
 		cookie, err := c.Cookie(config.ACCESS_TOKEN_COOKIE_NAME)
 		if err != nil {
-			return c.JSON(http.StatusUnauthorized, err)
+			return c.JSON(http.StatusUnauthorized, response.ErrorResponse{Message: "Unauthorized"})
 		}
 
 		token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
@@ -37,28 +38,28 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 			return []byte(config.JWT_SECRET), nil
 		})
 		if err != nil {
-			return c.JSON(http.StatusUnauthorized, err)
+			return c.JSON(http.StatusUnauthorized, response.ErrorResponse{Message: "Unauthorized"})
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok || !token.Valid {
-			return c.JSON(http.StatusUnauthorized, err)
+			return c.JSON(http.StatusUnauthorized, response.ErrorResponse{Message: "Unauthorized"})
 		}
 
 		userId := claims["user_id"].(float64)
 
 		isExistUser, err := h.userInteractor.IsUserExists(c.Request().Context(), uint64(userId))
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return c.JSON(http.StatusInternalServerError, response.ErrorResponse{Message: "Internal Server Error"})
 		} else if !isExistUser {
-			return c.JSON(http.StatusUnauthorized, "user not found")
+			return c.JSON(http.StatusUnauthorized, response.ErrorResponse{Message: "Unauthorized"})
 		}
 
 		c.Set("user_id", uint64(userId))
 
 		exp := claims["exp"].(float64)
 		if int64(exp) < time.Now().Unix() {
-			return c.JSON(http.StatusUnauthorized, "token expired")
+			return c.JSON(http.StatusUnauthorized, response.ErrorResponse{Message: "Unauthorized"})
 		}
 
 		return next(c)
