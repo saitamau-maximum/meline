@@ -127,19 +127,19 @@ func TestUserInteractor_Failed_CreateUser_FindFailed(t *testing.T) {
 	assert.Nil(t, user)
 }
 
-func TestUserInteractor_Success_CheckExistUser(t *testing.T) {
+func TestUserInteractor_Success_IsUserExists(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
 	pre := &mockUserPresenter{}
 
 	interactor := usecase.NewUserInteractor(repo, pre)
 
-	result, err := interactor.CheckExistUser(ctx, 1)
+	result, err := interactor.IsUserExists(ctx, 1)
 	assert.NoError(t, err)
 	assert.True(t, result)
 }
 
-func TestUserInteractor_Failed_CheckExistUser_NotFound(t *testing.T) {
+func TestUserInteractor_Failed_IsUserExists_NotFound(t *testing.T) {
 	ctx := context.Background()
 	repo := &mockUserRepository{}
 	pre := &mockUserPresenter{}
@@ -147,7 +147,7 @@ func TestUserInteractor_Failed_CheckExistUser_NotFound(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 	ctx = context.WithValue(ctx, CheckExistUserFailedValue, true)
 
-	result, err := interactor.CheckExistUser(ctx, 2)
+	result, err := interactor.IsUserExists(ctx, 2)
 	assert.Error(t, err)
 	assert.False(t, result)
 }
@@ -213,7 +213,7 @@ func (r *mockUserRepository) FindChannelsByUserID(ctx context.Context, userID ui
 	}, nil
 }
 
-func (r *mockUserRepository) IsExistUser(ctx context.Context, userID uint64) (bool, error) {
+func (r *mockUserRepository) IsUserExists(ctx context.Context, userID uint64) (bool, error) {
 	if ctx.Value(CheckExistUserFailedValue) != nil {
 		return false, fmt.Errorf("not found")
 	}

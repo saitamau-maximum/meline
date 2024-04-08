@@ -11,5 +11,5 @@ type IUserRepository interface {
 	Create(ctx context.Context, user *model.User) error
 	FindByProviderID(ctx context.Context, providerID string) (*model.User, error)
 	FindChannelsByUserID(ctx context.Context, userID uint64) ([]*model.Channel, error)
-	IsExistUser(ctx context.Context, userID uint64) (bool, error)
+	IsUserExists(ctx context.Context, userID uint64) (bool, error)
 }
