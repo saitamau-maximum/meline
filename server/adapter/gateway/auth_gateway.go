@@ -47,9 +47,11 @@ func (h *AuthGateway) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		userId := claims["user_id"].(float64)
 
-		isExistUser, err := h.userInteractor.CheckExistUser(c.Request().Context(), uint64(userId))
-		if err != nil || !isExistUser {
-			return c.JSON(http.StatusForbidden, err)
+		isExistUser, err := h.userInteractor.IsUserExists(c.Request().Context(), uint64(userId))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		} else if !isExistUser {
+			return c.JSON(http.StatusUnauthorized, "user not found")
 		}
 
 		c.Set("user_id", uint64(userId))
