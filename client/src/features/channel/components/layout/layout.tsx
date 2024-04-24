@@ -1,21 +1,33 @@
 import { MaximumIcon } from "@/components/icons/maximum";
 import { styles } from "./layout.css";
+import { CreateChannelForm } from "../create-channel-form";
+import { ChannelList } from "../channel-list";
+import { Outlet } from "react-router-dom";
 
 interface ChannelLayoutProps {
-  sidePanel: React.ReactNode;
-  main: React.ReactNode;
+  channels: {
+    id: number;
+    name: string;
+  }[];
+  isChannelsLoading?: boolean;
 }
 
-export const ChannelLayout = ({ sidePanel, main }: ChannelLayoutProps) => {
+export const ChannelLayout = ({
+  channels,
+  isChannelsLoading,
+}: ChannelLayoutProps) => {
   return (
     <div className={styles.channelLayoutWrapper}>
       <div className={styles.channelLayoutSidePanel}>
         <div className={styles.channelLayoutSidePanelLogo}>
           <MaximumIcon />
         </div>
-        {sidePanel}
+        <CreateChannelForm />
+        <ChannelList channels={channels} isLoading={isChannelsLoading} />
       </div>
-      <div className={styles.channelLayoutMain}>{main}</div>
+      <div className={styles.channelLayoutMain}>
+        <Outlet />
+      </div>
     </div>
   );
 };

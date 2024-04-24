@@ -13,22 +13,5 @@ const mockUser = {
   imageURL: "https://example.com",
 };
 
-const mockChannels = [
-  {
-    id: 1,
-    name: "general",
-  },
-  {
-    id: 2,
-    name: "random",
-  },
-  {
-    id: 3,
-    name: "random2",
-  },
-];
-
-export const Overview = () => (
-  <ChannelTopPageTemplate user={mockUser} channels={mockChannels} />
-);
+export const Overview = () => <ChannelTopPageTemplate user={mockUser} />;
 Overview.story = DESKTOP_STORY_CONFIG;
