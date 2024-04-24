@@ -1,4 +1,3 @@
-import { IChannelRepository } from "@/repositories/channel";
 import { ChannelLayout } from "../../components/layout";
 import { ChannelList } from "./components/channel-list";
 import { CreateChannelForm } from "./components/create-channel-form";
@@ -12,25 +11,20 @@ interface ChannelTopPageProps {
     id: number;
     name: string;
   }[];
-  fetchJoinedChannels: () => Promise<void>;
-  channelRepository: IChannelRepository;
+  isChannelsLoading?: boolean;
 }
 
 export const ChannelTopPageTemplate = ({
   user,
   channels,
-  fetchJoinedChannels,
-  channelRepository,
+  isChannelsLoading,
 }: ChannelTopPageProps) => {
   return (
     <ChannelLayout
       sidePanel={
         <>
-          <CreateChannelForm
-            fetchJoinedChannels={fetchJoinedChannels}
-            channelRepository={channelRepository}
-          />
-          <ChannelList channels={channels} />
+          <CreateChannelForm />
+          <ChannelList channels={channels} isLoading={isChannelsLoading} />
         </>
       }
       main={<div>{JSON.stringify(user)}</div>}

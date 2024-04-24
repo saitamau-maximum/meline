@@ -1,9 +1,12 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 
 import "../src/styles/global.css";
+
+const queryClient = new QueryClient();
 
 const preview: Preview = {
   parameters: {
@@ -53,6 +56,11 @@ const preview: Preview = {
       <MemoryRouter>
         <Story />
       </MemoryRouter>
+    ),
+    (Story) => (
+      <QueryClientProvider client={queryClient}>
+        <Story />
+      </QueryClientProvider>
     ),
   ],
 };

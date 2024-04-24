@@ -1,7 +1,6 @@
 import { Meta } from "@storybook/react";
 import { ChannelTopPageTemplate } from "../template";
 import { DESKTOP_STORY_CONFIG } from "@/__stories__/config";
-import { IChannelRepository } from "@/repositories/channel";
 
 const meta = {
   title: "Features/Channel/Top",
@@ -29,23 +28,7 @@ const mockChannels = [
   },
 ];
 
-const mockChannelRepository: IChannelRepository = {
-  createChannel: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return new Response(null, { status: 200 });
-  },
-};
-
-const fetchJoinedChannels = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-};
-
 export const Overview = () => (
-  <ChannelTopPageTemplate
-    user={mockUser}
-    channels={mockChannels}
-    channelRepository={mockChannelRepository}
-    fetchJoinedChannels={fetchJoinedChannels}
-  />
+  <ChannelTopPageTemplate user={mockUser} channels={mockChannels} />
 );
 Overview.story = DESKTOP_STORY_CONFIG;
