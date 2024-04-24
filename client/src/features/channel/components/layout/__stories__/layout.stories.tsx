@@ -7,9 +7,15 @@ const meta = {
 
 export default meta;
 
-export const Overview = () => (
-  <ChannelLayout
-    sidePanel={<span>Channel List</span>}
-    main={<span>Channel Chat</span>}
-  />
-);
+const mockChannels = [
+  {
+    id: 1,
+    name: "Channel 1",
+  },
+  {
+    id: 2,
+    name: "Channel 2",
+  },
+];
+
+export const Overview = () => <ChannelLayout channels={mockChannels} />;

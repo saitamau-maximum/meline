@@ -1,30 +1,31 @@
 import { AuthRequired } from "@/libs/router";
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
+import { ChannelLayout } from "./components/layout";
+import { useJoinedChannels } from "./hooks/use-joined-channels";
 
 const ChannelTop = lazy(() => import("./pages/top"));
+const ChannelDetail = lazy(() => import("./pages/detail"));
 
-export const CHANNEL_TOP_ROUTE = "/channel";
-
-interface RoutesProps {
-  basePath: string;
-}
-
-export const ChannelRoutes = ({ basePath }: RoutesProps) => {
-  const trimUnderPath = (path: string) => {
-    return path.replace(basePath, "");
-  };
+export const ChannelRoutes = () => {
+  const { data, isLoading: isChannelsLoading } = useJoinedChannels();
 
   return (
     <Routes>
       <Route
-        path={trimUnderPath(CHANNEL_TOP_ROUTE)}
+        path="/"
         element={
           <AuthRequired>
-            <ChannelTop />
+            <ChannelLayout
+              channels={data?.channels || []}
+              isChannelsLoading={isChannelsLoading}
+            />
           </AuthRequired>
         }
-      />
+      >
+        <Route index element={<ChannelTop />} />
+        <Route path=":channelId" element={<ChannelDetail />} />
+      </Route>
     </Routes>
   );
 };

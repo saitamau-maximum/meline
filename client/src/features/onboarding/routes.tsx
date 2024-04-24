@@ -4,21 +4,11 @@ import { Route, Routes } from "react-router-dom";
 
 const Top = lazy(() => import("./pages/top"));
 
-export const TOP_ROUTE = "/";
-
-interface RoutesProps {
-  basePath: string;
-}
-
-export const OnBoardingRoutes = ({ basePath }: RoutesProps) => {
-  const trimUnderPath = (path: string) => {
-    return path.replace(basePath, "");
-  };
-
+export const OnBoardingRoutes = () => {
   return (
     <Routes>
       <Route
-        path={trimUnderPath(TOP_ROUTE)}
+        path="/"
         element={
           <UnAuthRequired>
             <Top />

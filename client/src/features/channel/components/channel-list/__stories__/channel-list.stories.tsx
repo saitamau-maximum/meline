@@ -2,7 +2,7 @@ import { Meta } from "@storybook/react";
 import { ChannelList } from "..";
 
 const meta = {
-  title: "Features/Channel/Top/Components/ChannelList",
+  title: "Features/Channel/Components/ChannelList",
 } satisfies Meta;
 
 export default meta;
