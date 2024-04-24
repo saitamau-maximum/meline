@@ -69,8 +69,8 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 
 	expected := &entity.Message{
 		ID:      "1",
-		Channel: nil,
-		User: &entity.User{
+		Channel: entity.Channel{},
+		User: entity.User{
 			ID:       1,
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
@@ -79,6 +79,7 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
+		DeletedAt:      (*time.Time)(nil),
 	}
 
 	assert.NoError(t, err)
@@ -96,8 +97,8 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 
 	expected := &entity.Message{
 		ID:      "1",
-		Channel: nil,
-		User: &entity.User{
+		Channel: entity.Channel{},
+		User: entity.User{
 			ID:       1,
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
@@ -106,6 +107,7 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
+		DeletedAt:      (*time.Time)(nil),
 	}
 
 	assert.NoError(t, err)

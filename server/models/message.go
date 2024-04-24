@@ -22,14 +22,14 @@ type Message struct {
 }
 
 func (m *Message) ToMessageEntity() *entity.Message {
-	var entitiedChannel *entity.Channel
+	var entitiedChannel entity.Channel
 	if m.Channel != nil {
-		entitiedChannel = m.Channel.ToChannelEntity()
+		entitiedChannel = *(m.Channel.ToChannelEntity())
 	}
 
-	var entitiedUser *entity.User
+	var entitiedUser entity.User
 	if m.User != nil {
-		entitiedUser = m.User.ToUserEntity()
+		entitiedUser = *(m.User.ToUserEntity())
 	}
 
 	var entitiedReplyToMessage *entity.Message = nil
@@ -37,7 +37,12 @@ func (m *Message) ToMessageEntity() *entity.Message {
 		entitiedReplyToMessage = m.ReplyToMessage.ToMessageEntity()
 	}
 
-	return entity.NewMessageEntity(m.ID, m.ChannelID, entitiedChannel, m.UserID, entitiedUser, m.ReplyToMessageID, entitiedReplyToMessage, m.Content, m.CreatedAt, m.UpdatedAt, m.DeletedAt)
+	var deletedAt *time.Time = nil
+	if !m.DeletedAt.IsZero() {
+		deletedAt = &m.DeletedAt
+	}
+
+	return entity.NewMessageEntity(m.ID, m.ChannelID, entitiedChannel, m.UserID, entitiedUser, m.ReplyToMessageID, entitiedReplyToMessage, m.Content, m.CreatedAt, m.UpdatedAt, deletedAt)
 }
 
 func NewMessageModel(channelID uint64, userID uint64, content string) *Message {
