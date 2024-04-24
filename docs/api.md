@@ -1,4 +1,4 @@
-## GET /api/channels
+## GET /api/channel
 
 ログインしているユーザの属するChannel一覧を返す
 
@@ -13,7 +13,7 @@
 }
 ```
 
-## GET /api/channels/:id
+## GET /api/channel/:id
 
 Channelの詳細を返す
 
