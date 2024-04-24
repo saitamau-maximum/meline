@@ -17,14 +17,14 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 	}
 	for _, message := range messages {
 		replyToMessage := &presenter.ReplyToMessage{}
-		if len(message.ReplyToMessage) > 0 {
-			replyToMessage.ID = message.ReplyToMessage[0].ID
+		if message.ReplyToMessage != nil {
+			replyToMessage.ID = message.ReplyToMessage.ID
 			replyToMessage.User = &presenter.User{
-				ID:       message.ReplyToMessage[0].User.ID,
-				Name:     message.ReplyToMessage[0].User.Name,
-				ImageURL: message.ReplyToMessage[0].User.ImageURL,
+				ID:       message.ReplyToMessage.User.ID,
+				Name:     message.ReplyToMessage.User.Name,
+				ImageURL: message.ReplyToMessage.User.ImageURL,
 			}
-			replyToMessage.Content = message.ReplyToMessage[0].Content
+			replyToMessage.Content = message.ReplyToMessage.Content
 		}
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,

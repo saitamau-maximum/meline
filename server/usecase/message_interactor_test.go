@@ -75,7 +75,7 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
-		ReplyToMessage: []*entity.Message{},
+		ReplyToMessage: &entity.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
@@ -102,7 +102,7 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
-		ReplyToMessage: []*entity.Message{},
+		ReplyToMessage: &entity.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
@@ -259,7 +259,7 @@ func (m *mockMessageRepository) FindByChannelID(ctx context.Context, channelID u
 				ImageURL: "https://example.com/image.png",
 			},
 			Content:        "Hello, World!",
-			ReplyToMessage: []*model.Message{},
+			ReplyToMessage: &model.Message{},
 			CreatedAt:      time.Time{},
 			UpdatedAt:      time.Time{},
 		},
@@ -278,7 +278,7 @@ func (m *mockMessageRepository) FindByID(ctx context.Context, id string) (*model
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
-		ReplyToMessage: []*model.Message{},
+		ReplyToMessage: &model.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
@@ -293,7 +293,7 @@ func (m *mockMessageRepository) Create(ctx context.Context, message *model.Messa
 	return nil
 }
 
-func (m *mockMessageRepository) CreateReply(ctx context.Context, message *model.Message, parentMessageID string) error {
+func (m *mockMessageRepository) CreateReply(ctx context.Context, message *model.Message) error {
 	if ctx.Value(CreateReplyFailedValue) != nil {
 		return fmt.Errorf("failed to create reply")
 	}

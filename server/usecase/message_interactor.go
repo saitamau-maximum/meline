@@ -60,8 +60,9 @@ func (i *messageInteractor) Create(ctx context.Context, userID, channelID uint64
 
 func (i *messageInteractor) CreateReply(ctx context.Context, userID, channelID uint64, parentMessageID string, content string) (*entity.Message, error) {
 	message := model.NewMessageModel(channelID, userID, content)
+	message.ReplyToMessageID = parentMessageID
 
-	if err := i.messageRepository.CreateReply(ctx, message, parentMessageID); err != nil {
+	if err := i.messageRepository.CreateReply(ctx, message); err != nil {
 		return nil, err
 	}
 

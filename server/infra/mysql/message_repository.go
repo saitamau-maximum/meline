@@ -23,7 +23,7 @@ func (r *messageRepository) FindByChannelID(ctx context.Context, channelID uint6
 	defer r.mu.Unlock()
 
 	var messages []*model.Message
-	err := r.db.NewSelect().Model(&messages).Where("channel_id = ?", channelID).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Relation("User").Order("created_at ASC").Scan(ctx)
+	err := r.db.NewSelect().Model(&messages).Where("message.channel_id = ?", channelID).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Relation("User").Order("created_at ASC").Scan(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (r *messageRepository) FindByID(ctx context.Context, id string) (*model.Mes
 	defer r.mu.Unlock()
 
 	message := &model.Message{}
-	err := r.db.NewSelect().Model(message).Where("id = ?", id).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Scan(ctx)
+	err := r.db.NewSelect().Model(message).Where("message.id = ?", id).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Scan(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -56,16 +56,11 @@ func (r *messageRepository) Create(ctx context.Context, message *model.Message) 
 	return nil
 }
 
-func (r *messageRepository) CreateReply(ctx context.Context, message *model.Message, parentMessageID string) error {
+func (r *messageRepository) CreateReply(ctx context.Context, message *model.Message) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	_, err := r.db.NewInsert().Model(message).Exec(ctx)
-	if err != nil {
-		return err
-	}
-
-	_, err = r.db.NewInsert().Model(&model.MessageToMessages{ParentMessageID: parentMessageID, ChildMessageID: message.ID}).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -77,7 +72,7 @@ func (r *messageRepository) Update(ctx context.Context, message *model.Message) 
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	_, err := r.db.NewUpdate().Model(message).Where("id = ?", message.ID).Exec(ctx)
+	_, err := r.db.NewUpdate().Model(message).Where("message.id = ?", message.ID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -89,12 +84,7 @@ func (r *messageRepository) Delete(ctx context.Context, id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	_, err := r.db.NewDelete().Model(&model.Message{}).Where("id = ?", id).Exec(ctx)
-	if err != nil {
-		return err
-	}
-
-	_, err = r.db.NewDelete().Model(&model.MessageToMessages{}).WhereOr("parent_message_id = ?", id).WhereOr("child_message_id = ?", id).Exec(ctx)
+	_, err := r.db.NewDelete().Model(&model.Message{}).Where("message.id = ?", id).Exec(ctx)
 	if err != nil {
 		return err
 	}
