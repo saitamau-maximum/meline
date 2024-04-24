@@ -1,37 +1,63 @@
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useCreateChannelForm } from "./use-create-channel-form";
+import { useCallback, useState } from "react";
 import { TextInput } from "@/components/ui/text-input";
 import { styles } from "./create-channel-form.css";
-import { IChannelRepository } from "@/repositories/channel";
+import { useForm } from "react-hook-form";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { Input, maxLength, minLength, object, string } from "valibot";
+import { useCreateChannels } from "../../hooks/use-create-channel";
 
-interface CreateChannelFormProps {
-  fetchJoinedChannels: () => Promise<void>;
-  channelRepository: IChannelRepository;
-}
+const CreateChannelSchema = object({
+  name: string([
+    minLength(1, "チャンネル名は必須です。"),
+    maxLength(255, "チャンネル名は255文字以内で入力してください。"),
+  ]),
+});
 
-export const CreateChannelForm = ({
-  fetchJoinedChannels,
-  channelRepository,
-}: CreateChannelFormProps) => {
+type CreateChannelFormData = Input<typeof CreateChannelSchema>;
+
+export const CreateChannelForm = () => {
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateChannelFormData>({
+    resolver: valibotResolver(CreateChannelSchema),
+  });
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = () => setIsOpen(true);
-  const close = () => {
+  const open = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const close = useCallback(() => {
     reset();
     setIsOpen(false);
-  };
+  }, [reset]);
 
-  const onCreated = () => {
-    void fetchJoinedChannels();
+  const [formError, setFormError] = useState("");
+
+  const handleCreated = useCallback(() => {
     close();
-  };
+  }, [close]);
 
-  const { reset, register, errors, handleSubmit } = useCreateChannelForm({
-    channelRepository,
-    onCreated,
+  const handleFailed = useCallback(() => {
+    setFormError("チャンネルの作成に失敗しました。");
+  }, []);
+
+  const { mutate: createChannel } = useCreateChannels({
+    onCreated: handleCreated,
+    onFailed: handleFailed,
   });
+
+  const onSubmit = useCallback(
+    (data: CreateChannelFormData) => {
+      createChannel(data);
+    },
+    [createChannel]
+  );
 
   return (
     <Dialog.Root
@@ -51,7 +77,7 @@ export const CreateChannelForm = ({
           チャンネルを作って、みんなで話しましょう
         </Dialog.Description>
         <form
-          onSubmit={(d) => void handleSubmit(d)}
+          onSubmit={handleSubmit(onSubmit)}
           className={styles.createChannelForm}
         >
           <TextInput
@@ -60,6 +86,7 @@ export const CreateChannelForm = ({
             error={errors.name?.message}
             {...register("name")}
           />
+          {formError && <p className={styles.formError}>{formError}</p>}
           <Dialog.Footer>
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>

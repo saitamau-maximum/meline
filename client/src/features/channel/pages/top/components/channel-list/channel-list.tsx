@@ -12,9 +12,20 @@ interface Channel {
 
 interface Props {
   channels: Channel[];
+  isLoading?: boolean;
 }
 
-export const ChannelList = ({ channels }: Props) => {
+export const ChannelList = ({ channels, isLoading }: Props) => {
+  if (isLoading) {
+    return (
+      <div className={styles.channelList}>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className={styles.channelListItemSkeleton} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className={styles.channelList}>
       {channels.map((channel) => (

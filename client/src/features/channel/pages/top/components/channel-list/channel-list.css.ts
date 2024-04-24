@@ -1,6 +1,8 @@
 import { style } from "@vanilla-extract/css";
 import { vars } from "@/styles";
 
+const channelListItemHeight = vars.spacing[8];
+
 export const styles = {
   channelList: style({
     width: "100%",
@@ -20,15 +22,22 @@ export const styles = {
     textDecoration: "none",
     transition: vars.transition.normal("background"),
     background: "transparent",
-    padding: `${vars.spacing[1]} ${vars.spacing[2]}`,
+    padding: `0 ${vars.spacing[2]}`,
     boxSizing: "border-box",
     borderRadius: vars.spacing[2],
+    height: channelListItemHeight,
 
     selectors: {
       "&:hover": {
         background: vars.color.gray[3],
       },
     },
+  }),
+  channelListItemSkeleton: style({
+    width: "100%",
+    height: vars.spacing[8],
+    background: vars.color.gray[4],
+    borderRadius: vars.spacing[2],
   }),
   channelListItemActive: style({
     color: vars.color.gray[12],

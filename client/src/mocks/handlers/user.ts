@@ -12,10 +12,11 @@ export const MockUsers = [
     image_url: "https://github.com/sor4chi.png",
   },
 ];
+export const MockMe = MockUsers[0];
 
 export const userHandlers = [
   http.get("/api/user/me", async () => {
     await delay();
-    return HttpResponse.json(MockUsers[0]);
+    return HttpResponse.json(MockMe);
   }),
 ];

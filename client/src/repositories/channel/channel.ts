@@ -1,9 +1,20 @@
-export interface IChannelRepository {
-  createChannel: (name: string) => Promise<Response>;
+interface Channel {
+  id: number;
+  name: string;
 }
 
-export class ChannelRepository implements IChannelRepository {
-  public createChannel = async (name: string) => {
+interface GetJoinedChannelsResponse {
+  channels: Channel[];
+}
+
+export interface IChannelRepository {
+  createChannel: (name: string) => Promise<void>;
+  getJoinedChannels: () => Promise<GetJoinedChannelsResponse>;
+  getJoinedChannels$$key: () => string[];
+}
+
+export const ChannelRepositoryImpl: IChannelRepository = {
+  createChannel: async (name: string) => {
     const res = await fetch("/api/channel", {
       method: "POST",
       headers: {
@@ -12,6 +23,14 @@ export class ChannelRepository implements IChannelRepository {
       body: JSON.stringify({ name }),
     });
 
-    return res;
-  };
-}
+    if (!res.ok) {
+      throw new Error("Failed to create channel");
+    }
+  },
+  getJoinedChannels: async () => {
+    const res = await fetch("/api/channel");
+
+    return res.json();
+  },
+  getJoinedChannels$$key: () => ["getJoinedChannels"],
+};

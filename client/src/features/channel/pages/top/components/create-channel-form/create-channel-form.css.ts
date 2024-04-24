@@ -8,4 +8,7 @@ export const styles = {
     width: "100%",
     gap: vars.spacing[4],
   }),
+  formError: style({
+    color: vars.color.red[10],
+  }),
 };
