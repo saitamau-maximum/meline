@@ -1,37 +1,32 @@
 import { BrowserRouter } from "react-router-dom";
 import { LoadingOverlay } from "./components/loading-overlay/loading-overlay";
 import { AppRoutes } from "./routes";
-import { Suspense, useCallback, useContext, useEffect } from "react";
+import { Suspense, useContext, useEffect } from "react";
 import {
   LoadingOverlayContext,
   LoadingOverlayProvider,
 } from "./providers/loading-overlay.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthContext, AuthProvider } from "./providers/auth.tsx";
-import { ChannelProvider } from "./providers/channel.tsx";
+import { useAuthUser } from "./hooks/auth-user.ts";
 
-interface AppRootProps {
-  children: React.ReactNode;
-}
-
-const AppRoot = ({ children }: AppRootProps) => {
+const AppRoot = () => {
   const { setIsLoading } = useContext(LoadingOverlayContext);
-  const { fetchUser } = useContext(AuthContext);
-
-  const setupApplication = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      await fetchUser();
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchUser, setIsLoading]);
+  const { isLoading: isAuthUserLoading } = useAuthUser();
 
   useEffect(() => {
-    void setupApplication();
-  }, []);
+    setIsLoading(isAuthUserLoading);
+  }, [isAuthUserLoading, setIsLoading]);
 
-  return <div>{children}</div>;
+  return (
+    <>
+      <LoadingOverlay />
+      <BrowserRouter>
+        <Suspense>
+          <AppRoutes />
+        </Suspense>
+      </BrowserRouter>
+    </>
+  );
 };
 
 const App = () => {
@@ -39,20 +34,9 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ChannelProvider>
-          <LoadingOverlayProvider>
-            <LoadingOverlay />
-            <AppRoot>
-              <BrowserRouter>
-                <Suspense>
-                  <AppRoutes />
-                </Suspense>
-              </BrowserRouter>
-            </AppRoot>
-          </LoadingOverlayProvider>
-        </ChannelProvider>
-      </AuthProvider>
+      <LoadingOverlayProvider>
+        <AppRoot />
+      </LoadingOverlayProvider>
     </QueryClientProvider>
   );
 };
