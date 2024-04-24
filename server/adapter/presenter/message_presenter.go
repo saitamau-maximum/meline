@@ -16,17 +16,15 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 		Messages: []*presenter.Message{},
 	}
 	for _, message := range messages {
-		replyToMessages := make([]*presenter.ReplyToMessage, 0)
-		for _, replyToMessage := range message.ReplyToMessage {
-			replyToMessages = append(replyToMessages, &presenter.ReplyToMessage{
-				ID: replyToMessage.ID,
-				User: &presenter.User{
-					ID:       replyToMessage.User.ID,
-					Name:     replyToMessage.User.Name,
-					ImageURL: replyToMessage.User.ImageURL,
-				},
-				Content: replyToMessage.Content,
-			})
+		replyToMessage := &presenter.ReplyToMessage{}
+		if len(message.ReplyToMessage) > 0 {
+			replyToMessage.ID = message.ReplyToMessage[0].ID
+			replyToMessage.User = &presenter.User{
+				ID:       message.ReplyToMessage[0].User.ID,
+				Name:     message.ReplyToMessage[0].User.Name,
+				ImageURL: message.ReplyToMessage[0].User.ImageURL,
+			}
+			replyToMessage.Content = message.ReplyToMessage[0].Content
 		}
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,
@@ -36,7 +34,7 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 				ImageURL: message.User.ImageURL,
 			},
 			Content:        message.Content,
-			ReplyToMessage: replyToMessages,
+			ReplyToMessage: replyToMessage,
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		})

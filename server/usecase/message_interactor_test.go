@@ -47,7 +47,7 @@ func TestMessageInteractor_Success_GetMessagesByChannelID(t *testing.T) {
 					ImageURL: "https://example.com/image.png",
 				},
 				Content:        "Hello, World!",
-				ReplyToMessage: []*presenter.ReplyToMessage{},
+				ReplyToMessage: &presenter.ReplyToMessage{},
 				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
@@ -324,18 +324,7 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 		Messages: []*presenter.Message{},
 	}
 	for _, message := range messages {
-		replyToMessages := make([]*presenter.ReplyToMessage, 0)
-		for _, replyToMessage := range message.ReplyToMessage {
-			replyToMessages = append(replyToMessages, &presenter.ReplyToMessage{
-				ID: replyToMessage.ID,
-				User: &presenter.User{
-					ID:       replyToMessage.User.ID,
-					Name:     replyToMessage.User.Name,
-					ImageURL: replyToMessage.User.ImageURL,
-				},
-				Content: replyToMessage.Content,
-			})
-		}
+		replyToMessage := &presenter.ReplyToMessage{}
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
@@ -344,7 +333,7 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 				ImageURL: message.User.ImageURL,
 			},
 			Content:        message.Content,
-			ReplyToMessage: replyToMessages,
+			ReplyToMessage: replyToMessage,
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		})
