@@ -1,18 +1,17 @@
-import { AuthContext } from "@/providers/auth";
 import { ChannelTopPageTemplate } from "./template";
-import { useContext } from "react";
 
 import { useJoinedChannels } from "./hooks/use-joined-channels";
+import { useAuthUser } from "@/hooks/auth-user";
 
 export const ChannelTopPage = () => {
-  const { state } = useContext(AuthContext);
+  const { data: authUser } = useAuthUser();
   const { data, isLoading } = useJoinedChannels();
 
-  if (!state.isAuthenticated) return null;
+  if (!authUser) return null;
 
   return (
     <ChannelTopPageTemplate
-      user={state.user}
+      user={authUser}
       channels={data?.channels || []}
       isChannelsLoading={isLoading}
     />
