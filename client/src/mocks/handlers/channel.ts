@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from "msw";
-import { MockUsers } from "./user";
+import { MockMe, MockUsers } from "./user";
 
 export const MockChannels = [
   {
@@ -21,7 +21,7 @@ export const MockChannels = [
 ];
 
 export const channelHandlers = [
-  http.get("/api/channels", async () => {
+  http.get("/api/channel", async () => {
     await delay();
     return HttpResponse.json({
       channels: MockChannels.map((mc) => ({
@@ -30,8 +30,18 @@ export const channelHandlers = [
       })),
     });
   }),
+  http.post("/api/channel", async ({ request }) => {
+    const body = (await request.json()) as { name: string };
+    MockChannels.push({
+      id: MockChannels.length + 1,
+      name: body.name,
+      users: [MockMe],
+    });
+    await delay();
+    return new HttpResponse(null);
+  }),
   http.get(
-    "/api/channels/:id",
+    "/api/channel/:id",
     async ({ params }) => {
       await delay();
       const id = Number(params.id);
