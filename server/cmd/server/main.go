@@ -40,7 +40,7 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
-	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.ChannelToChannels)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.MessageToMessages)(nil), (*model.Message)(nil))
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.ChannelToChannels)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.Message)(nil))
 	defer bunDB.Close()
 
 	apiGroup := e.Group("/api")

@@ -47,7 +47,7 @@ func TestMessageInteractor_Success_GetMessagesByChannelID(t *testing.T) {
 					ImageURL: "https://example.com/image.png",
 				},
 				Content:        "Hello, World!",
-				ReplyToMessage: []*presenter.ReplyToMessage{},
+				ReplyToMessage: &presenter.ReplyToMessage{},
 				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
@@ -69,16 +69,17 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 
 	expected := &entity.Message{
 		ID:      "1",
-		Channel: nil,
-		User: &entity.User{
+		Channel: entity.Channel{},
+		User: entity.User{
 			ID:       1,
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
-		ReplyToMessage: []*entity.Message{},
+		ReplyToMessage: &entity.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
+		DeletedAt:      (*time.Time)(nil),
 	}
 
 	assert.NoError(t, err)
@@ -96,16 +97,17 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 
 	expected := &entity.Message{
 		ID:      "1",
-		Channel: nil,
-		User: &entity.User{
+		Channel: entity.Channel{},
+		User: entity.User{
 			ID:       1,
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
-		ReplyToMessage: []*entity.Message{},
+		ReplyToMessage: &entity.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
+		DeletedAt:      (*time.Time)(nil),
 	}
 
 	assert.NoError(t, err)
@@ -259,7 +261,7 @@ func (m *mockMessageRepository) FindByChannelID(ctx context.Context, channelID u
 				ImageURL: "https://example.com/image.png",
 			},
 			Content:        "Hello, World!",
-			ReplyToMessage: []*model.Message{},
+			ReplyToMessage: &model.Message{},
 			CreatedAt:      time.Time{},
 			UpdatedAt:      time.Time{},
 		},
@@ -278,7 +280,7 @@ func (m *mockMessageRepository) FindByID(ctx context.Context, id string) (*model
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
-		ReplyToMessage: []*model.Message{},
+		ReplyToMessage: &model.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
@@ -293,7 +295,7 @@ func (m *mockMessageRepository) Create(ctx context.Context, message *model.Messa
 	return nil
 }
 
-func (m *mockMessageRepository) CreateReply(ctx context.Context, message *model.Message, parentMessageID string) error {
+func (m *mockMessageRepository) CreateReply(ctx context.Context, message *model.Message) error {
 	if ctx.Value(CreateReplyFailedValue) != nil {
 		return fmt.Errorf("failed to create reply")
 	}
@@ -324,18 +326,7 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 		Messages: []*presenter.Message{},
 	}
 	for _, message := range messages {
-		replyToMessages := make([]*presenter.ReplyToMessage, 0)
-		for _, replyToMessage := range message.ReplyToMessage {
-			replyToMessages = append(replyToMessages, &presenter.ReplyToMessage{
-				ID: replyToMessage.ID,
-				User: &presenter.User{
-					ID:       replyToMessage.User.ID,
-					Name:     replyToMessage.User.Name,
-					ImageURL: replyToMessage.User.ImageURL,
-				},
-				Content: replyToMessage.Content,
-			})
-		}
+		replyToMessage := &presenter.ReplyToMessage{}
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
@@ -344,7 +335,7 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 				ImageURL: message.User.ImageURL,
 			},
 			Content:        message.Content,
-			ReplyToMessage: replyToMessages,
+			ReplyToMessage: replyToMessage,
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		})
