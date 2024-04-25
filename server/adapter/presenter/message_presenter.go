@@ -19,7 +19,7 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 		var replyToMessage *presenter.ReplyToMessage = nil
 		if message.ReplyToMessage != nil {
 			replyToMessage = &presenter.ReplyToMessage{
-				ID:      message.ReplyToMessage.ID,
+				ID: message.ReplyToMessage.ID,
 				User: &presenter.User{
 					ID:       message.ReplyToMessage.User.ID,
 					Name:     message.ReplyToMessage.User.Name,
@@ -43,4 +43,34 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 	}
 
 	return messagesResponse
+}
+
+func (p *MessagePresenter) GenerateCreateMessageResponse(message *entity.Message) *presenter.CreateMessageResponse {
+	var replyToMessage *presenter.ReplyToMessage = nil
+	if message.ReplyToMessage != nil {
+		replyToMessage = &presenter.ReplyToMessage{
+			ID: message.ReplyToMessage.ID,
+			User: &presenter.User{
+				ID:       message.ReplyToMessage.User.ID,
+				Name:     message.ReplyToMessage.User.Name,
+				ImageURL: message.ReplyToMessage.User.ImageURL,
+			},
+			Content: message.ReplyToMessage.Content,
+		}
+	}
+
+	return &presenter.CreateMessageResponse{
+		Message: &presenter.Message{
+			ID: message.ID,
+			User: &presenter.User{
+				ID:       message.User.ID,
+				Name:     message.User.Name,
+				ImageURL: message.User.ImageURL,
+			},
+			Content:        message.Content,
+			ReplyToMessage: replyToMessage,
+			CreatedAt:      message.CreatedAt.String(),
+			UpdatedAt:      message.UpdatedAt.String(),
+		},
+	}
 }
