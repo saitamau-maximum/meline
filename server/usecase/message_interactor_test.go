@@ -67,19 +67,19 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 
 	res, err := interactor.Create(ctx, 1, 1, "Hello, World!")
 
-	expected := &entity.Message{
-		ID:      "1",
-		Channel: entity.Channel{},
-		User: entity.User{
-			ID:       1,
-			Name:     "User",
-			ImageURL: "https://example.com/image.png",
+	expected := &presenter.CreateMessageResponse{
+		Message: &presenter.Message{
+			ID: "1",
+			User: &presenter.User{
+				ID:       1,
+				Name:     "User",
+				ImageURL: "https://example.com/image.png",
+			},
+			Content:        "Hello, World!",
+			ReplyToMessage: nil,
+			CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+			UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 		},
-		ReplyToMessage: &entity.Message{},
-		Content:        "Hello, World!",
-		CreatedAt:      time.Time{},
-		UpdatedAt:      time.Time{},
-		DeletedAt:      (*time.Time)(nil),
 	}
 
 	assert.NoError(t, err)
@@ -95,19 +95,19 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 
 	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
-	expected := &entity.Message{
-		ID:      "1",
-		Channel: entity.Channel{},
-		User: entity.User{
-			ID:       1,
-			Name:     "User",
-			ImageURL: "https://example.com/image.png",
+	expected := &presenter.CreateMessageResponse{
+		Message: &presenter.Message{
+			ID: "1",
+			User: &presenter.User{
+				ID:       1,
+				Name:     "User",
+				ImageURL: "https://example.com/image.png",
+			},
+			Content:        "Hello, World!",
+			ReplyToMessage: nil,
+			CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+			UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 		},
-		ReplyToMessage: &entity.Message{},
-		Content:        "Hello, World!",
-		CreatedAt:      time.Time{},
-		UpdatedAt:      time.Time{},
-		DeletedAt:      (*time.Time)(nil),
 	}
 
 	assert.NoError(t, err)
@@ -342,4 +342,23 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 	}
 
 	return messagesResponse
+}
+
+func (m *mockMessagePresenter) GenerateCreateMessageResponse(message *entity.Message) *presenter.CreateMessageResponse {
+	var replyToMessage *presenter.ReplyToMessage = nil
+
+	return &presenter.CreateMessageResponse{
+		Message: &presenter.Message{
+			ID: message.ID,
+			User: &presenter.User{
+				ID:       message.User.ID,
+				Name:     message.User.Name,
+				ImageURL: message.User.ImageURL,
+			},
+			Content:        message.Content,
+			ReplyToMessage: replyToMessage,
+			CreatedAt:      message.CreatedAt.String(),
+			UpdatedAt:      message.UpdatedAt.String(),
+		},
+	}
 }
