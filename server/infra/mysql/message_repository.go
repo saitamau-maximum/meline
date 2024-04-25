@@ -36,7 +36,7 @@ func (r *messageRepository) FindByID(ctx context.Context, id string) (*model.Mes
 	defer r.mu.Unlock()
 
 	message := &model.Message{}
-	err := r.db.NewSelect().Model(message).Where("message.id = ?", id).Relation("ReplyToMessage").Relation("ReplyToMessage.User").Scan(ctx)
+	err := r.db.NewSelect().Model(message).Where("message.id = ?", id).Relation("User").Relation("ReplyToMessage").Relation("ReplyToMessage.User").Scan(ctx)
 	if err != nil {
 		return nil, err
 	}

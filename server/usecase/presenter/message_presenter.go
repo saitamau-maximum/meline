@@ -21,6 +21,11 @@ type GetMessagesByChannelIDResponse struct {
 	Messages []*Message `json:"messages"`
 }
 
+type CreateMessageResponse struct {
+	Message *Message `json:"message"`
+}
+
 type IMessagePresenter interface {
 	GenerateGetMessagesByChannelIDResponse(messages []*entity.Message) *GetMessagesByChannelIDResponse
+	GenerateCreateMessageResponse(message *entity.Message) *CreateMessageResponse
 }
