@@ -47,7 +47,7 @@ func TestMessageInteractor_Success_GetMessagesByChannelID(t *testing.T) {
 					ImageURL: "https://example.com/image.png",
 				},
 				Content:        "Hello, World!",
-				ReplyToMessage: &presenter.ReplyToMessage{},
+				ReplyToMessage: nil,
 				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
@@ -326,7 +326,7 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 		Messages: []*presenter.Message{},
 	}
 	for _, message := range messages {
-		replyToMessage := &presenter.ReplyToMessage{}
+		var replyToMessage *presenter.ReplyToMessage = nil
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
