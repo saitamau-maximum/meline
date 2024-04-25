@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChannelRepositoryImpl } from "@/repositories/channel";
 
 interface UseCreateChannelsOptions {
-  onCreated: () => void;
-  onFailed: () => void;
+  onCreated?: () => void;
+  onFailed?: () => void;
 }
 
-interface CreateChannelParams {
+interface MutationParam {
   name: string;
 }
 
@@ -17,8 +17,8 @@ export const useCreateChannels = ({
   const client = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name }: CreateChannelParams) => {
-      return ChannelRepositoryImpl.createChannel(name);
+    mutationFn: async (param: MutationParam) => {
+      return ChannelRepositoryImpl.createChannel(param);
     },
     onSettled: () => {
       client.invalidateQueries({
@@ -26,10 +26,10 @@ export const useCreateChannels = ({
       });
     },
     onSuccess: () => {
-      onCreated();
+      onCreated?.();
     },
     onError: () => {
-      onFailed();
+      onFailed?.();
     },
   });
 };
