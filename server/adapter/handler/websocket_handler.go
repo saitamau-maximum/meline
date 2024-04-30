@@ -53,10 +53,10 @@ func (h *WebSocketHandler) WebSocket(c echo.Context) error {
 	var eg errgroup.Group
 
 	eg.Go(func() error {
-		return h.clientInteractor.ReadLoop(ctx, client, h.hub)
+		return h.clientInteractor.ReadPump(ctx, client, h.hub)
 	})
 	eg.Go(func() error {
-		return h.clientInteractor.WriteLoop(ctx, client, h.hub)
+		return h.clientInteractor.WritePump(ctx, client, h.hub)
 	})
 
 	if err := eg.Wait(); err != nil {

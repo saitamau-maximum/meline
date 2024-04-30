@@ -17,8 +17,8 @@ const (
 )
 
 type IClientInteractor interface {
-	ReadLoop(ctx context.Context, client *entity.Client, hub *entity.Hub) error
-	WriteLoop(ctx context.Context, client *entity.Client, hub *entity.Hub) error
+	ReadPump(ctx context.Context, client *entity.Client, hub *entity.Hub) error
+	WritePump(ctx context.Context, client *entity.Client, hub *entity.Hub) error
 }
 
 type ClientInteractor struct{}
@@ -27,7 +27,7 @@ func NewClientInteractor() *ClientInteractor {
 	return &ClientInteractor{}
 }
 
-func (c *ClientInteractor) ReadLoop(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
+func (c *ClientInteractor) ReadPump(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
 	defer func() {
 		hub.UnregisterCh <- client
 		client.Ws.Close()
@@ -57,7 +57,7 @@ func (c *ClientInteractor) ReadLoop(ctx context.Context, client *entity.Client, 
 	}
 }
 
-func (c *ClientInteractor) WriteLoop(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
+func (c *ClientInteractor) WritePump(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
 	ticker := time.NewTicker(pingWait)
 	defer func() {
 		ticker.Stop()
