@@ -80,10 +80,9 @@ func (h *MessageHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	h.hub.BroadcastCh <- jsonRes
-	h.hub.ChannelIDCh <- channelIdUint64
+	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
 
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (h *MessageHandler) CreateReply(c echo.Context) error {
@@ -120,10 +119,9 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	h.hub.BroadcastCh <- jsonRes
-	h.hub.ChannelIDCh <- channelIdUint64
+	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
 
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (h *MessageHandler) Update(c echo.Context) error {

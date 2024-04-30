@@ -1,8 +1,7 @@
 package handler
 
 import (
-	"log"
-	"net/http"
+	"context"
 	"strconv"
 
 	"github.com/gorilla/websocket"
@@ -31,16 +30,20 @@ func NewWebSocketHandler(websocketGroup *echo.Group, clientInteractor usecase.IC
 }
 
 func (h *WebSocketHandler) WebSocket(c echo.Context) error {
+	ctx, cancel := context.WithCancel(c.Request().Context())
+
 	channelId := c.Param("channel_id")
 
 	channelIdUint64, err := strconv.ParseUint(channelId, 10, 64)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		cancel()
+		return err
 	}
 
 	conn, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		cancel()
+		return err
 	}
 
 	client := entity.NewClientEntity(conn, channelIdUint64)
@@ -50,13 +53,18 @@ func (h *WebSocketHandler) WebSocket(c echo.Context) error {
 	var eg errgroup.Group
 
 	eg.Go(func() error {
-		return h.clientInteractor.WriteLoop(c.Request().Context(), client)
+		return h.clientInteractor.ReadPump(ctx, client, h.hub)
+	})
+	eg.Go(func() error {
+		return h.clientInteractor.WritePump(ctx, client, h.hub)
 	})
 
 	if err := eg.Wait(); err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, err)
+		cancel()
+		return err
 	}
+
+	cancel()
 
 	return nil
 }

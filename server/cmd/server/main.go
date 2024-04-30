@@ -64,7 +64,7 @@ func main() {
 	channelGroup := apiGroup.Group("/channel", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
 	handler.NewMessageHandler(channelGroup.Group("/:channel_id/message"), messageInteractor, hub)
-	handler.NewWebSocketHandler(apiGroup.Group("/ws"), clientInteractor, hub)
+	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), clientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
