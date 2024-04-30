@@ -26,10 +26,10 @@ func NewWebSocketHandler(websocketGroup *echo.Group, clientInteractor usecase.IC
 		hub:              hub,
 	}
 
-	websocketGroup.GET("/:channel_id", webSocketHandler.WebSocket)
+	websocketGroup.GET("/:channel_id", webSocketHandler.MessageWebSocket)
 }
 
-func (h *WebSocketHandler) WebSocket(c echo.Context) error {
+func (h *WebSocketHandler) MessageWebSocket(c echo.Context) error {
 	ctx, cancel := context.WithCancel(c.Request().Context())
 
 	channelId := c.Param("channel_id")
