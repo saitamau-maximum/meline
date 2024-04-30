@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -14,7 +13,7 @@ const (
 	writeWait      = 10 * time.Second
 	pongWait       = 60 * time.Second
 	pingWait       = (pongWait * 7) / 10
-	maxMessageSize = 512
+	maxMessageSize = 8192
 )
 
 type IClientInteractor interface {
@@ -38,7 +37,6 @@ func (c *ClientInteractor) ReadLoop(ctx context.Context, client *entity.Client, 
 	client.Ws.SetReadDeadline(time.Now().Add(pongWait))
 	client.Ws.SetPongHandler(func(string) error {
 		client.Ws.SetReadDeadline(time.Now().Add(pongWait))
-		log.Println("pong")
 		return nil
 	})
 
@@ -50,7 +48,7 @@ func (c *ClientInteractor) ReadLoop(ctx context.Context, client *entity.Client, 
 			_, _, err := client.Ws.ReadMessage()
 			if err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-					log.Printf("websocket: %v", err)
+					return fmt.Errorf("websocket: %w", err)
 				}
 
 				return nil
@@ -86,7 +84,6 @@ func (c *ClientInteractor) WriteLoop(ctx context.Context, client *entity.Client,
 			}
 		case <-ticker.C:
 			client.Ws.SetWriteDeadline(time.Now().Add(writeWait))
-			log.Println("ping")
 			if err := client.Ws.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return fmt.Errorf("websocket: %w", err)
 			}
