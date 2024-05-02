@@ -72,5 +72,21 @@ func (p *MessagePresenter) GenerateCreateMessageResponse(message *entity.Message
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		},
+		ChannelID: message.ChannelID,
+	}
+}
+
+func (p *MessagePresenter) GenerateNotifyMessageResponse(message *entity.Message) *presenter.NotifyMessageResponse {
+	return &presenter.NotifyMessageResponse{
+		Message: &presenter.NotifyMessage{
+			ID: message.ID,
+			User: &presenter.User{
+				ID:       message.User.ID,
+				Name:     message.User.Name,
+				ImageURL: message.User.ImageURL,
+			},
+			Content: message.Content,
+		},
+		ChannelID: message.ChannelID,
 	}
 }

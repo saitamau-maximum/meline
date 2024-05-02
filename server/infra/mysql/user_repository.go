@@ -71,3 +71,13 @@ func (r *UserRepository) IsUserExists(ctx context.Context, userID uint64) (bool,
 
 	return isExist, nil
 }
+
+func (r *UserRepository) FindByChannelID(ctx context.Context, channelID uint64) ([]*model.User, error) {
+	var users []*model.User
+
+	if err := r.db.NewSelect().Model(&users).Column("user.*").Join("JOIN channel_users ON channel_users.user_id = user.id").Where("channel_users.channel_id = ?", channelID).Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

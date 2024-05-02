@@ -55,8 +55,9 @@ func main() {
 	channelInteractor := usecase.NewChannelInteractor(channelRepository, userRepository, presenter.NewChannelPresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
-	messageInteractor := usecase.NewMessageInteractor(messageRepository, presenter.NewMessagePresenter())
+	messageInteractor := usecase.NewMessageInteractor(messageRepository, userRepository, presenter.NewMessagePresenter())
 	clientInteractor := usecase.NewClientInteractor()
+	notifyClientInteractor := usecase.NewNotifyClientInteractor()
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
 	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
@@ -64,7 +65,7 @@ func main() {
 	channelGroup := apiGroup.Group("/channel", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
 	handler.NewMessageHandler(channelGroup.Group("/:channel_id/message"), messageInteractor, hub)
-	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), clientInteractor, hub)
+	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), clientInteractor, notifyClientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

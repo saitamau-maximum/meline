@@ -11,6 +11,12 @@ type Message struct {
 	UpdatedAt      string          `json:"updated_at"`
 }
 
+type NotifyMessage struct {
+	ID      string `json:"id"`
+	User    *User  `json:"user"`
+	Content string `json:"content"`
+}
+
 type ReplyToMessage struct {
 	ID      string `json:"id"`
 	User    *User  `json:"user"`
@@ -22,10 +28,17 @@ type GetMessagesByChannelIDResponse struct {
 }
 
 type CreateMessageResponse struct {
-	Message *Message `json:"message"`
+	Message   *Message `json:"message"`
+	ChannelID uint64   `json:"channel_id"`
+}
+
+type NotifyMessageResponse struct {
+	Message   *NotifyMessage `json:"message"`
+	ChannelID uint64         `json:"channel_id"`
 }
 
 type IMessagePresenter interface {
 	GenerateGetMessagesByChannelIDResponse(messages []*entity.Message) *GetMessagesByChannelIDResponse
 	GenerateCreateMessageResponse(message *entity.Message) *CreateMessageResponse
+	GenerateNotifyMessageResponse(message *entity.Message) *NotifyMessageResponse
 }
