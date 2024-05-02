@@ -21,7 +21,6 @@ func NewChannelHandler(channelGroup *echo.Group, channelInteractor usecase.IChan
 
 	channelGroup.GET("", channelHandler.GetAllChannels)
 	channelGroup.GET("/:id", channelHandler.GetChannelByID)
-	channelGroup.GET("/", channelHandler.GetAllChannels)
 	channelGroup.POST("/:id/join", channelHandler.JoinChannel)
 	channelGroup.POST("", channelHandler.CreateChannel)
 	channelGroup.POST("/:id/create", channelHandler.CreateChildChannel)
