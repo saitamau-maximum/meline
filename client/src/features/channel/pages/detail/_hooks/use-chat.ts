@@ -12,7 +12,6 @@ export const useChat = ({ channelId, onMessageReceived }: UseChatOptions) => {
   useEffect(() => {
     chatRepository.connect();
     chatRepository.onMessageReceived((message) => {
-      console.log("message", message);
       onMessageReceived?.(message);
     });
 
