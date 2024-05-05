@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/domain/entity"
 	model "github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase"
@@ -43,8 +44,10 @@ func TestMessageInteractor_Success_GetMessagesByChannelID(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, err := interactor.GetMessagesByChannelID(ctx, 1)
 
@@ -74,8 +77,10 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, notifyRes, userIDs, err := interactor.Create(ctx, 1, 1, "Hello, World!")
 
@@ -96,6 +101,9 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 			ChannelID: 1,
 		},
 		notify: &presenter.NotifyMessageResponse{
+			NotifyMeta: presenter.NotifyMeta{
+				TypeID: config.NOTIFY_MESSAGE,
+			},
 			Message: &presenter.NotifyMessage{
 				ID: "1",
 				User: &presenter.User{
@@ -103,9 +111,9 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 					Name:     "User",
 					ImageURL: "https://example.com/image.png",
 				},
-				Content: "Hello, World!",
+				Content:   "Hello, World!",
+				ChannelID: 1,
 			},
-			ChannelID: 1,
 		},
 	}
 
@@ -120,8 +128,10 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
@@ -142,6 +152,9 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 			ChannelID: 1,
 		},
 		notify: &presenter.NotifyMessageResponse{
+			NotifyMeta: presenter.NotifyMeta{
+				TypeID: config.NOTIFY_MESSAGE,
+			},
 			Message: &presenter.NotifyMessage{
 				ID: "1",
 				User: &presenter.User{
@@ -149,9 +162,9 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 					Name:     "User",
 					ImageURL: "https://example.com/image.png",
 				},
-				Content: "Hello, World!",
+				Content:   "Hello, World!",
+				ChannelID: 1,
 			},
-			ChannelID: 1,
 		},
 	}
 
@@ -166,8 +179,10 @@ func TestMessageInteractor_Success_Update(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
@@ -179,8 +194,10 @@ func TestMessageInteractor_Success_Delete(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Delete(ctx, "1")
 
@@ -192,8 +209,10 @@ func TestMessageInteractor_Failed_GetMessagesByChannelID(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, err := interactor.GetMessagesByChannelID(ctx, 1)
 
@@ -206,8 +225,10 @@ func TestMessageInteractor_Failed_Create__Create_Message_Failed(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, notifyRes, userIDs, err := interactor.Create(ctx, 1, 1, "Hello, World!")
 
@@ -223,8 +244,10 @@ func TestMessageInteractor_Failed_CreateReply__Target_Message_Not_Found(t *testi
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
@@ -240,8 +263,10 @@ func TestMessageInteractor_Failed_CreateReply__Create_Reply_Failed(t *testing.T)
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
@@ -257,8 +282,10 @@ func TestMessageInteractor_Failed_CreateReply__Get_Message_Failed(t *testing.T) 
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
@@ -274,8 +301,10 @@ func TestMessageInteractor_Failed_Update__Target_Message_Not_Found(t *testing.T)
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
@@ -288,8 +317,10 @@ func TestMessageInteractor_Failed_Update__Update_Message_Failed(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
@@ -302,8 +333,10 @@ func TestMessageInteractor_Failed_Delete(t *testing.T) {
 
 	repo := &mockMessageRepository{}
 	userRepo := &mockUserRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, userRepo, pre)
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Delete(ctx, "1")
 
@@ -385,6 +418,16 @@ func (m *mockMessageRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+type mockNotifyRepository struct{}
+
+func (m *mockNotifyRepository) BulkCreate(ctx context.Context, notify []model.Notify) error {
+	return nil
+}
+
+func (m *mockNotifyRepository) FindByUserID(ctx context.Context, userID uint64) ([]*model.Notify, error) {
+	return nil, nil
+}
+
 type mockMessagePresenter struct{}
 
 func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*entity.Message) *presenter.GetMessagesByChannelIDResponse {
@@ -430,8 +473,13 @@ func (m *mockMessagePresenter) GenerateCreateMessageResponse(message *entity.Mes
 	}
 }
 
-func (m *mockMessagePresenter) GenerateNotifyMessageResponse(message *entity.Message) *presenter.NotifyMessageResponse {
+type mockNotifyPresenter struct{}
+
+func (m *mockNotifyPresenter) GenerateNotifyMessageResponse(message *entity.Message) *presenter.NotifyMessageResponse {
 	return &presenter.NotifyMessageResponse{
+		NotifyMeta: presenter.NotifyMeta{
+			TypeID: config.NOTIFY_MESSAGE,
+		},
 		Message: &presenter.NotifyMessage{
 			ID: message.ID,
 			User: &presenter.User{
@@ -439,8 +487,8 @@ func (m *mockMessagePresenter) GenerateNotifyMessageResponse(message *entity.Mes
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
 			},
-			Content: message.Content,
+			Content:   message.Content,
+			ChannelID: message.ChannelID,
 		},
-		ChannelID: message.ChannelID,
 	}
 }
