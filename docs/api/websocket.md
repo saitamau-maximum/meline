@@ -27,7 +27,8 @@
         },
         "created_at": "2024-04-25 10:19:24 +0000 UTC",
         "updated_at": "2024-04-25 10:19:24 +0000 UTC"
-    }
+    },
+    "channel_id": 1
 }
 ```
 
@@ -35,4 +36,27 @@
 
 自分が所属しているChannelに送信されたメッセージを受信する
 
-**実装中**
+### 通知の種類
+
+- 着信通知(Message)
+    - TypeID: 0 (`config.NOTIFY_MESSAGE`)
+
+### Response Example
+
+```json
+{
+    "notify_meta": {
+        "type_id": 0
+    },
+    "message": {
+        "id": "c7b2e0e2-4e4e-4a7d-9a0d-6e3e8b9c5d1f",
+        "user": {
+            "id": 1,
+            "name": "test-user",
+            "image_url": "https://example.com"
+        },
+        "content": "test-message",
+        "channel_id": 1
+    },
+}
+```

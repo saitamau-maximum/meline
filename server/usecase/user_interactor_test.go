@@ -221,6 +221,23 @@ func (r *mockUserRepository) IsUserExists(ctx context.Context, userID uint64) (b
 	return true, nil
 }
 
+func (r *mockUserRepository) FindByChannelID(ctx context.Context, channelID uint64) ([]*model.User, error) {
+	return []*model.User{
+		{
+			ID:         1,
+			ProviderID: "test-provider-id",
+			Name:       "John Doe",
+			ImageURL:   "https://example.com/image.jpg",
+		},
+		{
+			ID:         2,
+			ProviderID: "test-provider-id-2",
+			Name:       "Jane Doe",
+			ImageURL:   "https://example.com/image-2.jpg",
+		},
+	}, nil
+}
+
 type mockUserPresenter struct{}
 
 func (p *mockUserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {

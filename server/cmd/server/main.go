@@ -40,7 +40,7 @@ func main() {
 	}
 
 	bunDB := bun.NewDB(db, mysqldialect.New())
-	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.ChannelToChannels)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.Message)(nil))
+	bunDB.RegisterModel((*model.ChannelUsers)(nil), (*model.ChannelToChannels)(nil), (*model.Channel)(nil), (*model.User)(nil), (*model.Message)(nil), (*model.Notify)(nil))
 	defer bunDB.Close()
 
 	apiGroup := e.Group("/api")
@@ -50,13 +50,15 @@ func main() {
 	userRepository := mysql.NewUserRepository(bunDB)
 	channelRepository := mysql.NewChannelRepository(bunDB)
 	messageRepository := mysql.NewMessageRepository(bunDB)
+	notifyRepository := mysql.NewNotifyRepository(bunDB)
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
 	channelInteractor := usecase.NewChannelInteractor(channelRepository, userRepository, presenter.NewChannelPresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
-	messageInteractor := usecase.NewMessageInteractor(messageRepository, presenter.NewMessagePresenter())
+	messageInteractor := usecase.NewMessageInteractor(messageRepository, userRepository, notifyRepository, presenter.NewMessagePresenter(), presenter.NewNotifyPresenter())
 	clientInteractor := usecase.NewClientInteractor()
+	notifyClientInteractor := usecase.NewNotifyClientInteractor()
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
 	handler.NewOAuthHandler(apiGroup.Group("/auth"), githubOAuthInteractor, authInteractor, userInteractor)
@@ -64,7 +66,7 @@ func main() {
 	channelGroup := apiGroup.Group("/channel", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
 	handler.NewMessageHandler(channelGroup.Group("/:channel_id/message"), messageInteractor, hub)
-	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), clientInteractor, hub)
+	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), clientInteractor, notifyClientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

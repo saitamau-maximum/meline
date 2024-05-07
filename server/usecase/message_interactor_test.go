@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/domain/entity"
 	model "github.com/saitamau-maximum/meline/models"
 	"github.com/saitamau-maximum/meline/usecase"
@@ -20,6 +21,16 @@ type CreateReplyFailed string
 type UpdateMessageFailed string
 type DeleteMessageFailed string
 
+type ExpectedCreateMessageResponse struct {
+	msg    *presenter.CreateMessageResponse
+	notify *presenter.NotifyMessageResponse
+}
+
+type ExpectedCreateReplyResponse struct {
+	msg    *presenter.CreateMessageResponse
+	notify *presenter.NotifyMessageResponse
+}
+
 const (
 	GetMessagesByChannelIDFailedValue GetMessagesByChannelIDFailed = "get_messages_by_channel_id_failed"
 	CreateMessageFailedValue          CreateMessageFailed          = "create_message_failed"
@@ -32,8 +43,11 @@ func TestMessageInteractor_Success_GetMessagesByChannelID(t *testing.T) {
 	ctx := context.Background()
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, err := interactor.GetMessagesByChannelID(ctx, 1)
 
@@ -62,64 +76,123 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 	ctx := context.Background()
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
-	res, err := interactor.Create(ctx, 1, 1, "Hello, World!")
+	res, notifyRes, userIDs, err := interactor.Create(ctx, 1, 1, "Hello, World!")
 
-	expected := &presenter.CreateMessageResponse{
-		Message: &presenter.Message{
-			ID: "1",
-			User: &presenter.User{
-				ID:       1,
-				Name:     "User",
-				ImageURL: "https://example.com/image.png",
+	expected := &ExpectedCreateMessageResponse{
+		msg: &presenter.CreateMessageResponse{
+			Message: &presenter.Message{
+				ID: "1",
+				User: &presenter.User{
+					ID:       1,
+					Name:     "User",
+					ImageURL: "https://example.com/image.png",
+				},
+				Content:        "Hello, World!",
+				ReplyToMessage: nil,
+				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
-			Content:        "Hello, World!",
-			ReplyToMessage: nil,
-			CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
-			UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+			ChannelID: 1,
+		},
+		notify: &presenter.NotifyMessageResponse{
+			NotifyMeta: presenter.NotifyMeta{
+				TypeID: config.NOTIFY_MESSAGE,
+			},
+			Payload: presenter.Payload{
+				Message: &presenter.Message{
+					ID: "1",
+					User: &presenter.User{
+						ID:       1,
+						Name:     "User",
+						ImageURL: "https://example.com/image.png",
+					},
+					Content:        "Hello, World!",
+					ReplyToMessage: nil,
+					CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+					UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+				},
+				ChannelID: 1,
+			},
 		},
 	}
 
 	assert.NoError(t, err)
-	assert.Equal(t, expected, res)
+	assert.Equal(t, expected.msg, res)
+	assert.Equal(t, expected.notify, notifyRes)
+	assert.Equal(t, []uint64{1, 2}, userIDs)
 }
 
 func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 	ctx := context.Background()
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
-	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
+	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
-	expected := &presenter.CreateMessageResponse{
-		Message: &presenter.Message{
-			ID: "1",
-			User: &presenter.User{
-				ID:       1,
-				Name:     "User",
-				ImageURL: "https://example.com/image.png",
+	expected := &ExpectedCreateReplyResponse{
+		msg: &presenter.CreateMessageResponse{
+			Message: &presenter.Message{
+				ID: "1",
+				User: &presenter.User{
+					ID:       1,
+					Name:     "User",
+					ImageURL: "https://example.com/image.png",
+				},
+				Content:        "Hello, World!",
+				ReplyToMessage: nil,
+				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
-			Content:        "Hello, World!",
-			ReplyToMessage: nil,
-			CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
-			UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+			ChannelID: 1,
+		},
+		notify: &presenter.NotifyMessageResponse{
+			NotifyMeta: presenter.NotifyMeta{
+				TypeID: config.NOTIFY_MESSAGE,
+			},
+			Payload: presenter.Payload{
+				Message: &presenter.Message{
+					ID: "1",
+					User: &presenter.User{
+						ID:       1,
+						Name:     "User",
+						ImageURL: "https://example.com/image.png",
+					},
+					Content:        "Hello, World!",
+					ReplyToMessage: nil,
+					CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+					UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+				},
+				ChannelID: 1,
+			},
 		},
 	}
 
 	assert.NoError(t, err)
-	assert.Equal(t, expected, res)
+	assert.Equal(t, expected.msg, res)
+	assert.Equal(t, expected.notify, notifyRes)
+	assert.Equal(t, []uint64{1, 2}, userIDs)
 }
 
 func TestMessageInteractor_Success_Update(t *testing.T) {
 	ctx := context.Background()
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
@@ -130,8 +203,11 @@ func TestMessageInteractor_Success_Delete(t *testing.T) {
 	ctx := context.Background()
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Delete(ctx, "1")
 
@@ -142,8 +218,11 @@ func TestMessageInteractor_Failed_GetMessagesByChannelID(t *testing.T) {
 	ctx := context.WithValue(context.Background(), GetMessagesByChannelIDFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	res, err := interactor.GetMessagesByChannelID(ctx, 1)
 
@@ -155,13 +234,18 @@ func TestMessageInteractor_Failed_Create__Create_Message_Failed(t *testing.T) {
 	ctx := context.WithValue(context.Background(), CreateMessageFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
-	res, err := interactor.Create(ctx, 1, 1, "Hello, World!")
+	res, notifyRes, userIDs, err := interactor.Create(ctx, 1, 1, "Hello, World!")
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
+	assert.Nil(t, notifyRes)
+	assert.Nil(t, userIDs)
 	assert.Equal(t, "failed to create message", err.Error())
 }
 
@@ -169,13 +253,18 @@ func TestMessageInteractor_Failed_CreateReply__Target_Message_Not_Found(t *testi
 	ctx := context.WithValue(context.Background(), FindByIDFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
-	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
+	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
+	assert.Nil(t, notifyRes)
+	assert.Nil(t, userIDs)
 	assert.Equal(t, "failed to get message by id", err.Error())
 }
 
@@ -183,13 +272,18 @@ func TestMessageInteractor_Failed_CreateReply__Create_Reply_Failed(t *testing.T)
 	ctx := context.WithValue(context.Background(), CreateReplyFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
-	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
+	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
+	assert.Nil(t, notifyRes)
+	assert.Nil(t, userIDs)
 	assert.Equal(t, "failed to create reply", err.Error())
 }
 
@@ -197,13 +291,18 @@ func TestMessageInteractor_Failed_CreateReply__Get_Message_Failed(t *testing.T) 
 	ctx := context.WithValue(context.Background(), FindByIDFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
-	res, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
+	res, notifyRes, userIDs, err := interactor.CreateReply(ctx, 1, 1, "1", "Hello, World!")
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
+	assert.Nil(t, notifyRes)
+	assert.Nil(t, userIDs)
 	assert.Equal(t, "failed to get message by id", err.Error())
 }
 
@@ -211,8 +310,11 @@ func TestMessageInteractor_Failed_Update__Target_Message_Not_Found(t *testing.T)
 	ctx := context.WithValue(context.Background(), FindByIDFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
@@ -224,8 +326,11 @@ func TestMessageInteractor_Failed_Update__Update_Message_Failed(t *testing.T) {
 	ctx := context.WithValue(context.Background(), UpdateMessageFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Update(ctx, "1", "Hello, World!")
 
@@ -237,8 +342,11 @@ func TestMessageInteractor_Failed_Delete(t *testing.T) {
 	ctx := context.WithValue(context.Background(), DeleteMessageFailedValue, true)
 
 	repo := &mockMessageRepository{}
-	pre := &mockMessagePresenter{}
-	interactor := usecase.NewMessageInteractor(repo, pre)
+	userRepo := &mockUserRepository{}
+	notifyRepo := &mockNotifyRepository{}
+	msgPre := &mockMessagePresenter{}
+	notifyPre := &mockNotifyPresenter{}
+	interactor := usecase.NewMessageInteractor(repo, userRepo, notifyRepo, msgPre, notifyPre)
 
 	err := interactor.Delete(ctx, "1")
 
@@ -280,6 +388,7 @@ func (m *mockMessageRepository) FindByID(ctx context.Context, id string) (*model
 			Name:     "User",
 			ImageURL: "https://example.com/image.png",
 		},
+		ChannelID:      1,
 		ReplyToMessage: &model.Message{},
 		Content:        "Hello, World!",
 		CreatedAt:      time.Time{},
@@ -317,6 +426,16 @@ func (m *mockMessageRepository) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+type mockNotifyRepository struct{}
+
+func (m *mockNotifyRepository) BulkCreate(ctx context.Context, notify []model.Notify) error {
+	return nil
+}
+
+func (m *mockNotifyRepository) FindByUserID(ctx context.Context, userID uint64) ([]*model.Notify, error) {
+	return nil, nil
 }
 
 type mockMessagePresenter struct{}
@@ -359,6 +478,32 @@ func (m *mockMessagePresenter) GenerateCreateMessageResponse(message *entity.Mes
 			ReplyToMessage: replyToMessage,
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
+		},
+		ChannelID: message.ChannelID,
+	}
+}
+
+type mockNotifyPresenter struct{}
+
+func (m *mockNotifyPresenter) GenerateNotifyMessageResponse(message *entity.Message) *presenter.NotifyMessageResponse {
+	return &presenter.NotifyMessageResponse{
+		NotifyMeta: presenter.NotifyMeta{
+			TypeID: config.NOTIFY_MESSAGE,
+		},
+		Payload: presenter.Payload{
+			Message: &presenter.Message{
+				ID: message.ID,
+				User: &presenter.User{
+					ID:       message.User.ID,
+					Name:     message.User.Name,
+					ImageURL: message.User.ImageURL,
+				},
+				Content:        message.Content,
+				ReplyToMessage: nil,
+				CreatedAt:      message.CreatedAt.String(),
+				UpdatedAt:      message.UpdatedAt.String(),
+			},
+			ChannelID: message.ChannelID,
 		},
 	}
 }

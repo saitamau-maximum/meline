@@ -22,7 +22,8 @@ type GetMessagesByChannelIDResponse struct {
 }
 
 type CreateMessageResponse struct {
-	Message *Message `json:"message"`
+	Message   *Message `json:"message"`
+	ChannelID uint64   `json:"channel_id"`
 }
 
 type IMessagePresenter interface {

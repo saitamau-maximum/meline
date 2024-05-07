@@ -72,5 +72,6 @@ func (p *MessagePresenter) GenerateCreateMessageResponse(message *entity.Message
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		},
+		ChannelID: message.ChannelID,
 	}
 }

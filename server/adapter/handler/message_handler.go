@@ -68,7 +68,7 @@ func (h *MessageHandler) Create(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	res, err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.Content)
+	res, notifyRes, userIDs, err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.Content)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
@@ -80,7 +80,14 @@ func (h *MessageHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
+	jsonNotifyRes, err := json.Marshal(notifyRes)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
 	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
+	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userIDs)
 
 	return c.JSON(http.StatusCreated, res)
 }
@@ -107,7 +114,7 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	res, err := h.messageInteractor.CreateReply(c.Request().Context(), userId, channelIdUint64, replyToId, createMessageRequest.Content)
+	res, notifyRes, userIDs, err := h.messageInteractor.CreateReply(c.Request().Context(), userId, channelIdUint64, replyToId, createMessageRequest.Content)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
@@ -119,7 +126,14 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
+	jsonNotifyRes, err := json.Marshal(notifyRes)
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
 	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
+	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userIDs)
 
 	return c.JSON(http.StatusCreated, res)
 }

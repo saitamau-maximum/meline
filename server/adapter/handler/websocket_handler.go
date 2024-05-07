@@ -16,20 +16,23 @@ var (
 )
 
 type WebSocketHandler struct {
-	clientInteractor usecase.IClientInteractor
-	hub              *entity.Hub
+	clientInteractor       usecase.IClientInteractor
+	notifyClientInteractor usecase.INotifyClientInteractor
+	hub                    *entity.Hub
 }
 
-func NewWebSocketHandler(websocketGroup *echo.Group, clientInteractor usecase.IClientInteractor, hub *entity.Hub) {
+func NewWebSocketHandler(websocketGroup *echo.Group, clientInteractor usecase.IClientInteractor, notifyClientInteractor usecase.INotifyClientInteractor, hub *entity.Hub) {
 	webSocketHandler := &WebSocketHandler{
-		clientInteractor: clientInteractor,
-		hub:              hub,
+		clientInteractor:       clientInteractor,
+		notifyClientInteractor: notifyClientInteractor,
+		hub:                    hub,
 	}
 
-	websocketGroup.GET("/:channel_id", webSocketHandler.WebSocket)
+	websocketGroup.GET("/:channel_id", webSocketHandler.MessageWebSocket)
+	websocketGroup.GET("/notify", webSocketHandler.NotifyWebSocket)
 }
 
-func (h *WebSocketHandler) WebSocket(c echo.Context) error {
+func (h *WebSocketHandler) MessageWebSocket(c echo.Context) error {
 	ctx, cancel := context.WithCancel(c.Request().Context())
 
 	channelId := c.Param("channel_id")
@@ -48,7 +51,7 @@ func (h *WebSocketHandler) WebSocket(c echo.Context) error {
 
 	client := entity.NewClientEntity(conn, channelIdUint64)
 
-	h.hub.RegisterClient(client, channelIdUint64)
+	h.hub.RegisterCh <- client
 
 	var eg errgroup.Group
 
@@ -57,6 +60,40 @@ func (h *WebSocketHandler) WebSocket(c echo.Context) error {
 	})
 	eg.Go(func() error {
 		return h.clientInteractor.WritePump(ctx, client, h.hub)
+	})
+
+	if err := eg.Wait(); err != nil {
+		cancel()
+		return err
+	}
+
+	cancel()
+
+	return nil
+}
+
+func (h *WebSocketHandler) NotifyWebSocket(c echo.Context) error {
+	ctx, cancel := context.WithCancel(c.Request().Context())
+
+	userId := c.Get("user_id").(uint64)
+
+	conn, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		cancel()
+		return err
+	}
+
+	client := entity.NewNotifyClientEntity(conn, userId)
+
+	h.hub.RegisterNotifyCh <- client
+
+	var eg errgroup.Group
+
+	eg.Go(func() error {
+		return h.notifyClientInteractor.ReadPump(ctx, client, h.hub)
+	})
+	eg.Go(func() error {
+		return h.notifyClientInteractor.WritePump(ctx, client, h.hub)
 	})
 
 	if err := eg.Wait(); err != nil {
