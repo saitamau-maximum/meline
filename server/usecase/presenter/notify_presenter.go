@@ -6,16 +6,14 @@ type NotifyMeta struct {
 	TypeID uint64 `json:"type_id"`
 }
 
-type NotifyMessage struct {
-	ID        string `json:"id"`
-	User      *User  `json:"user"`
-	Content   string `json:"content"`
-	ChannelID uint64 `json:"channel_id"`
+type Payload struct {
+	Message   *Message `json:"message"`
+	ChannelID uint64   `json:"channel_id"`
 }
 
 type NotifyMessageResponse struct {
-	NotifyMeta NotifyMeta     `json:"notify_meta"`
-	Message    *NotifyMessage `json:"message"`
+	NotifyMeta NotifyMeta `json:"notify_meta"`
+	Payload    Payload    `json:"payload"`
 }
 
 type INotifyPresenter interface {

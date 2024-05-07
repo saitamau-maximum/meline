@@ -17,10 +17,19 @@ func (p *NotifyPresenter) GenerateNotifyMessageResponse(message *entity.Message)
 		NotifyMeta: presenter.NotifyMeta{
 			TypeID: config.NOTIFY_MESSAGE,
 		},
-		Message: &presenter.NotifyMessage{
-			ID:        message.ID,
-			User:      &presenter.User{ID: message.User.ID, Name: message.User.Name, ImageURL: message.User.ImageURL},
-			Content:   message.Content,
+		Payload: presenter.Payload{
+			Message: &presenter.Message{
+				ID: message.ID,
+				User: &presenter.User{
+					ID:       message.User.ID,
+					Name:     message.User.Name,
+					ImageURL: message.User.ImageURL,
+				},
+				Content:        message.Content,
+				ReplyToMessage: nil,
+				CreatedAt:      message.CreatedAt.String(),
+				UpdatedAt:      message.UpdatedAt.String(),
+			},
 			ChannelID: message.ChannelID,
 		},
 	}

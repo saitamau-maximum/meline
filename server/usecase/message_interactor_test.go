@@ -104,14 +104,19 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 			NotifyMeta: presenter.NotifyMeta{
 				TypeID: config.NOTIFY_MESSAGE,
 			},
-			Message: &presenter.NotifyMessage{
-				ID: "1",
-				User: &presenter.User{
-					ID:       1,
-					Name:     "User",
-					ImageURL: "https://example.com/image.png",
+			Payload: presenter.Payload{
+				Message: &presenter.Message{
+					ID: "1",
+					User: &presenter.User{
+						ID:       1,
+						Name:     "User",
+						ImageURL: "https://example.com/image.png",
+					},
+					Content:        "Hello, World!",
+					ReplyToMessage: nil,
+					CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+					UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				},
-				Content:   "Hello, World!",
 				ChannelID: 1,
 			},
 		},
@@ -155,14 +160,19 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 			NotifyMeta: presenter.NotifyMeta{
 				TypeID: config.NOTIFY_MESSAGE,
 			},
-			Message: &presenter.NotifyMessage{
-				ID: "1",
-				User: &presenter.User{
-					ID:       1,
-					Name:     "User",
-					ImageURL: "https://example.com/image.png",
+			Payload: presenter.Payload{
+				Message: &presenter.Message{
+					ID: "1",
+					User: &presenter.User{
+						ID:       1,
+						Name:     "User",
+						ImageURL: "https://example.com/image.png",
+					},
+					Content:        "Hello, World!",
+					ReplyToMessage: nil,
+					CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
+					UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				},
-				Content:   "Hello, World!",
 				ChannelID: 1,
 			},
 		},
@@ -480,14 +490,19 @@ func (m *mockNotifyPresenter) GenerateNotifyMessageResponse(message *entity.Mess
 		NotifyMeta: presenter.NotifyMeta{
 			TypeID: config.NOTIFY_MESSAGE,
 		},
-		Message: &presenter.NotifyMessage{
-			ID: message.ID,
-			User: &presenter.User{
-				ID:       message.User.ID,
-				Name:     message.User.Name,
-				ImageURL: message.User.ImageURL,
+		Payload: presenter.Payload{
+			Message: &presenter.Message{
+				ID: message.ID,
+				User: &presenter.User{
+					ID:       message.User.ID,
+					Name:     message.User.Name,
+					ImageURL: message.User.ImageURL,
+				},
+				Content:        message.Content,
+				ReplyToMessage: nil,
+				CreatedAt:      message.CreatedAt.String(),
+				UpdatedAt:      message.UpdatedAt.String(),
 			},
-			Content:   message.Content,
 			ChannelID: message.ChannelID,
 		},
 	}
