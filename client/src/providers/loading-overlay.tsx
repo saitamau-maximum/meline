@@ -7,7 +7,7 @@ interface LoadingOverlayContextProps {
 
 export const LoadingOverlayContext = createContext<LoadingOverlayContextProps>({
   isLoading: false,
-  setIsLoading: () => {},
+  setIsLoading: () => void 0,
 });
 
 interface LoadingProviderProps {

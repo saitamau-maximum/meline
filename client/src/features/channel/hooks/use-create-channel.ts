@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChannelRepositoryImpl } from "@/repositories/channel";
+import { useMemo } from "react";
 
 interface UseCreateChannelsOptions {
   onCreated?: () => void;
@@ -15,14 +16,15 @@ export const useCreateChannels = ({
   onFailed,
 }: UseCreateChannelsOptions) => {
   const client = useQueryClient();
+  const channelRepository = useMemo(() => new ChannelRepositoryImpl(), []);
 
   return useMutation({
     mutationFn: async (param: MutationParam) => {
-      return ChannelRepositoryImpl.createChannel(param);
+      return channelRepository.createChannel(param);
     },
     onSettled: () => {
       client.invalidateQueries({
-        queryKey: ChannelRepositoryImpl.getJoinedChannels$$key(),
+        queryKey: channelRepository.getJoinedChannels$$key(),
       });
     },
     onSuccess: () => {
