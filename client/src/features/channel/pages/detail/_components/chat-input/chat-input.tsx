@@ -69,7 +69,7 @@ export const ChatInput = ({ channelId }: ChatInputProps) => {
     return () => {
       textarea?.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [onSubmit]);
 
   return (
     <div className={styles.chatForm}>
