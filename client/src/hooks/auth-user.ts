@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { AuthUserRepositoryImpl } from "@/repositories/auth-user";
-import { useMemo } from "react";
+import { useRepositories } from "./repository";
 
 export const useAuthUser = () => {
-  const authUserRepository = useMemo(() => new AuthUserRepositoryImpl(), []);
+  const { authUserRepository } = useRepositories();
 
   const { data, isLoading } = useQuery({
     queryKey: authUserRepository.getAuthUser$$key(),

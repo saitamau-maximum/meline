@@ -1,15 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageRepositoryImpl } from "@/repositories/message";
-import { useEffect, useMemo } from "react";
-import { ChatRepositoryImpl } from "@/repositories/chat";
+import { useEffect } from "react";
 import { logger } from "@/utils/logger";
+import { useRepositories } from "@/hooks/repository";
 
 interface UseMessagesOptions {
   channelId: number;
 }
 
 export const useMessages = ({ channelId }: UseMessagesOptions) => {
-  const messageRepository = useMemo(() => new MessageRepositoryImpl(), []);
+  const { messageRepository, chatRepository } = useRepositories();
 
   const messageQuery = useQuery({
     queryKey: messageRepository.getMessages$$key(channelId),
@@ -19,7 +18,6 @@ export const useMessages = ({ channelId }: UseMessagesOptions) => {
 
   useEffect(() => {
     logger.raw(`=== useMessages ===`);
-    const chatRepository = new ChatRepositoryImpl();
     chatRepository.connect(channelId);
     logger.info(`Connecting to chat channel ${channelId}`);
     chatRepository.onMessageReceived(() => {
@@ -32,7 +30,7 @@ export const useMessages = ({ channelId }: UseMessagesOptions) => {
       chatRepository.disconnect();
       logger.info(`Disconnecting from chat channel ${channelId}`);
     };
-  }, [channelId, queryClient, messageRepository]);
+  }, [channelId, queryClient, chatRepository, messageRepository]);
 
   return {
     messages: messageQuery.data?.messages ?? [],

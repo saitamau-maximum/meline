@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { MessageRepositoryImpl } from "@/repositories/message";
-import { useMemo } from "react";
+import { useRepositories } from "@/hooks/repository";
 
 interface UsePostMessageOptions {
   channelId: number;
@@ -11,7 +10,7 @@ interface MutationParam {
 }
 
 export const usePostMessage = ({ channelId }: UsePostMessageOptions) => {
-  const messageRepository = useMemo(() => new MessageRepositoryImpl(), []);
+  const { messageRepository } = useRepositories();
 
   return useMutation({
     mutationFn: async (param: MutationParam) => {

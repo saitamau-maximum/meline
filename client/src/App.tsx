@@ -8,6 +8,7 @@ import {
 } from "./providers/loading-overlay.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthUser } from "./hooks/auth-user.ts";
+import { RepositoryProvider } from "./providers/repository.tsx";
 
 const AppRoot = () => {
   const { setIsLoading } = useContext(LoadingOverlayContext);
@@ -33,11 +34,13 @@ const App = () => {
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <LoadingOverlayProvider>
-        <AppRoot />
-      </LoadingOverlayProvider>
-    </QueryClientProvider>
+    <RepositoryProvider>
+      <QueryClientProvider client={queryClient}>
+        <LoadingOverlayProvider>
+          <AppRoot />
+        </LoadingOverlayProvider>
+      </QueryClientProvider>
+    </RepositoryProvider>
   );
 };
 

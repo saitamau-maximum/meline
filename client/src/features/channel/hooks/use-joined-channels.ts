@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChannelRepositoryImpl } from "@/repositories/channel";
-import { useMemo } from "react";
+import { useRepositories } from "@/hooks/repository";
 
 export const useJoinedChannels = () => {
-  const channelRepository = useMemo(() => new ChannelRepositoryImpl(), []);
+  const { channelRepository } = useRepositories();
 
   return useQuery({
     queryKey: channelRepository.getJoinedChannels$$key(),
