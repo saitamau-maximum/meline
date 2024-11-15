@@ -13,7 +13,7 @@ export default defineConfig((env) => ({
   server: {
     port: 3000,
     hmr: {
-      clientPort: env.mode === "msw" ? 3000 : 80,
+      clientPort: 80,
       protocol: "ws",
     },
   },
