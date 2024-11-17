@@ -34,13 +34,11 @@ export class NotificationRepositoryImpl implements INotificationRepository {
     const host = location.host;
     const url = `${protocol}://${host}/api/ws/notify`;
     this.connection = new WebSocket(url);
-    this.connection?.addEventListener("close", () => {
-      this.connect();
-    });
   }
 
   disconnect() {
     this.connection?.close();
+    this.connection = null;
   }
 
   onMessageReceived(callback: (res: MessageResponse) => void) {

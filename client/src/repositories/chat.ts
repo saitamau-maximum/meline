@@ -18,13 +18,11 @@ export class ChatRepositoryImpl implements IChatRepository {
     const host = location.host;
     const url = `${protocol}://${host}/api/ws/${channelId}`;
     this.connection = new WebSocket(url);
-    this.connection?.addEventListener("close", () => {
-      this.connect(channelId);
-    });
   }
 
   disconnect() {
     this.connection?.close();
+    this.connection = null;
   }
 
   onMessageReceived(callback: (res: MessageResponse) => void) {
