@@ -1,30 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
-import { Message, MessageRepositoryImpl } from "@/repositories/message";
-import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { logger } from "@/utils/logger";
+import { useRepositories } from "@/hooks/repository";
 
 interface UseMessagesOptions {
   channelId: number;
 }
 
 export const useMessages = ({ channelId }: UseMessagesOptions) => {
-  const query = useQuery({
-    queryKey: MessageRepositoryImpl.getMessages$$key(channelId),
-    queryFn: () => MessageRepositoryImpl.getMessages(channelId),
+  const { messageRepository, chatRepository } = useRepositories();
+
+  const messageQuery = useQuery({
+    queryKey: messageRepository.getMessages$$key(channelId),
+    queryFn: () => messageRepository.getMessages(channelId),
   });
+  const queryClient = useQueryClient();
 
-  const [postedMessages, setPostedMessages] = useState<Message[]>([]);
+  useEffect(() => {
+    logger.raw(`=== useMessages ===`);
+    chatRepository.connect(channelId);
+    logger.info(`Connecting to chat channel ${channelId}`);
+    chatRepository.onMessageReceived(() => {
+      queryClient.invalidateQueries({
+        queryKey: messageRepository.getMessages$$key(channelId),
+      });
+    });
 
-  const appendMessage = (message: Message) => {
-    setPostedMessages((prev) => [...prev, message]);
-  };
-
-  const messages = useMemo(
-    () => [...(query.data?.messages ?? []), ...postedMessages],
-    [query.data?.messages, postedMessages]
-  );
+    return () => {
+      chatRepository.disconnect();
+      logger.info(`Disconnecting from chat channel ${channelId}`);
+    };
+  }, [channelId, queryClient, chatRepository, messageRepository]);
 
   return {
-    messages,
-    appendMessage,
+    messages: messageQuery.data?.messages ?? [],
   };
 };

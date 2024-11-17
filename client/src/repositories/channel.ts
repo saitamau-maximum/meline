@@ -17,8 +17,8 @@ export interface IChannelRepository {
   getJoinedChannels$$key: () => string[];
 }
 
-export const ChannelRepositoryImpl: IChannelRepository = {
-  createChannel: async (param) => {
+export class ChannelRepositoryImpl implements IChannelRepository {
+  async createChannel(param: CreateChannelParam) {
     const res = await fetch("/api/channel", {
       method: "POST",
       headers: {
@@ -30,11 +30,15 @@ export const ChannelRepositoryImpl: IChannelRepository = {
     if (!res.ok) {
       throw new Error("Failed to create channel");
     }
-  },
-  getJoinedChannels: async () => {
+  }
+
+  async getJoinedChannels() {
     const res = await fetch("/api/channel");
 
     return res.json();
-  },
-  getJoinedChannels$$key: () => ["getJoinedChannels"],
-};
+  }
+
+  getJoinedChannels$$key() {
+    return ["getJoinedChannels"];
+  }
+}

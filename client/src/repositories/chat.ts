@@ -5,26 +5,21 @@ export interface MessageResponse {
 }
 
 export interface IChatRepository {
-  connect: () => void;
+  connect: (channelId: number) => void;
   disconnect: () => void;
   onMessageReceived: (callback: (res: MessageResponse) => void) => void;
 }
 
 export class ChatRepositoryImpl implements IChatRepository {
   private connection: WebSocket | null = null;
-  private channelId: number;
 
-  constructor(channelId: number) {
-    this.channelId = channelId;
-  }
-
-  connect() {
+  connect(channelId: number) {
     const protocol = location.protocol === "https:" ? "wss" : "ws";
     const host = location.host;
-    const url = `${protocol}://${host}/api/ws/${this.channelId}`;
+    const url = `${protocol}://${host}/api/ws/${channelId}`;
     this.connection = new WebSocket(url);
     this.connection?.addEventListener("close", () => {
-      this.connect();
+      this.connect(channelId);
     });
   }
 

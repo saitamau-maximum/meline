@@ -8,8 +8,8 @@ export interface IAuthUserRepository {
   getAuthUser$$key: () => string[];
 }
 
-export const AuthUserRepositoryImpl: IAuthUserRepository = {
-  getAuthUser: async () => {
+export class AuthUserRepositoryImpl implements IAuthUserRepository {
+  async getAuthUser() {
     const res = await fetch("/api/user/me");
 
     if (!res.ok) {
@@ -17,6 +17,9 @@ export const AuthUserRepositoryImpl: IAuthUserRepository = {
     }
 
     return res.json();
-  },
-  getAuthUser$$key: () => ["getAuthUser"],
-};
+  }
+
+  getAuthUser$$key() {
+    return ["getAuthUser"];
+  }
+}

@@ -36,8 +36,8 @@ export interface IMessageRepository {
   getMessages$$key: (channelId: number) => string[];
 }
 
-export const MessageRepositoryImpl: IMessageRepository = {
-  createMessage: async (channelId, param) => {
+export class MessageRepositoryImpl implements IMessageRepository {
+  async createMessage(channelId: number, param: CreateMessageParam) {
     const res = await fetch(`/api/channel/${channelId}/message`, {
       method: "POST",
       headers: {
@@ -49,11 +49,15 @@ export const MessageRepositoryImpl: IMessageRepository = {
     if (!res.ok) {
       throw new Error("Failed to create message");
     }
-  },
-  getMessages: async (channelId) => {
+  }
+
+  async getMessages(channelId: number) {
     const res = await fetch(`/api/channel/${channelId}/message`);
 
     return res.json();
-  },
-  getMessages$$key: (channelId) => ["getMessages", `channelId:${channelId}`],
-};
+  }
+
+  getMessages$$key(channelId: number) {
+    return ["getMessages", `channelId:${channelId}`];
+  }
+}

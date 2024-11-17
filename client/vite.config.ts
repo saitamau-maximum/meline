@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 // https://vitejs.dev/config/
-export default defineConfig((env) => ({
+export default defineConfig({
   plugins: [react(), vanillaExtractPlugin()],
   resolve: {
     alias: {
@@ -13,8 +13,8 @@ export default defineConfig((env) => ({
   server: {
     port: 3000,
     hmr: {
-      clientPort: env.mode === "msw" ? 3000 : 80,
+      clientPort: 80,
       protocol: "ws",
     },
   },
-}));
+});
