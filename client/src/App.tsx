@@ -1,32 +1,20 @@
 import { BrowserRouter } from "react-router-dom";
 import { LoadingOverlay } from "./components/loading-overlay/loading-overlay";
 import { AppRoutes } from "./routes";
-import { Suspense, useContext, useEffect } from "react";
-import {
-  LoadingOverlayContext,
-  LoadingOverlayProvider,
-} from "./providers/loading-overlay.tsx";
+import { Suspense } from "react";
+import { LoadingOverlayProvider } from "./providers/loading-overlay";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAuthUser } from "./hooks/auth-user.ts";
-import { RepositoryProvider } from "./providers/repository.tsx";
+import { RepositoryProvider } from "./providers/repository";
+import { useSetup } from "./hooks/setup";
+import { ToastProvider } from "./components/ui/toast/toast-provider";
 
 const AppRoot = () => {
-  const { setIsLoading } = useContext(LoadingOverlayContext);
-  const { isLoading: isAuthUserLoading } = useAuthUser();
-
-  useEffect(() => {
-    setIsLoading(isAuthUserLoading);
-  }, [isAuthUserLoading, setIsLoading]);
+  useSetup();
 
   return (
-    <>
-      <LoadingOverlay />
-      <BrowserRouter>
-        <Suspense>
-          <AppRoutes />
-        </Suspense>
-      </BrowserRouter>
-    </>
+    <Suspense>
+      <AppRoutes />
+    </Suspense>
   );
 };
 
@@ -37,7 +25,12 @@ const App = () => {
     <RepositoryProvider>
       <QueryClientProvider client={queryClient}>
         <LoadingOverlayProvider>
-          <AppRoot />
+          <LoadingOverlay />
+          <BrowserRouter>
+            <ToastProvider>
+              <AppRoot />
+            </ToastProvider>
+          </BrowserRouter>
         </LoadingOverlayProvider>
       </QueryClientProvider>
     </RepositoryProvider>
