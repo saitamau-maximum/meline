@@ -48,15 +48,18 @@
     "notify_meta": {
         "type_id": 0
     },
-    "message": {
-        "id": "c7b2e0e2-4e4e-4a7d-9a0d-6e3e8b9c5d1f",
-        "user": {
-            "id": 1,
-            "name": "test-user",
-            "image_url": "https://example.com"
-        },
-        "content": "test-message",
-        "channel_id": 1
-    },
+    "payload": {
+        "channel_id": 1,
+        "message": {
+            "id": "c7b2e0e2-4e4e-4a7d-9a0d-6e3e8b9c5d1f",
+            "user": {
+                "id": 1,
+                "name": "test-user",
+                "image_url": "https://example.com"
+            },
+            "content": "test-message",
+            "channel_id": 1
+        }
+    }
 }
 ```
