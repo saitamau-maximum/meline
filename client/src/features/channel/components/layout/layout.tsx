@@ -3,6 +3,7 @@ import { styles } from "./layout.css";
 import { CreateChannelForm } from "../create-channel-form";
 import { ChannelList } from "../channel-list";
 import { Outlet } from "react-router-dom";
+import { ProfileBox } from "../profile-box";
 
 interface ChannelLayoutProps {
   channels: {
@@ -24,6 +25,7 @@ export const ChannelLayout = ({
         </div>
         <CreateChannelForm />
         <ChannelList channels={channels} isLoading={isChannelsLoading} />
+        <ProfileBox />
       </div>
       <div className={styles.channelLayoutMain}>
         <Outlet />
