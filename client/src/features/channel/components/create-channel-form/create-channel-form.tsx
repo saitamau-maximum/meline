@@ -5,17 +5,14 @@ import { TextInput } from "@/components/ui/text-input";
 import { styles } from "./create-channel-form.css";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { Input, maxLength, minLength, object, string } from "valibot";
+import { InferInput, maxLength, minLength, object, string, pipe } from "valibot"
 import { useCreateChannels } from "../../hooks/use-create-channel";
 
 const CreateChannelSchema = object({
-  name: string([
-    minLength(1, "チャンネル名は必須です。"),
-    maxLength(255, "チャンネル名は255文字以内で入力してください。"),
-  ]),
+  name: pipe(string(), minLength(1, "チャンネル名は必須です。") , maxLength(255, "チャンネル名は255文字以内で入力してください。") ,),
 });
 
-type CreateChannelFormData = Input<typeof CreateChannelSchema>;
+type CreateChannelFormData = InferInput<typeof CreateChannelSchema>;
 
 export const CreateChannelForm = () => {
   const {
