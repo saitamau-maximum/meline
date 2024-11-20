@@ -159,7 +159,7 @@ jobs:
       - name: Close pull request if already exists
         working-directory: source
         run: |
-          PR_NUMBER=$(gh pr list --state open | grep '${{ env.BRANCH_NAME_CLIENT }}' | awk 'NR==1{print $1}')
+          PR_NUMBER=$(gh pr list --state open | grep '${{ env.BRANCH_NAME_SERVER }}' | awk 'NR==1{print $1}')
           if [ -n "$PR_NUMBER" ]; then
             gh pr close $PR_NUMBER --comment "This pull request is closed because another pull request is opened."
           else
@@ -170,7 +170,7 @@ jobs:
       - name: Delete branch if already exists
         working-directory: source
         run: |
-          BRANCH_NAME=${{ env.BRANCH_NAME_CLIENT }}
+          BRANCH_NAME=${{ env.BRANCH_NAME_SERVER }}
           exists=$(
             git fetch origin ${BRANCH_NAME} &&
             echo true ||
@@ -205,7 +205,7 @@ jobs:
       - name: Commit and Create pull request
         working-directory: source
         run: |
-          git checkout -b ${{ env.BRANCH_NAME_CLIENT }}
+          git checkout -b ${{ env.BRANCH_NAME_SERVER }}
           git add .
           git commit -m "chore: update proto client"
           git push
