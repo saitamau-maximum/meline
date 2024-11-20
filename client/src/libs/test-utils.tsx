@@ -32,8 +32,8 @@ interface CustomRenderOptions {
 
 const customRender = <
   Q extends typeof import("@testing-library/dom").queries,
-  Container extends HTMLElement | null = HTMLElement,
-  BaseElement extends HTMLElement | null = HTMLElement
+  Container extends HTMLElement = HTMLElement,
+  BaseElement extends HTMLElement = HTMLElement
 >(
   ui: React.ReactElement,
   options: RenderOptions<Q, Container, BaseElement> & CustomRenderOptions = {}
@@ -49,8 +49,8 @@ const customRenderHook = <
   Result,
   Props,
   Q extends typeof import("@testing-library/dom").queries,
-  Container extends HTMLElement | null = HTMLElement,
-  BaseElement extends HTMLElement | null = HTMLElement
+  Container extends HTMLElement = HTMLElement,
+  BaseElement extends HTMLElement = HTMLElement
 >(
   render: (initialProps: Props) => Result,
   options: RenderOptions<Q, Container, BaseElement> & CustomRenderOptions = {}
