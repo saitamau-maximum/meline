@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package meline;
+
+option go_package = "github.com/saitamau-maximum/meline/proto";
+
+import "google/api/annotations.proto";
+
+service UserService {
+  rpc Me(UserMeRequest) returns (UserMeResponse) {
+    option (google.api.http) = {
+      get : "/users/me"
+    };
+  }
+}
+
+message UserMeRequest {}
+
+message UserMeResponse {
+  int32 id = 1;
+  string name = 2;
+  string image_url = 3;
+}
