@@ -131,10 +131,10 @@ jobs:
         run: |
           git checkout -b ${{ env.BRANCH_NAME_CLIENT }}
           git add .
-          git commit -m "chore: update proto client"
+          git commit -m "chore(client): Update proto"
           git push
           gh pr create \
-            -t 'chore: Update proto client' \
+            -t 'chore(client): Update proto' \
             -b '${{ steps.set-pr-body.outputs.pr_body }}'
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
@@ -207,10 +207,10 @@ jobs:
         run: |
           git checkout -b ${{ env.BRANCH_NAME_SERVER }}
           git add .
-          git commit -m "chore: update proto client"
+          git commit -m "chore(server): Update proto"
           git push
           gh pr create \
-            -t 'chore: Update proto client' \
+            -t 'chore(server): Update proto' \
             -b '${{ steps.set-pr-body.outputs.pr_body }}'
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
