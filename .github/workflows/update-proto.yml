@@ -9,6 +9,7 @@ on:
 env:
   PROTO_REPOSITORY: saitamau-maximum/meline-protobuf
   BRANCH_NAME_CLIENT: chore/update-proto-client
+  BRANCH_NAME_SERVER: chore/update-proto-server
 
 jobs:
   build-proto:
@@ -117,6 +118,82 @@ jobs:
         run: |
           mkdir -p source/client/src/generated
           mv es source/client/src/generated/proto
+      - name: Set PR body
+        id: set-pr-body
+        run: |
+          if [ "${{ github.event.client_payload.pr_body }}" ]; then
+            echo "pr_body=${{ github.event.client_payload.pr_body }}" >> $GITHUB_OUTPUT
+          else
+            echo "pr_body=API type updated! :partying_face::tada:" >> $GITHUB_OUTPUT
+          fi
+      - name: Commit and Create pull request
+        working-directory: source
+        run: |
+          git checkout -b ${{ env.BRANCH_NAME_CLIENT }}
+          git add .
+          git commit -m "chore: update proto client"
+          git push
+          gh pr create \
+            -t 'chore: Update proto client' \
+            -b '${{ steps.set-pr-body.outputs.pr_body }}'
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+  update-server:
+    name: Update server
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    needs: build-proto
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          path: source
+      - name: Close pull request if already exists
+        working-directory: source
+        run: |
+          PR_NUMBER=$(gh pr list --state open | grep '${{ env.BRANCH_NAME_CLIENT }}' | awk 'NR==1{print $1}')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr close $PR_NUMBER --comment "This pull request is closed because another pull request is opened."
+          else
+            echo "Pull request does not exist, skipping..."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      - name: Delete branch if already exists
+        working-directory: source
+        run: |
+          BRANCH_NAME=${{ env.BRANCH_NAME_CLIENT }}
+          exists=$(
+            git fetch origin ${BRANCH_NAME} &&
+            echo true ||
+            echo false
+          )
+          if [ "${exists}" = "true" ]; then
+            git push origin --delete ${BRANCH_NAME}
+          else
+            echo "Branch ${BRANCH_NAME} does not exist, skipping..."
+          fi
+      - name: Configure git
+        run: |
+          git config --global user.name "meline-proto-updater"
+          git config --global user.email "188972507+meline-proto-updater[bot]@users.noreply.github.com"
+          git config --global --add --bool push.autoSetupRemote true
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: proto-generated
+      - name: Copy proto
+        run: |
+          mkdir -p source/server/geenerated/proto
+          mv go/github.com/saitamau-maximum/meline source/server/generated/proto
       - name: Set PR body
         id: set-pr-body
         run: |
