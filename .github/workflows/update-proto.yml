@@ -192,7 +192,7 @@ jobs:
           name: proto-generated
       - name: Copy proto
         run: |
-          mkdir -p source/server/geenerated/proto
+          mkdir -p source/server/generated/proto
           mv go/github.com/saitamau-maximum/meline source/server/generated/proto
       - name: Set PR body
         id: set-pr-body
