@@ -11,7 +11,7 @@ import (
 
 type INotifyClientInteractor interface {
 	ReadPump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error
-	WritePump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error
+	WritePump(ctx context.Context, client *entity.NotifyClient) error
 }
 
 type NotifyClientInteractor struct{}
@@ -50,7 +50,7 @@ func (c *NotifyClientInteractor) ReadPump(ctx context.Context, client *entity.No
 	}
 }
 
-func (c *NotifyClientInteractor) WritePump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error {
+func (c *NotifyClientInteractor) WritePump(ctx context.Context, client *entity.NotifyClient) error {
 	ticker := time.NewTicker(pingWait)
 
 	defer func() {

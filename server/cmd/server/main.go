@@ -53,11 +53,11 @@ func main() {
 	notifyRepository := mysql.NewNotifyRepository(bunDB)
 	githubOAuthInteractor := usecase.NewGithubOAuthInteractor(oAuthRepository)
 	authInteractor := usecase.NewAuthInteractor()
-	channelInteractor := usecase.NewChannelInteractor(channelRepository, userRepository, presenter.NewChannelPresenter())
+	channelInteractor := usecase.NewChannelInteractor(hub, channelRepository, userRepository, presenter.NewChannelPresenter())
 	userPresenter := presenter.NewUserPresenter()
 	userInteractor := usecase.NewUserInteractor(userRepository, userPresenter)
 	messageInteractor := usecase.NewMessageInteractor(messageRepository, userRepository, notifyRepository, presenter.NewMessagePresenter(), presenter.NewNotifyPresenter())
-	clientInteractor := usecase.NewClientInteractor()
+	messageClientInteractor := usecase.NewMessageClientInteractor()
 	notifyClientInteractor := usecase.NewNotifyClientInteractor()
 	authGateway := gateway.NewAuthGateway(userInteractor)
 
@@ -66,7 +66,7 @@ func main() {
 	channelGroup := apiGroup.Group("/channel", authGateway.Auth)
 	handler.NewChannelHandler(channelGroup, channelInteractor)
 	handler.NewMessageHandler(channelGroup.Group("/:channel_id/message"), messageInteractor, hub)
-	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), clientInteractor, notifyClientInteractor, hub)
+	handler.NewWebSocketHandler(apiGroup.Group("/ws", authGateway.Auth), channelInteractor, messageClientInteractor, notifyClientInteractor, hub)
 
 	apiGroup.GET("/", authGateway.Auth(func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
