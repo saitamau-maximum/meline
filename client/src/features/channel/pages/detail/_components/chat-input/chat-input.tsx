@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Input, maxLength, minLength, object, string } from "valibot";
+import {
+  InferInput,
+  maxLength,
+  minLength,
+  object,
+  string,
+  pipe,
+} from "valibot";
 import { styles } from "./chat-input.css";
 import { usePostMessage } from "../../_hooks/use-post-message";
 import { Textarea } from "@/components/ui/textarea";
 
 const ChatInputSchema = object({
-  message: string([
+  message: pipe(
+    string(),
     minLength(1, "Message is too short"),
-    maxLength(2000, "Message is too long"),
-  ]),
+    maxLength(2000, "Message is too long")
+  ),
 });
 
-type ChatInputFormData = Input<typeof ChatInputSchema>;
+type ChatInputFormData = InferInput<typeof ChatInputSchema>;
 
 interface ChatInputProps {
   channelId: number;

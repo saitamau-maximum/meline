@@ -1,0 +1,216 @@
+name: Update proto
+
+on:
+  repository_dispatch:
+    types: [proto]
+
+  workflow_dispatch:
+
+env:
+  PROTO_REPOSITORY: saitamau-maximum/meline-protobuf
+  BRANCH_NAME_CLIENT: chore/update-proto-client
+  BRANCH_NAME_SERVER: chore/update-proto-server
+
+jobs:
+  build-proto:
+    name: Build proto
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout proto repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          repository: ${{ env.PROTO_REPOSITORY }}
+          token: ${{ steps.generate_token.outputs.token }}
+          path: proto
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: "8.12.0"
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.10"
+          cache: "pnpm"
+          cache-dependency-path: "./proto/pnpm-lock.yaml"
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: proto
+      - name: Setup protoc-gen-openapiv2
+        run: |
+          curl -sSL https://github.com/grpc-ecosystem/grpc-gateway/releases/download/v2.23.0/protoc-gen-openapiv2-v2.23.0-linux-x86_64 -o protoc-gen-openapiv2
+          chmod +x protoc-gen-openapiv2
+          mv protoc-gen-openapiv2 /usr/local/bin
+      - name: Setup protoc-gen-go
+        run: |
+          curl -sSL https://github.com/protocolbuffers/protobuf-go/releases/download/v1.35.2/protoc-gen-go.v1.35.2.linux.amd64.tar.gz -o protoc-gen-go.tar.gz
+          tar -xvf protoc-gen-go.tar.gz
+          chmod +x protoc-gen-go
+          mv protoc-gen-go /usr/local/bin
+      - name: Build
+        run: pnpm build
+        working-directory: proto
+      - name: Upload proto
+        uses: actions/upload-artifact@v4
+        with:
+          path: proto/gen
+          name: proto-generated
+  update-client:
+    name: Update client
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    needs: build-proto
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          path: source
+      - name: Close pull request if already exists
+        working-directory: source
+        run: |
+          PR_NUMBER=$(gh pr list --state open | grep '${{ env.BRANCH_NAME_CLIENT }}' | awk 'NR==1{print $1}')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr close $PR_NUMBER --comment "This pull request is closed because another pull request is opened."
+          else
+            echo "Pull request does not exist, skipping..."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      - name: Delete branch if already exists
+        working-directory: source
+        run: |
+          BRANCH_NAME=${{ env.BRANCH_NAME_CLIENT }}
+          exists=$(
+            git fetch origin ${BRANCH_NAME} &&
+            echo true ||
+            echo false
+          )
+          if [ "${exists}" = "true" ]; then
+            git push origin --delete ${BRANCH_NAME}
+          else
+            echo "Branch ${BRANCH_NAME} does not exist, skipping..."
+          fi
+      - name: Configure git
+        run: |
+          git config --global user.name "meline-proto-updater"
+          git config --global user.email "188972507+meline-proto-updater[bot]@users.noreply.github.com"
+          git config --global --add --bool push.autoSetupRemote true
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: proto-generated
+      - name: Copy proto
+        run: |
+          mkdir -p source/client/src/generated
+          mv es source/client/src/generated/proto
+      - name: Set PR body
+        id: set-pr-body
+        run: |
+          if [ "${{ github.event.client_payload.pr_body }}" ]; then
+            echo "pr_body=${{ github.event.client_payload.pr_body }}" >> $GITHUB_OUTPUT
+          else
+            echo "pr_body=API type updated! :partying_face::tada:" >> $GITHUB_OUTPUT
+          fi
+      - name: Commit and Create pull request
+        working-directory: source
+        run: |
+          git checkout -b ${{ env.BRANCH_NAME_CLIENT }}
+          git add .
+          git commit -m "chore(client): Update proto"
+          git push
+          gh pr create \
+            -t 'chore(client): Update proto' \
+            -b '${{ steps.set-pr-body.outputs.pr_body }}'
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+  update-server:
+    name: Update server
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    needs: build-proto
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          path: source
+      - name: Close pull request if already exists
+        working-directory: source
+        run: |
+          PR_NUMBER=$(gh pr list --state open | grep '${{ env.BRANCH_NAME_SERVER }}' | awk 'NR==1{print $1}')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr close $PR_NUMBER --comment "This pull request is closed because another pull request is opened."
+          else
+            echo "Pull request does not exist, skipping..."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      - name: Delete branch if already exists
+        working-directory: source
+        run: |
+          BRANCH_NAME=${{ env.BRANCH_NAME_SERVER }}
+          exists=$(
+            git fetch origin ${BRANCH_NAME} &&
+            echo true ||
+            echo false
+          )
+          if [ "${exists}" = "true" ]; then
+            git push origin --delete ${BRANCH_NAME}
+          else
+            echo "Branch ${BRANCH_NAME} does not exist, skipping..."
+          fi
+      - name: Configure git
+        run: |
+          git config --global user.name "meline-proto-updater"
+          git config --global user.email "188972507+meline-proto-updater[bot]@users.noreply.github.com"
+          git config --global --add --bool push.autoSetupRemote true
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: proto-generated
+      - name: Copy proto
+        run: |
+          mkdir -p source/server/generated/proto
+          mv go/github.com/saitamau-maximum/meline source/server/generated/proto
+      - name: Set PR body
+        id: set-pr-body
+        run: |
+          if [ "${{ github.event.client_payload.pr_body }}" ]; then
+            echo "pr_body=${{ github.event.client_payload.pr_body }}" >> $GITHUB_OUTPUT
+          else
+            echo "pr_body=API type updated! :partying_face::tada:" >> $GITHUB_OUTPUT
+          fi
+      - name: Commit and Create pull request
+        working-directory: source
+        run: |
+          git checkout -b ${{ env.BRANCH_NAME_SERVER }}
+          git add .
+          git commit -m "chore(server): Update proto"
+          git push
+          gh pr create \
+            -t 'chore(server): Update proto' \
+            -b '${{ steps.set-pr-body.outputs.pr_body }}'
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}

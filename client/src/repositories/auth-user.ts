@@ -16,7 +16,12 @@ export class AuthUserRepositoryImpl implements IAuthUserRepository {
       return null;
     }
 
-    return res.json();
+    const data = await res.json();
+
+    return {
+      name: data.name,
+      imageURL: data.image_url,
+    };
   }
 
   getAuthUser$$key() {
