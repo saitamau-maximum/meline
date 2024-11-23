@@ -16,16 +16,18 @@ var (
 )
 
 type WebSocketHandler struct {
-	clientInteractor       usecase.IClientInteractor
-	notifyClientInteractor usecase.INotifyClientInteractor
-	hub                    *entity.Hub
+	channelInteractor       usecase.IChannelInteractor
+	messageClientInteractor usecase.IMessageClientInteractor
+	notifyClientInteractor  usecase.INotifyClientInteractor
+	hub                     *entity.Hub
 }
 
-func NewWebSocketHandler(websocketGroup *echo.Group, clientInteractor usecase.IClientInteractor, notifyClientInteractor usecase.INotifyClientInteractor, hub *entity.Hub) {
+func NewWebSocketHandler(websocketGroup *echo.Group, channelInteractor usecase.IChannelInteractor, messageClientInteractor usecase.IMessageClientInteractor, notifyClientInteractor usecase.INotifyClientInteractor, hub *entity.Hub) {
 	webSocketHandler := &WebSocketHandler{
-		clientInteractor:       clientInteractor,
-		notifyClientInteractor: notifyClientInteractor,
-		hub:                    hub,
+		channelInteractor:       channelInteractor,
+		messageClientInteractor: messageClientInteractor,
+		notifyClientInteractor:  notifyClientInteractor,
+		hub:                     hub,
 	}
 
 	websocketGroup.GET("/:channel_id", webSocketHandler.MessageWebSocket)
@@ -56,10 +58,10 @@ func (h *WebSocketHandler) MessageWebSocket(c echo.Context) error {
 	var eg errgroup.Group
 
 	eg.Go(func() error {
-		return h.clientInteractor.ReadPump(ctx, client, h.hub)
+		return h.messageClientInteractor.ReadPump(ctx, client, h.hub)
 	})
 	eg.Go(func() error {
-		return h.clientInteractor.WritePump(ctx, client, h.hub)
+		return h.messageClientInteractor.WritePump(ctx, client)
 	})
 
 	if err := eg.Wait(); err != nil {
@@ -83,7 +85,19 @@ func (h *WebSocketHandler) NotifyWebSocket(c echo.Context) error {
 		return err
 	}
 
-	client := entity.NewNotifyClientEntity(conn, userId)
+	joinedChannelIDs, err := h.channelInteractor.GetJoinedChannelIDs(ctx, userId)
+	if err != nil {
+		cancel()
+		return err
+	}
+
+	// NOTE: 通知クライアントが参加しているチャンネルを取得
+	joinedChannels := make(map[uint64]*entity.NotifyClientJoinedChannel)
+	for _, channelID := range joinedChannelIDs {
+		joinedChannels[channelID] = entity.NewNotifyClientJoinedChannelEntity(true)
+	}
+
+	client := entity.NewNotifyClientEntity(conn, userId, joinedChannels)
 
 	h.hub.RegisterNotifyCh <- client
 
@@ -93,7 +107,7 @@ func (h *WebSocketHandler) NotifyWebSocket(c echo.Context) error {
 		return h.notifyClientInteractor.ReadPump(ctx, client, h.hub)
 	})
 	eg.Go(func() error {
-		return h.notifyClientInteractor.WritePump(ctx, client, h.hub)
+		return h.notifyClientInteractor.WritePump(ctx, client)
 	})
 
 	if err := eg.Wait(); err != nil {

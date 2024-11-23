@@ -14,4 +14,5 @@ type IChannelRepository interface {
 	Delete(ctx context.Context, id uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
 	LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error
+	FetchJoinedChannelIDs(ctx context.Context, userID uint64) ([]uint64, error)
 }

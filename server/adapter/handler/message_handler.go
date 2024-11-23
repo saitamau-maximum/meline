@@ -87,7 +87,7 @@ func (h *MessageHandler) Create(c echo.Context) error {
 	}
 
 	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
-	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userIDs)
+	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userId, userIDs, channelIdUint64)
 
 	return c.JSON(http.StatusCreated, res)
 }
@@ -133,7 +133,7 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 	}
 
 	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
-	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userIDs)
+	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userId, userIDs, channelIdUint64)
 
 	return c.JSON(http.StatusCreated, res)
 }

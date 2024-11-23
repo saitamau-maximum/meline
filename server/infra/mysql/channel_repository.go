@@ -147,3 +147,18 @@ func (r *ChannelRepository) LeaveChannel(ctx context.Context, channelID uint64, 
 
 	return nil
 }
+
+func (r *ChannelRepository) FetchJoinedChannelIDs(ctx context.Context, userID uint64) ([]uint64, error) {
+	var channelToUsers []model.ChannelUsers
+
+	if err := r.db.NewSelect().Model(&channelToUsers).Where("user_id = ?", userID).Scan(ctx); err != nil {
+		return nil, err
+	}
+
+	var channelIDs []uint64
+	for _, channelToUser := range channelToUsers {
+		channelIDs = append(channelIDs, channelToUser.ChannelID)
+	}
+
+	return channelIDs, nil
+}

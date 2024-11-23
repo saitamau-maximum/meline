@@ -39,7 +39,7 @@ func (h *Hub) RunLoop() {
 		case message := <-h.BroadcastCh:
 			h.BroadcastMessage(message.Message, message.ChannelID)
 		case message := <-h.NotifyBroadcastCh:
-			h.NotifyBroadcastMessage(message.Message, message.UserIDs)
+			h.NotifyBroadcastMessage(message.Message, message.SenderID, message.UserIDs, message.ChannelID)
 		}
 	}
 }
@@ -93,13 +93,22 @@ func (h *Hub) BroadcastMessage(message []byte, channelID uint64) {
 	}
 }
 
-func (h *Hub) NotifyBroadcastMessage(message []byte, userIDs []uint64) {
+func (h *Hub) NotifyBroadcastMessage(message []byte, senderID uint64, userIDs []uint64, channelID uint64) {
 	for userID := range h.NotifyClients {
+		// NOTE: 送信者自身には通知しない
+		if userID == senderID {
+			continue
+		}
+
 		if _, ok := h.NotifyClients[userID]; !ok {
 			continue
 		}
 
 		for client := range h.NotifyClients[userID] {
+			// NOTE: チャンネルに参加していないユーザには通知しない
+			if !isJoinedChannel(client, channelID) {
+				continue
+			}
 			select {
 			case client.SendCh <- message:
 			default:
@@ -108,4 +117,36 @@ func (h *Hub) NotifyBroadcastMessage(message []byte, userIDs []uint64) {
 			}
 		}
 	}
+}
+
+func (h *Hub) JoinChannel(userID uint64, channelID uint64) {
+	for client := range h.NotifyClients[userID] {
+		// NOTE: 既に参加している場合は何もしない
+		if isJoinedChannel(client, channelID) {
+			return
+		}
+		client.JoinedChannelIDs[channelID] = NewNotifyClientJoinedChannelEntity(true)
+	}
+}
+
+func (h *Hub) LeaveChannel(userID uint64, channelID uint64) {
+	for client := range h.NotifyClients[userID] {
+		if !isJoinedChannel(client, channelID) {
+			return
+		}
+		for id := range client.JoinedChannelIDs {
+			if id == channelID {
+			}
+		}
+	}
+}
+
+func isJoinedChannel(client *NotifyClient, channelID uint64) bool {
+	for id := range client.JoinedChannelIDs {
+		if id == channelID {
+			return true
+		}
+	}
+
+	return false
 }

@@ -19,16 +19,19 @@ type IChannelInteractor interface {
 	DeleteChannel(ctx context.Context, id uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
 	LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error
+	GetJoinedChannelIDs(ctx context.Context, userID uint64) ([]uint64, error)
 }
 
 type ChannelInteractor struct {
+	hub               *entity.Hub
 	channelRepository repository.IChannelRepository
 	userRepository    repository.IUserRepository
 	channelPresenter  presenter.IChannelPresenter
 }
 
-func NewChannelInteractor(channelRepository repository.IChannelRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
+func NewChannelInteractor(hub *entity.Hub, channelRepository repository.IChannelRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
 	return &ChannelInteractor{
+		hub:               hub,
 		channelRepository: channelRepository,
 		userRepository:    userRepository,
 		channelPresenter:  channelPresenter,
@@ -105,6 +108,9 @@ func (i *ChannelInteractor) JoinChannel(ctx context.Context, channelID uint64, u
 		return err
 	}
 
+	// NOTE: チャンネルに参加したら、通知クライアントにも参加させる
+	i.hub.JoinChannel(userID, channelID)
+
 	return nil
 }
 
@@ -113,5 +119,12 @@ func (i *ChannelInteractor) LeaveChannel(ctx context.Context, channelID uint64, 
 		return err
 	}
 
+	// NOTE: チャンネルから退室したら、通知クライアントからも退室させる
+	i.hub.LeaveChannel(userID, channelID)
+
 	return nil
+}
+
+func (i *ChannelInteractor) GetJoinedChannelIDs(ctx context.Context, userID uint64) ([]uint64, error) {
+	return i.channelRepository.FetchJoinedChannelIDs(ctx, userID)
 }

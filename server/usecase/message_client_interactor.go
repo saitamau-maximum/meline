@@ -16,18 +16,18 @@ const (
 	maxMessageSize = 8192
 )
 
-type IClientInteractor interface {
+type IMessageClientInteractor interface {
 	ReadPump(ctx context.Context, client *entity.Client, hub *entity.Hub) error
-	WritePump(ctx context.Context, client *entity.Client, hub *entity.Hub) error
+	WritePump(ctx context.Context, client *entity.Client) error
 }
 
-type ClientInteractor struct{}
+type MessageClientInteractor struct{}
 
-func NewClientInteractor() *ClientInteractor {
-	return &ClientInteractor{}
+func NewMessageClientInteractor() *MessageClientInteractor {
+	return &MessageClientInteractor{}
 }
 
-func (c *ClientInteractor) ReadPump(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
+func (c *MessageClientInteractor) ReadPump(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
 	defer func() {
 		hub.UnregisterCh <- client
 		client.Ws.Close()
@@ -57,7 +57,7 @@ func (c *ClientInteractor) ReadPump(ctx context.Context, client *entity.Client, 
 	}
 }
 
-func (c *ClientInteractor) WritePump(ctx context.Context, client *entity.Client, hub *entity.Hub) error {
+func (c *MessageClientInteractor) WritePump(ctx context.Context, client *entity.Client) error {
 	ticker := time.NewTicker(pingWait)
 	defer func() {
 		ticker.Stop()
