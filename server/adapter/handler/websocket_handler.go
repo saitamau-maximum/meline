@@ -16,15 +16,13 @@ var (
 )
 
 type WebSocketHandler struct {
-	channelInteractor       usecase.IChannelInteractor
 	messageClientInteractor usecase.IMessageClientInteractor
 	notifyClientInteractor  usecase.INotifyClientInteractor
 	hub                     *entity.Hub
 }
 
-func NewWebSocketHandler(websocketGroup *echo.Group, channelInteractor usecase.IChannelInteractor, messageClientInteractor usecase.IMessageClientInteractor, notifyClientInteractor usecase.INotifyClientInteractor, hub *entity.Hub) {
+func NewWebSocketHandler(websocketGroup *echo.Group, messageClientInteractor usecase.IMessageClientInteractor, notifyClientInteractor usecase.INotifyClientInteractor, hub *entity.Hub) {
 	webSocketHandler := &WebSocketHandler{
-		channelInteractor:       channelInteractor,
 		messageClientInteractor: messageClientInteractor,
 		notifyClientInteractor:  notifyClientInteractor,
 		hub:                     hub,
@@ -85,19 +83,11 @@ func (h *WebSocketHandler) NotifyWebSocket(c echo.Context) error {
 		return err
 	}
 
-	joinedChannelIDs, err := h.channelInteractor.GetJoinedChannelIDs(ctx, userId)
+	client, err := h.notifyClientInteractor.CreateNotifyClient(ctx, conn, userId)
 	if err != nil {
 		cancel()
 		return err
 	}
-
-	// NOTE: 通知クライアントが参加しているチャンネルを取得
-	joinedChannels := make(map[uint64]*entity.NotifyClientJoinedChannel)
-	for _, channelID := range joinedChannelIDs {
-		joinedChannels[channelID] = entity.NewNotifyClientJoinedChannelEntity(true)
-	}
-
-	client := entity.NewNotifyClientEntity(conn, userId, joinedChannels)
 
 	h.hub.RegisterNotifyCh <- client
 
