@@ -7,15 +7,15 @@ import (
 type NotifyClient struct {
 	Ws               *websocket.Conn
 	SendCh           chan []byte
-	JoinedChannelIDs map[uint64]*NotifyClientJoinedChannel
+	JoinedChannelMap map[uint64]bool
 	UserID           uint64
 }
 
-func NewNotifyClientEntity(ws *websocket.Conn, userID uint64, joinedChannelIDs map[uint64]*NotifyClientJoinedChannel) *NotifyClient {
+func NewNotifyClientEntity(ws *websocket.Conn, userID uint64, joinedChannelMap map[uint64]bool) *NotifyClient {
 	return &NotifyClient{
 		Ws:               ws,
 		SendCh:           make(chan []byte),
-		JoinedChannelIDs: joinedChannelIDs,
+		JoinedChannelMap: joinedChannelMap,
 		UserID:           userID,
 	}
 }
