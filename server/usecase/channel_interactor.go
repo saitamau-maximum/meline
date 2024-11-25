@@ -19,7 +19,6 @@ type IChannelInteractor interface {
 	DeleteChannel(ctx context.Context, id uint64) error
 	JoinChannel(ctx context.Context, channelID uint64, userID uint64) error
 	LeaveChannel(ctx context.Context, channelID uint64, userID uint64) error
-	GetJoinedChannelIDs(ctx context.Context, userID uint64) ([]uint64, error)
 }
 
 type ChannelInteractor struct {
@@ -123,8 +122,4 @@ func (i *ChannelInteractor) LeaveChannel(ctx context.Context, channelID uint64, 
 	i.hub.LeaveChannel(userID, channelID)
 
 	return nil
-}
-
-func (i *ChannelInteractor) GetJoinedChannelIDs(ctx context.Context, userID uint64) ([]uint64, error) {
-	return i.channelRepository.FetchJoinedChannelIDs(ctx, userID)
 }
