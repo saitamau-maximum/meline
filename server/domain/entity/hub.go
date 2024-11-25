@@ -106,7 +106,7 @@ func (h *Hub) NotifyBroadcastMessage(message []byte, senderID uint64, userIDs []
 
 		for client := range h.NotifyClients[userID] {
 			// NOTE: チャンネルに参加していないユーザには通知しない
-			if !isJoinedChannel(client, channelID) {
+			if !client.IsJoinedChannel(channelID) {
 				continue
 			}
 			select {
@@ -122,31 +122,22 @@ func (h *Hub) NotifyBroadcastMessage(message []byte, senderID uint64, userIDs []
 func (h *Hub) JoinChannel(userID uint64, channelID uint64) {
 	for client := range h.NotifyClients[userID] {
 		// NOTE: 既に参加している場合は何もしない
-		if isJoinedChannel(client, channelID) {
+		if client.IsJoinedChannel(channelID) {
 			return
 		}
-		client.JoinedChannelIDs[channelID] = NewNotifyClientJoinedChannelEntity(true)
+		client.JoinedChannelMap[channelID] = true
 	}
 }
 
 func (h *Hub) LeaveChannel(userID uint64, channelID uint64) {
 	for client := range h.NotifyClients[userID] {
-		if !isJoinedChannel(client, channelID) {
+		if !client.IsJoinedChannel(channelID) {
 			return
 		}
-		for id := range client.JoinedChannelIDs {
+		for id := range client.JoinedChannelMap {
 			if id == channelID {
+				delete(client.JoinedChannelMap, id)
 			}
 		}
 	}
-}
-
-func isJoinedChannel(client *NotifyClient, channelID uint64) bool {
-	for id := range client.JoinedChannelIDs {
-		if id == channelID {
-			return true
-		}
-	}
-
-	return false
 }

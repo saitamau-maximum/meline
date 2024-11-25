@@ -19,3 +19,8 @@ func NewNotifyClientEntity(ws *websocket.Conn, userID uint64, joinedChannelMap m
 		UserID:           userID,
 	}
 }
+
+func (c *NotifyClient) IsJoinedChannel(channelID uint64) bool {
+	_, ok := c.JoinedChannelMap[channelID]
+	return ok
+}
