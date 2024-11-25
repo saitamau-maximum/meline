@@ -50,7 +50,7 @@ func (h *MessageHandler) GetByChannelID(c echo.Context) error {
 func (h *MessageHandler) Create(c echo.Context) error {
 	channelId := c.Param("channel_id")
 
-	channelIdUint64, err := strconv.ParseUint(channelId, 10, 64)
+	parsedChannelId, err := strconv.ParseUint(channelId, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -68,7 +68,7 @@ func (h *MessageHandler) Create(c echo.Context) error {
 
 	userId := c.Get("user_id").(uint64)
 
-	res, notifyRes, userIDs, err := h.messageInteractor.Create(c.Request().Context(), userId, channelIdUint64, createMessageRequest.Content)
+	res, notifyRes, joinedUserIds, err := h.messageInteractor.Create(c.Request().Context(), userId, parsedChannelId, createMessageRequest.Content)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, err)
@@ -86,8 +86,8 @@ func (h *MessageHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
-	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userIDs)
+	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, parsedChannelId)
+	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userId, joinedUserIds, parsedChannelId)
 
 	return c.JSON(http.StatusCreated, res)
 }
@@ -133,7 +133,7 @@ func (h *MessageHandler) CreateReply(c echo.Context) error {
 	}
 
 	h.hub.BroadcastCh <- entity.NewBroadcastChEntity(jsonRes, channelIdUint64)
-	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userIDs)
+	h.hub.NotifyBroadcastCh <- entity.NewNotifyBroadcastChEntity(jsonNotifyRes, userId, userIDs, channelIdUint64)
 
 	return c.JSON(http.StatusCreated, res)
 }

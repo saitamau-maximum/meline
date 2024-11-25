@@ -7,17 +7,23 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/saitamau-maximum/meline/domain/entity"
+	"github.com/saitamau-maximum/meline/domain/repository"
 )
 
 type INotifyClientInteractor interface {
 	ReadPump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error
-	WritePump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error
+	WritePump(ctx context.Context, client *entity.NotifyClient) error
+	CreateNotifyClient(ctx context.Context, ws *websocket.Conn, userID uint64) (*entity.NotifyClient, error)
 }
 
-type NotifyClientInteractor struct{}
+type NotifyClientInteractor struct {
+	ChannelRepository repository.IChannelRepository
+}
 
-func NewNotifyClientInteractor() *NotifyClientInteractor {
-	return &NotifyClientInteractor{}
+func NewNotifyClientInteractor(channelRepository repository.IChannelRepository) *NotifyClientInteractor {
+	return &NotifyClientInteractor{
+		ChannelRepository: channelRepository,
+	}
 }
 
 func (c *NotifyClientInteractor) ReadPump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error {
@@ -50,7 +56,7 @@ func (c *NotifyClientInteractor) ReadPump(ctx context.Context, client *entity.No
 	}
 }
 
-func (c *NotifyClientInteractor) WritePump(ctx context.Context, client *entity.NotifyClient, hub *entity.Hub) error {
+func (c *NotifyClientInteractor) WritePump(ctx context.Context, client *entity.NotifyClient) error {
 	ticker := time.NewTicker(pingWait)
 
 	defer func() {
@@ -79,4 +85,19 @@ func (c *NotifyClientInteractor) WritePump(ctx context.Context, client *entity.N
 			}
 		}
 	}
+}
+
+func (c *NotifyClientInteractor) CreateNotifyClient(ctx context.Context, ws *websocket.Conn, userID uint64) (*entity.NotifyClient, error) {
+	// NOTE: 通知クライアントが参加しているチャンネルを取得
+	joinedChannelIDs, err := c.ChannelRepository.FetchJoinedChannelIDs(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	joinedChannels := make(map[uint64]bool)
+	for _, id := range joinedChannelIDs {
+		joinedChannels[id] = true
+	}
+
+	return entity.NewNotifyClientEntity(ws, userID, joinedChannels), nil
 }

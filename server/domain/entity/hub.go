@@ -39,7 +39,7 @@ func (h *Hub) RunLoop() {
 		case message := <-h.BroadcastCh:
 			h.BroadcastMessage(message.Message, message.ChannelID)
 		case message := <-h.NotifyBroadcastCh:
-			h.NotifyBroadcastMessage(message.Message, message.UserIDs)
+			h.NotifyBroadcastMessage(message.Message, message.SenderID, message.UserIDs, message.ChannelID)
 		}
 	}
 }
@@ -93,18 +93,50 @@ func (h *Hub) BroadcastMessage(message []byte, channelID uint64) {
 	}
 }
 
-func (h *Hub) NotifyBroadcastMessage(message []byte, userIDs []uint64) {
+func (h *Hub) NotifyBroadcastMessage(message []byte, senderID uint64, userIDs []uint64, channelID uint64) {
 	for userID := range h.NotifyClients {
+		// NOTE: 送信者自身には通知しない
+		if userID == senderID {
+			continue
+		}
+
 		if _, ok := h.NotifyClients[userID]; !ok {
 			continue
 		}
 
 		for client := range h.NotifyClients[userID] {
+			// NOTE: チャンネルに参加していないユーザには通知しない
+			if !client.IsJoinedChannel(channelID) {
+				continue
+			}
 			select {
 			case client.SendCh <- message:
 			default:
 				delete(h.NotifyClients[userID], client)
 				close(client.SendCh)
+			}
+		}
+	}
+}
+
+func (h *Hub) JoinChannel(userID uint64, channelID uint64) {
+	for client := range h.NotifyClients[userID] {
+		// NOTE: 既に参加している場合は何もしない
+		if client.IsJoinedChannel(channelID) {
+			return
+		}
+		client.JoinedChannelMap[channelID] = true
+	}
+}
+
+func (h *Hub) LeaveChannel(userID uint64, channelID uint64) {
+	for client := range h.NotifyClients[userID] {
+		if !client.IsJoinedChannel(channelID) {
+			return
+		}
+		for id := range client.JoinedChannelMap {
+			if id == channelID {
+				delete(client.JoinedChannelMap, id)
 			}
 		}
 	}

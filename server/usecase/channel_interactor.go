@@ -22,13 +22,15 @@ type IChannelInteractor interface {
 }
 
 type ChannelInteractor struct {
+	hub               *entity.Hub
 	channelRepository repository.IChannelRepository
 	userRepository    repository.IUserRepository
 	channelPresenter  presenter.IChannelPresenter
 }
 
-func NewChannelInteractor(channelRepository repository.IChannelRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
+func NewChannelInteractor(hub *entity.Hub, channelRepository repository.IChannelRepository, userRepository repository.IUserRepository, channelPresenter presenter.IChannelPresenter) *ChannelInteractor {
 	return &ChannelInteractor{
+		hub:               hub,
 		channelRepository: channelRepository,
 		userRepository:    userRepository,
 		channelPresenter:  channelPresenter,
@@ -105,6 +107,9 @@ func (i *ChannelInteractor) JoinChannel(ctx context.Context, channelID uint64, u
 		return err
 	}
 
+	// NOTE: チャンネルに参加したら、通知クライアントにも参加させる
+	i.hub.JoinChannel(userID, channelID)
+
 	return nil
 }
 
@@ -112,6 +117,9 @@ func (i *ChannelInteractor) LeaveChannel(ctx context.Context, channelID uint64, 
 	if err := i.channelRepository.LeaveChannel(ctx, channelID, userID); err != nil {
 		return err
 	}
+
+	// NOTE: チャンネルから退室したら、通知クライアントからも退室させる
+	i.hub.LeaveChannel(userID, channelID)
 
 	return nil
 }
