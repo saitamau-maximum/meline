@@ -192,6 +192,9 @@ jobs:
           name: proto-generated
       - name: Copy proto
         run: |
+          if [ -d source/server/generated/proto ]; then
+            rm -rf source/server/generated/proto
+          fi
           mkdir -p source/server/generated/proto
           mv go source/server/generated/proto
       - name: Set PR body
