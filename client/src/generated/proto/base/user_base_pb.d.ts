@@ -15,9 +15,9 @@ export declare const file_base_user_base: GenFile;
  */
 export declare type User = Message<"base.User"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id: bigint;
+  id: number;
 
   /**
    * @generated from field: string name = 2;
