@@ -23,7 +23,7 @@ const (
 	DRIVER          = "mysql"
 	PORT            = "3306"
 	NET             = "tcp"
-	HOST            = "localhost"
+	HOST            = "database"
 	MIGRATION_TABLE = "bun_migrations"
 )
 
