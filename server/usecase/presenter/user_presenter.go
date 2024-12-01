@@ -5,25 +5,25 @@ import (
 )
 
 type User struct {
-	ID       uint64 `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	ImageURL string `json:"image_url"`
 }
 
 type GetUserByIdResponse struct {
-	ID       uint64 `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	ImageURL string `json:"image_url"`
 }
 
 type GetUserByGithubIdResponse struct {
-	ID       uint64 `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	ImageURL string `json:"image_url"`
 }
 
 type CreateUserResponse struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 }
 
 type IUserPresenter interface {

@@ -1,6 +1,8 @@
 package presenter
 
 import (
+	"strconv"
+
 	"github.com/saitamau-maximum/meline/config"
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
@@ -21,7 +23,7 @@ func (p *NotifyPresenter) GenerateNotifyMessageResponse(message *entity.Message)
 			Message: &presenter.Message{
 				ID: message.ID,
 				User: &presenter.User{
-					ID:       message.User.ID,
+					ID:       strconv.FormatUint(message.User.ID, 10),
 					Name:     message.User.Name,
 					ImageURL: message.User.ImageURL,
 				},
@@ -30,7 +32,7 @@ func (p *NotifyPresenter) GenerateNotifyMessageResponse(message *entity.Message)
 				CreatedAt:      message.CreatedAt.String(),
 				UpdatedAt:      message.UpdatedAt.String(),
 			},
-			ChannelID: message.ChannelID,
+			ChannelID: strconv.FormatUint(message.ChannelID, 10),
 		},
 	}
 }

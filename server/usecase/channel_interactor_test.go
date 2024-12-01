@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
@@ -40,7 +41,7 @@ func TestChannelInteractor_Success_GetAllChannels(t *testing.T) {
 
 	expectedChannels := []*presenter.Channel{
 		{
-			ID:   1,
+			ID:   "1",
 			Name: "test-channel",
 		},
 	}
@@ -82,7 +83,7 @@ func TestChannelInteractor_Success_GetChannelByID(t *testing.T) {
 		Name: "test-channel",
 		Users: []*presenter.User{
 			{
-				ID:       1,
+				ID:       "1",
 				Name:     "John Doe",
 				ImageURL: "https://example.com/image.jpg",
 			},
@@ -384,7 +385,7 @@ func (m *mockChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Ch
 	users := make([]*presenter.User, len(channel.Users))
 	for i, u := range channel.Users {
 		users[i] = &presenter.User{
-			ID:       u.ID,
+			ID:       strconv.FormatUint(u.ID, 10),
 			Name:     u.Name,
 			ImageURL: u.ImageURL,
 		}
@@ -402,7 +403,7 @@ func (m *mockChannelPresenter) GenerateGetAllChannelsResponse(channels []*entity
 	res := make([]*presenter.Channel, len(channels))
 	for i, c := range channels {
 		res[i] = &presenter.Channel{
-			ID:   c.ID,
+			ID:   strconv.FormatUint(c.ID, 10),
 			Name: c.Name,
 		}
 	}
@@ -416,7 +417,7 @@ func (m *mockChannelPresenter) GenerateGetChannelsByNameResponse(channels []*ent
 	res := make([]*presenter.Channel, len(channels))
 	for i, c := range channels {
 		res[i] = &presenter.Channel{
-			ID:   c.ID,
+			ID:   strconv.FormatUint(c.ID, 10),
 			Name: c.Name,
 		}
 	}

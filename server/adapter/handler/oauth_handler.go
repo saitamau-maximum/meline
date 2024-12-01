@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saitamau-maximum/meline/config"
@@ -79,7 +80,11 @@ func (h *OAuthHandler) CallBack(c echo.Context) error {
 		return err
 	}
 
-	userId = getUserRes.ID
+	userId, err = strconv.ParseUint(getUserRes.ID, 10, 64)
+	if err != nil {
+		log.Default().Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
 
 	// Set Access Token
 	token, err := h.authInteractor.CreateAccessToken(ctx, userId)
