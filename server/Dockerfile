@@ -1,5 +1,5 @@
 
-FROM golang:1.20-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 COPY . .
@@ -16,7 +16,7 @@ EXPOSE 8000
 ENTRYPOINT ["/app/main"]
 
 
-FROM golang:1.20-alpine AS dev
+FROM golang:1.23-alpine AS dev
 
 ENV CGO_ENABLED 0
 WORKDIR /app
