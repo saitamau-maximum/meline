@@ -27,9 +27,9 @@ export declare const GetAllChannelsRequestSchema: GenMessage<GetAllChannelsReque
  */
 export declare type GetChannelByIDRequest = Message<"schema.request.GetChannelByIDRequest"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 };
 
 /**
@@ -43,9 +43,9 @@ export declare const GetChannelByIDRequestSchema: GenMessage<GetChannelByIDReque
  */
 export declare type JoinChannelRequest = Message<"schema.request.JoinChannelRequest"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 };
 
 /**
@@ -75,9 +75,9 @@ export declare const CreateChannelRequestSchema: GenMessage<CreateChannelRequest
  */
 export declare type CreateChildChannelRequest = Message<"schema.request.CreateChildChannelRequest"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 
   /**
    * @generated from field: string name = 2;
@@ -96,9 +96,9 @@ export declare const CreateChildChannelRequestSchema: GenMessage<CreateChildChan
  */
 export declare type UpdateChannelRequest = Message<"schema.request.UpdateChannelRequest"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 
   /**
    * @generated from field: string name = 2;
@@ -117,9 +117,9 @@ export declare const UpdateChannelRequestSchema: GenMessage<UpdateChannelRequest
  */
 export declare type DeleteChannelRequest = Message<"schema.request.DeleteChannelRequest"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 };
 
 /**
@@ -133,9 +133,9 @@ export declare const DeleteChannelRequestSchema: GenMessage<DeleteChannelRequest
  */
 export declare type LeaveChannelRequest = Message<"schema.request.LeaveChannelRequest"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 };
 
 /**
