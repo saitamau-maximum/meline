@@ -15,9 +15,9 @@ export declare const file_schema_request_message_request: GenFile;
  */
 export declare type GetByChannelIDRequest = Message<"schema.request.GetByChannelIDRequest"> & {
   /**
-   * @generated from field: uint64 channel_id = 1;
+   * @generated from field: string channel_id = 1;
    */
-  channelId: bigint;
+  channelId: string;
 };
 
 /**
@@ -31,9 +31,9 @@ export declare const GetByChannelIDRequestSchema: GenMessage<GetByChannelIDReque
  */
 export declare type CreateMessageRequest = Message<"schema.request.CreateMessageRequest"> & {
   /**
-   * @generated from field: uint64 channel_id = 1;
+   * @generated from field: string channel_id = 1;
    */
-  channelId: bigint;
+  channelId: string;
 
   /**
    * @generated from field: string content = 2;
@@ -52,14 +52,14 @@ export declare const CreateMessageRequestSchema: GenMessage<CreateMessageRequest
  */
 export declare type CreateReplyMessageRequest = Message<"schema.request.CreateReplyMessageRequest"> & {
   /**
-   * @generated from field: uint64 channel_id = 1;
+   * @generated from field: string channel_id = 1;
    */
-  channelId: bigint;
+  channelId: string;
 
   /**
-   * @generated from field: uint64 id = 2;
+   * @generated from field: string id = 2;
    */
-  id: bigint;
+  id: string;
 
   /**
    * @generated from field: string content = 3;
@@ -78,14 +78,14 @@ export declare const CreateReplyMessageRequestSchema: GenMessage<CreateReplyMess
  */
 export declare type UpdateMessageRequest = Message<"schema.request.UpdateMessageRequest"> & {
   /**
-   * @generated from field: uint64 channel_id = 1;
+   * @generated from field: string channel_id = 1;
    */
-  channelId: bigint;
+  channelId: string;
 
   /**
-   * @generated from field: uint64 id = 2;
+   * @generated from field: string id = 2;
    */
-  id: bigint;
+  id: string;
 
   /**
    * @generated from field: string content = 3;
@@ -104,14 +104,14 @@ export declare const UpdateMessageRequestSchema: GenMessage<UpdateMessageRequest
  */
 export declare type DeleteMessageRequest = Message<"schema.request.DeleteMessageRequest"> & {
   /**
-   * @generated from field: uint64 channel_id = 1;
+   * @generated from field: string channel_id = 1;
    */
-  channelId: bigint;
+  channelId: string;
 
   /**
-   * @generated from field: uint64 id = 2;
+   * @generated from field: string id = 2;
    */
-  id: bigint;
+  id: string;
 };
 
 /**

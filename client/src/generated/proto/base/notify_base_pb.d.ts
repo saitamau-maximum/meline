@@ -37,9 +37,9 @@ export declare type Payload = Message<"base.Payload"> & {
   message?: Message$1;
 
   /**
-   * @generated from field: uint64 channel_id = 2;
+   * @generated from field: string channel_id = 2;
    */
-  channelId: bigint;
+  channelId: string;
 };
 
 /**

@@ -16,9 +16,9 @@ export declare const file_base_channel_base: GenFile;
  */
 export declare type Channel = Message<"base.Channel"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 
   /**
    * @generated from field: string name = 2;
@@ -37,9 +37,9 @@ export declare const ChannelSchema: GenMessage<Channel>;
  */
 export declare type ChannelDetail = Message<"base.ChannelDetail"> & {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: string id = 1;
    */
-  id: bigint;
+  id: string;
 
   /**
    * @generated from field: string name = 2;
