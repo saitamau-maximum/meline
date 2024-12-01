@@ -8,7 +8,7 @@ type NotifyMeta struct {
 
 type Payload struct {
 	Message   *Message `json:"message"`
-	ChannelID uint64   `json:"channel_id"`
+	ChannelID string   `json:"channel_id"`
 }
 
 type NotifyMessageResponse struct {

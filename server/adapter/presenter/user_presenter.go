@@ -1,6 +1,8 @@
 package presenter
 
 import (
+	"strconv"
+
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
@@ -13,7 +15,7 @@ func NewUserPresenter() presenter.IUserPresenter {
 
 func (p *UserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {
 	return &presenter.GetUserByIdResponse{
-		ID:       user.ID,
+		ID:       strconv.FormatUint(user.ID, 10),
 		Name:     user.Name,
 		ImageURL: user.ImageURL,
 	}
@@ -21,7 +23,7 @@ func (p *UserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presente
 
 func (p *UserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *presenter.GetUserByGithubIdResponse {
 	return &presenter.GetUserByGithubIdResponse{
-		ID:       user.ID,
+		ID:       strconv.FormatUint(user.ID, 10),
 		Name:     user.Name,
 		ImageURL: user.ImageURL,
 	}
@@ -29,6 +31,6 @@ func (p *UserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *pr
 
 func (p *UserPresenter) GenerateCreateUserResponse(user *entity.User) *presenter.CreateUserResponse {
 	return &presenter.CreateUserResponse{
-		ID: user.ID,
+		ID: strconv.FormatUint(user.ID, 10),
 	}
 }

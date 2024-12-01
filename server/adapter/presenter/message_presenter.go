@@ -1,6 +1,8 @@
 package presenter
 
 import (
+	"strconv"
+
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
@@ -21,7 +23,7 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 			replyToMessage = &presenter.ReplyToMessage{
 				ID: message.ReplyToMessage.ID,
 				User: &presenter.User{
-					ID:       message.ReplyToMessage.User.ID,
+					ID:       strconv.FormatUint(message.ReplyToMessage.User.ID, 10),
 					Name:     message.ReplyToMessage.User.Name,
 					ImageURL: message.ReplyToMessage.User.ImageURL,
 				},
@@ -31,7 +33,7 @@ func (p *MessagePresenter) GenerateGetMessagesByChannelIDResponse(messages []*en
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
-				ID:       message.User.ID,
+				ID:       strconv.FormatUint(message.User.ID, 10),
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
 			},
@@ -51,7 +53,7 @@ func (p *MessagePresenter) GenerateCreateMessageResponse(message *entity.Message
 		replyToMessage = &presenter.ReplyToMessage{
 			ID: message.ReplyToMessage.ID,
 			User: &presenter.User{
-				ID:       message.ReplyToMessage.User.ID,
+				ID:       strconv.FormatUint(message.ReplyToMessage.User.ID, 10),
 				Name:     message.ReplyToMessage.User.Name,
 				ImageURL: message.ReplyToMessage.User.ImageURL,
 			},
@@ -63,7 +65,7 @@ func (p *MessagePresenter) GenerateCreateMessageResponse(message *entity.Message
 		Message: &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
-				ID:       message.User.ID,
+				ID:       strconv.FormatUint(message.User.ID, 10),
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
 			},
@@ -72,6 +74,6 @@ func (p *MessagePresenter) GenerateCreateMessageResponse(message *entity.Message
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		},
-		ChannelID: message.ChannelID,
+		ChannelID: strconv.FormatUint(message.ChannelID, 10),
 	}
 }

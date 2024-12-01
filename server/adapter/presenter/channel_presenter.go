@@ -1,6 +1,8 @@
 package presenter
 
 import (
+	"strconv"
+
 	"github.com/saitamau-maximum/meline/domain/entity"
 	"github.com/saitamau-maximum/meline/usecase/presenter"
 )
@@ -17,7 +19,7 @@ func (p *ChannelPresenter) GenerateGetAllChannelsResponse(channels []*entity.Cha
 	}
 	for _, channel := range channels {
 		channelsResponse.Channels = append(channelsResponse.Channels, &presenter.Channel{
-			ID:   channel.ID,
+			ID:   strconv.FormatUint(channel.ID, 10),
 			Name: channel.Name,
 		})
 	}
@@ -29,7 +31,7 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 	childChannels := make([]*presenter.Channel, 0)
 	for _, childChannel := range channel.ChildChannels {
 		childChannels = append(childChannels, &presenter.Channel{
-			ID:   childChannel.ID,
+			ID:   strconv.FormatUint(childChannel.ID, 10),
 			Name: childChannel.Name,
 		})
 	}
@@ -37,7 +39,7 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 	users := make([]*presenter.User, 0)
 	for _, user := range channel.Users {
 		users = append(users, &presenter.User{
-			ID:       user.ID,
+			ID:       strconv.FormatUint(user.ID, 10),
 			Name:     user.Name,
 			ImageURL: user.ImageURL,
 		})
@@ -45,7 +47,7 @@ func (p *ChannelPresenter) GenerateGetChannelByIdResponse(channel *entity.Channe
 
 	return &presenter.GetChannelByIdResponse{
 		Channel: &presenter.ChannelDetail{
-			ID:       channel.ID,
+			ID:       strconv.FormatUint(channel.ID, 10),
 			Name:     channel.Name,
 			Users:    users,
 			Channels: childChannels,
@@ -59,7 +61,7 @@ func (p *ChannelPresenter) GenerateGetChannelsByNameResponse(channels []*entity.
 	}
 	for _, channel := range channels {
 		channelsResponse.Channels = append(channelsResponse.Channels, &presenter.Channel{
-			ID:   channel.ID,
+			ID:   strconv.FormatUint(channel.ID, 10),
 			Name: channel.Name,
 		})
 	}

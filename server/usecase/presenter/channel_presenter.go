@@ -5,12 +5,12 @@ import (
 )
 
 type Channel struct {
-	ID   uint64 `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 type ChannelDetail struct {
-	ID       uint64     `json:"id"`
+	ID       string     `json:"id"`
 	Name     string     `json:"name"`
 	Users    []*User    `json:"users"`
 	Channels []*Channel `json:"channels"`
@@ -29,11 +29,11 @@ type GetChannelsByNameResponse struct {
 }
 
 type CreateChannelResponse struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 }
 
 type UpdateChannelResponse struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 }
 
 type IChannelPresenter interface {

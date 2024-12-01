@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/saitamau-maximum/meline/domain/entity"
@@ -27,7 +28,7 @@ func TestUserInteractor_Success_GetUserByID(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 
 	expectedUser := &presenter.GetUserByIdResponse{
-		ID:       1,
+		ID:       "1",
 		Name:     "John Doe",
 		ImageURL: "https://example.com/image.jpg",
 	}
@@ -58,7 +59,7 @@ func TestUserInteractor_Success_GetUserByGithubID(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 
 	expectedUser := &presenter.GetUserByGithubIdResponse{
-		ID:       1,
+		ID:       "1",
 		Name:     "John Doe",
 		ImageURL: "https://example.com/image.jpg",
 	}
@@ -93,7 +94,7 @@ func TestUserInteractor_Success_CreateUser(t *testing.T) {
 	interactor := usecase.NewUserInteractor(repo, pre)
 
 	expectedUser := &presenter.CreateUserResponse{
-		ID: 1,
+		ID: "1",
 	}
 
 	user, err := interactor.CreateUser(ctx, "test-provider-id", "John Doe", "https://example.com/image.jpg")
@@ -242,7 +243,7 @@ type mockUserPresenter struct{}
 
 func (p *mockUserPresenter) GenerateGetUserByIdResponse(user *entity.User) *presenter.GetUserByIdResponse {
 	return &presenter.GetUserByIdResponse{
-		ID:       user.ID,
+		ID:       strconv.FormatUint(user.ID, 10),
 		Name:     user.Name,
 		ImageURL: user.ImageURL,
 	}
@@ -250,7 +251,7 @@ func (p *mockUserPresenter) GenerateGetUserByIdResponse(user *entity.User) *pres
 
 func (p *mockUserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User) *presenter.GetUserByGithubIdResponse {
 	return &presenter.GetUserByGithubIdResponse{
-		ID:       user.ID,
+		ID:       strconv.FormatUint(user.ID, 10),
 		Name:     user.Name,
 		ImageURL: user.ImageURL,
 	}
@@ -258,6 +259,6 @@ func (p *mockUserPresenter) GenerateGetUserByGithubIdResponse(user *entity.User)
 
 func (p *mockUserPresenter) GenerateCreateUserResponse(user *entity.User) *presenter.CreateUserResponse {
 	return &presenter.CreateUserResponse{
-		ID: user.ID,
+		ID: strconv.FormatUint(user.ID, 10),
 	}
 }

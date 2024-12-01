@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -56,7 +57,7 @@ func TestMessageInteractor_Success_GetMessagesByChannelID(t *testing.T) {
 			{
 				ID: "1",
 				User: &presenter.User{
-					ID:       1,
+					ID:       "1",
 					Name:     "User",
 					ImageURL: "https://example.com/image.png",
 				},
@@ -89,7 +90,7 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 			Message: &presenter.Message{
 				ID: "1",
 				User: &presenter.User{
-					ID:       1,
+					ID:       "1",
 					Name:     "User",
 					ImageURL: "https://example.com/image.png",
 				},
@@ -98,7 +99,7 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
-			ChannelID: 1,
+			ChannelID: "1",
 		},
 		notify: &presenter.NotifyMessageResponse{
 			NotifyMeta: presenter.NotifyMeta{
@@ -108,7 +109,7 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 				Message: &presenter.Message{
 					ID: "1",
 					User: &presenter.User{
-						ID:       1,
+						ID:       "1",
 						Name:     "User",
 						ImageURL: "https://example.com/image.png",
 					},
@@ -117,7 +118,7 @@ func TestMessageInteractor_Success_Create(t *testing.T) {
 					CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 					UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				},
-				ChannelID: 1,
+				ChannelID: "1",
 			},
 		},
 	}
@@ -145,7 +146,7 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 			Message: &presenter.Message{
 				ID: "1",
 				User: &presenter.User{
-					ID:       1,
+					ID:       "1",
 					Name:     "User",
 					ImageURL: "https://example.com/image.png",
 				},
@@ -154,7 +155,7 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 				CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 			},
-			ChannelID: 1,
+			ChannelID: "1",
 		},
 		notify: &presenter.NotifyMessageResponse{
 			NotifyMeta: presenter.NotifyMeta{
@@ -164,7 +165,7 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 				Message: &presenter.Message{
 					ID: "1",
 					User: &presenter.User{
-						ID:       1,
+						ID:       "1",
 						Name:     "User",
 						ImageURL: "https://example.com/image.png",
 					},
@@ -173,7 +174,7 @@ func TestMessageInteractor_Success_CreateReply(t *testing.T) {
 					CreatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 					UpdatedAt:      "0001-01-01 00:00:00 +0000 UTC",
 				},
-				ChannelID: 1,
+				ChannelID: "1",
 			},
 		},
 	}
@@ -449,7 +450,7 @@ func (m *mockMessagePresenter) GenerateGetMessagesByChannelIDResponse(messages [
 		messagesResponse.Messages = append(messagesResponse.Messages, &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
-				ID:       message.User.ID,
+				ID:       strconv.FormatUint(message.User.ID, 10),
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
 			},
@@ -470,7 +471,7 @@ func (m *mockMessagePresenter) GenerateCreateMessageResponse(message *entity.Mes
 		Message: &presenter.Message{
 			ID: message.ID,
 			User: &presenter.User{
-				ID:       message.User.ID,
+				ID:       strconv.FormatUint(message.User.ID, 10),
 				Name:     message.User.Name,
 				ImageURL: message.User.ImageURL,
 			},
@@ -479,7 +480,7 @@ func (m *mockMessagePresenter) GenerateCreateMessageResponse(message *entity.Mes
 			CreatedAt:      message.CreatedAt.String(),
 			UpdatedAt:      message.UpdatedAt.String(),
 		},
-		ChannelID: message.ChannelID,
+		ChannelID: strconv.FormatUint(message.ChannelID, 10),
 	}
 }
 
@@ -494,7 +495,7 @@ func (m *mockNotifyPresenter) GenerateNotifyMessageResponse(message *entity.Mess
 			Message: &presenter.Message{
 				ID: message.ID,
 				User: &presenter.User{
-					ID:       message.User.ID,
+					ID:       strconv.FormatUint(message.User.ID, 10),
 					Name:     message.User.Name,
 					ImageURL: message.User.ImageURL,
 				},
@@ -503,7 +504,7 @@ func (m *mockNotifyPresenter) GenerateNotifyMessageResponse(message *entity.Mess
 				CreatedAt:      message.CreatedAt.String(),
 				UpdatedAt:      message.UpdatedAt.String(),
 			},
-			ChannelID: message.ChannelID,
+			ChannelID: strconv.FormatUint(message.ChannelID, 10),
 		},
 	}
 }

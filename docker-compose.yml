@@ -39,7 +39,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
   server:
-    image: golang:1.20
+    image: golang:1.23
     build:
       context: ./server
       target: dev
