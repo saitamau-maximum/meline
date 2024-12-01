@@ -8,7 +8,7 @@ import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
  * Describes the file base/user_base.proto.
  */
 export const file_base_user_base = /*@__PURE__*/
-  fileDesc("ChRiYXNlL3VzZXJfYmFzZS5wcm90bxIEYmFzZSIzCgRVc2VyEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEQoJaW1hZ2VfdXJsGAMgASgJQngKCGNvbS5iYXNlQg1Vc2VyQmFzZVByb3RvUAFaLWdpdGh1Yi5jb20vc2FpdGFtYXUtbWF4aW11bS9tZWxpbmUvcHJvdG8vYmFzZaICA0JYWKoCBEJhc2XKAgRCYXNl4gIQQmFzZVxHUEJNZXRhZGF0YeoCBEJhc2ViBnByb3RvMw");
+  fileDesc("ChRiYXNlL3VzZXJfYmFzZS5wcm90bxIEYmFzZSIzCgRVc2VyEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEQoJaW1hZ2VfdXJsGAMgASgJQoIBCghjb20uYmFzZUINVXNlckJhc2VQcm90b1ABWjdnaXRodWIuY29tL3NhaXRhbWF1LW1heGltdW0vbWVsaW5lL2dlbmVyYXRlZC9wcm90by9iYXNlogIDQlhYqgIEQmFzZcoCBEJhc2XiAhBCYXNlXEdQQk1ldGFkYXRh6gIEQmFzZWIGcHJvdG8z");
 
 /**
  * Describes the message base.User.
